@@ -1,0 +1,86 @@
+
+html {
+  overflow-y: scroll;
+}
+
+strong {
+  color: #A20000;
+}
+
+a {
+  color: #A20000;
+}
+
+a:hover {
+  color: #A20000;
+}
+
+h1.title{
+  display: none;
+}
+
+h1, .h1 {
+  margin-bottom: 1em;
+}
+
+h3 {
+  display: flex;
+  flex-direction: row;
+  margin-top: 3rem;
+}
+
+h3:after {
+  content: "";
+  flex: 1 1;
+  border-bottom: 1px solid 	#dfd7ca;
+  margin: auto auto 7px 3px;
+}
+
+ol li ul {
+  margin-top: 0.4rem;
+}
+
+ol > li {
+  margin-bottom: 0.9rem;
+}
+
+.exercises ol {
+  padding-left: 18px;
+}
+
+.main-container {
+  max-width: 1200px !important;
+}
+
+.rmdcaution {
+  background-image: url(../caution.png);
+}
+
+.rmdnote {
+  background-image: url(../fyi.png);
+}
+
+.rmdcaution, .rmdimportant, .rmdnote, .rmdtip, .rmdwarning {
+  padding: 1em;
+  margin: 1em 0;
+  padding-left: 100px;
+  background-size: 70px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  min-height: 100px;
+  color: #1f5386;
+  background-color: #bed3ec;
+  border: solid 5px #dfedff;
+}
+
+.rmdcaution p {
+  margin-bottom: 0;
+}
+
+.rmdnote p {
+  margin-bottom: 0;
+}
+
+.rmdexamples {
+  background-color: #f7f7f7;
+}

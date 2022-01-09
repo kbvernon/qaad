@@ -1,0 +1,76 @@
+
+html {
+  line-height: 1.4;
+}
+
+/* 
+To vertical center divs
+https://github.com/gnab/remark/issues/409
+*/
+.container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.center-vertical {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 
+for xaringanExtra panelset, 
+to ensure that they all span 
+the entire available space 
+*/
+.panel-active{
+  width: 100%;
+}
+
+/* Make inline code slightly smaller; prevents vertical jumps
+   from slides with to slides without inline code. */ 
+.remark-inline-code { font-size: 0.94em; line-height: 1.0; }
+
+/*
+font stuff
+*/
+.large { 
+  font-size: 130%; 
+}
+
+.small { 
+  font-size: 70%; 
+}
+
+.tiny{
+  font-size: 40%;
+}
+
+.pull-lleft {
+  float: left;
+  width: 15%;
+}
+
+.pull-lright {
+  float: right;
+  width: 84%;
+}
+
+.pull-lright ~ * {
+  clear: both;
+}
+
+.pull-rleft {
+  float: left;
+  width: 60%;
+}
+
+.pull-rright {
+  float: right;
+  width: 39%;
+}
+
+.pull-rright ~ * {
+  clear: both;
+}
