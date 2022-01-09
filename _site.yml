@@ -2,7 +2,7 @@ name: "QAAD"
 title: "QAAD"
 description: |
   Website with content and exercises for the QuAAD course
-output_dir: "_site"
+output_dir: "docs"
 base_url: "."
 repository_url: https://github.com/kbvernon/qaad
 theme: theme.css
