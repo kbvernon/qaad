@@ -49,13 +49,26 @@ ol > li {
   max-width: 1200px !important;
 }
 
+/* 
+
+relative paths built by knitr are confusing  
+
+*/
+
 .rmdcaution {
-  background-image: url(../caution.png);
+  background-image: url(../../images/caution.png);
 }
 
 .rmdnote {
-  background-image: url(../fyi.png);
+  background-image: url(../../images/fyi.png);
 }
+
+/*
+
+# fyi.png from 
+# https://desiree.rbind.io/post/2019/making-tip-boxes-with-bookdown-and-rmarkdown/
+
+*/
 
 .rmdcaution, .rmdimportant, .rmdnote, .rmdtip, .rmdwarning {
   padding: 1em;
