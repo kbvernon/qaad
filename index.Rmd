@@ -5,7 +5,7 @@ site: distill::distill_website
 
 ## WELCOME
 
-This is a Github page setup to host lectures and other content for the University of Utah course __ANTH 5850: Quantitative Analysis of Archaeological Data__. Mostly, you'll find the lecture slides and labs for this course. You can see a link to them in the navbar. The site was built using the R package [distill](https://rstudio.github.io/distill/). The source code for this website, along with the lecture slides and lab exercises, can be found at the associated [Github repository]().
+This is a Github page setup to host lectures and other content for the University of Utah course __ANTH 5850: Quantitative Analysis of Archaeological Data__. Mostly, you'll find the lecture slides and labs for this course. You can see a link to them in the navbar. The site was built using the R package [distill](https://rstudio.github.io/distill/). The source code for this website, along with the lecture slides and lab exercises, can be found at the associated [Github repository](https://github.com/kbvernon/qaad).
 
 
 

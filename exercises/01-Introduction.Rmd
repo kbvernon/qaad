@@ -1,7 +1,10 @@
 ---
-title: "QAAD"
+title: "Lab 01 - Introduction to R"
 output: 
   html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
     self_contained: false
     css: custom_style.css
     theme: 
@@ -11,23 +14,23 @@ output:
 ```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
 ```
 
-# Lab 01 - Introduction to R {.panelset .sideways}
-
 ## Outline
 
 __tl;dr__ An introduction to R and R Markdown. 
 
-### &#x1F3AF;  Objectives
+### &#x1F3AF;  Objectives {.objectives}
 
 This lab will guide you through the process of  
 
-1. making your first plot in R. 
-2. learning the basics of R
+1. making sense of RStudio
+2. making your first plot in R
+3. learning the basics of R
    - doing math
    - creating objects
    - using functions
-3. creating an R Project folder
-4. putting together an Rmarkdown document
+4. working through a typical workflow
+4. creating an R Project folder
+5. putting together an Rmarkdown document
    - adding R code
    - styling with markdown
    - knitting
@@ -73,7 +76,7 @@ Let's try out a few bits of code just to give you a sense of the difference betw
 As you work through this lab, you can practice running code in the Console, but make sure to do the actual exercises in an R script.
 :::
 
-### Exercises &#x1F3CB; {.exercises}
+### &#x1F3CB; Exercises {.exercises}
 
 1. First, let's open a new R script. To open an R script in RStudio, just click __File > New File > R Script__ (or hit `Ctrl + Shift + N`, `Cmd + Shift + N` on Mac OS). 
 2. Copy this code into the console and hit Enter.
@@ -142,7 +145,7 @@ plot(
 ```
 
 
-### Exercises &#x1F3CB; {.exercises}
+### &#x1F3CB; Exercises {.exercises}
 
 1. Complete the following line of code to preview only the first three rows of the `cars` table.
 
@@ -312,7 +315,7 @@ exp(logx)
 ```
 
 
-### Exercises &#x1F3CB; {.exercises}
+### &#x1F3CB; Exercises {.exercises}
 
 1. Use `seq()` to generate a sequence of numbers from 3 to 12.
 
@@ -480,7 +483,7 @@ YOU CANNOT EAT R CODE. Believe me. You can't. Eventually, you'll have to close o
 
 When you open your project in RStudio, it will establish your project folder as your working directory by default. The advantage of this is that you can access R scripts and data using relative file paths, rather than specifying the full path from your computer's root directory. Why is this advantageous? Because you can copy the project folder to any computer you want and your relative file paths will just work!
 
-### Exercises &#x1F3CB; {.exercises}
+### &#x1F3CB; Exercises {.exercises}
 
 1. Before we setup your project, let's turn off some of R's default settings.
     - In RStudio, go to __Tools > Global Options...__.
@@ -680,7 +683,7 @@ output: html_document
 Notice the three dashes `---` at the top and bottom. These must be there in order for R Markdown to recognize it as the YAML. You should always include this at the beginning of the document. There's A LOT you can specify in the YAML. In fact, you can specify basically anything you want, but being quite new to R Markdown, I don't think that would be helpful. For now, let me draw your attention to the `output` field. R Markdown (with the power of a utility known as Pandoc) can technically generate a wide variety of output formats, including Word documents, PDFs, ioslides (presentations), and even powerpoint (if you really insist on it). In this class, we'll stick with the default HTML output, so the only thing you will need to specify in the YAML is the title, author, and date.  
 
 
-### Exercises &#x1F3CB; {.exercises}
+### &#x1F3CB; Exercises {.exercises}
 
 1. Let's create a new rmd document in RStudio. To do that, follow these steps:
    - Go to __File > New File > R Markdown...__.

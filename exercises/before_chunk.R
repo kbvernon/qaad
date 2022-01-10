@@ -44,7 +44,7 @@ htmltools::tagList(
   rmarkdown::html_dependency_font_awesome()
 )
 
-xaringanExtra::use_panelset()
+# xaringanExtra::use_panelset()
 
 # short-hand for loading figures
 figure <- function(x) {

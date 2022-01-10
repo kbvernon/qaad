@@ -7,7 +7,7 @@ base_url: "."
 repository_url: https://github.com/kbvernon/qaad
 theme: theme.css
 navbar:
-  search: true
+  search: false
   source_url: true
   right:
     - text: "Lectures"

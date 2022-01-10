@@ -11,7 +11,7 @@
 
 
 
-<title>QAAD</title>
+<title>Lab 01 - Introduction to R</title>
 
 <script src="01-Introduction_files/header-attrs/header-attrs.js"></script>
 <script src="01-Introduction_files/jquery/jquery-3.6.0.min.js"></script>
@@ -21,6 +21,9 @@
 <script src="01-Introduction_files/bs3compat/transition.js"></script>
 <script src="01-Introduction_files/bs3compat/tabs.js"></script>
 <script src="01-Introduction_files/bs3compat/bs3compat.js"></script>
+<script src="01-Introduction_files/jqueryui/jquery-ui.min.js"></script>
+<link href="01-Introduction_files/tocify/jquery.tocify.css" rel="stylesheet" />
+<script src="01-Introduction_files/tocify/jquery.tocify.js"></script>
 <script src="01-Introduction_files/navigation/tabsets.js"></script>
 <link href="01-Introduction_files/highlightjs/default.css" rel="stylesheet" />
 <script src="01-Introduction_files/highlightjs/highlight.js"></script>
@@ -148,6 +151,69 @@ pre code {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -157,33 +223,43 @@ pre code {
 <div class="container-fluid main-container">
 
 
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div id="header">
 
 
 
-<h1 class="title toc-ignore">QAAD</h1>
+<h1 class="title toc-ignore">Lab 01 - Introduction to R</h1>
 
 </div>
 
 
-<div id="lab-01---introduction-to-r" class="section level1 panelset sideways">
-<h1 class="panelset sideways">Lab 01 - Introduction to R</h1>
 <div id="outline" class="section level2">
 <h2>Outline</h2>
 <p><strong>tl;dr</strong> An introduction to R and R Markdown.</p>
-<div id="objectives" class="section level3">
-<h3>🎯 Objectives</h3>
+<div id="objectives" class="section level3 objectives">
+<h3 class="objectives">🎯 Objectives</h3>
 <p>This lab will guide you through the process of</p>
 <ol style="list-style-type: decimal">
-<li>making your first plot in R.</li>
+<li>making sense of RStudio</li>
+<li>making your first plot in R</li>
 <li>learning the basics of R
 <ul>
 <li>doing math</li>
 <li>creating objects</li>
 <li>using functions</li>
 </ul></li>
+<li>working through a typical workflow</li>
 <li>creating an R Project folder</li>
 <li>putting together an Rmarkdown document
 <ul>
@@ -230,7 +306,7 @@ pre code {
 </div>
 </div>
 <div id="exercises" class="section level3 exercises">
-<h3 class="exercises">Exercises 🏋</h3>
+<h3 class="exercises">🏋 Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>First, let’s open a new R script. To open an R script in RStudio, just click <strong>File &gt; New File &gt; R Script</strong> (or hit <code>Ctrl + Shift + N</code>, <code>Cmd + Shift + N</code> on Mac OS).</li>
 <li>Copy this code into the console and hit Enter.</li>
@@ -285,7 +361,7 @@ pre code {
 <p><img src="01-Introduction_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="exercises-1" class="section level3 exercises">
-<h3 class="exercises">Exercises 🏋</h3>
+<h3 class="exercises">🏋 Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Complete the following line of code to preview only the first three rows of the <code>cars</code> table.</li>
 </ol>
@@ -386,7 +462,7 @@ exp(logx)
 </div>
 </div>
 <div id="exercises-2" class="section level3 exercises">
-<h3 class="exercises">Exercises 🏋</h3>
+<h3 class="exercises">🏋 Exercises</h3>
 <ol style="list-style-type: decimal">
 <li><p>Use <code>seq()</code> to generate a sequence of numbers from 3 to 12.</p></li>
 <li><p>Use <code>seq()</code> to generate a sequence of numbers from 3 to 12 with length 25.</p></li>
@@ -517,7 +593,7 @@ title(
 <p>YOU CANNOT EAT R CODE. Believe me. You can’t. Eventually, you’ll have to close out of R, turn off your computer, walk away, and do whatever it is that you do to maintain your existence. That means, you need some way to save your progress and you need some place to save it. R has a few built-in tools for this, and they are really convenient, at least early on. However, you will be much better off if you get into the habit of using RStudio <a href="https://support.rstudio.com/hc/en-us/articles/200526207-Using-RStudio-Projects">Projects</a>. What is an R Project? Basically, it’s a folder on your computer that you can use to organize all the data, code, figures, texts, and analyses associated with a single scientific research project.</p>
 <p>When you open your project in RStudio, it will establish your project folder as your working directory by default. The advantage of this is that you can access R scripts and data using relative file paths, rather than specifying the full path from your computer’s root directory. Why is this advantageous? Because you can copy the project folder to any computer you want and your relative file paths will just work!</p>
 <div id="exercises-3" class="section level3 exercises">
-<h3 class="exercises">Exercises 🏋</h3>
+<h3 class="exercises">🏋 Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Before we setup your project, let’s turn off some of R’s default settings.
 <ul>
@@ -687,7 +763,7 @@ output: html_document
 <p>Notice the three dashes <code>---</code> at the top and bottom. These must be there in order for R Markdown to recognize it as the YAML. You should always include this at the beginning of the document. There’s A LOT you can specify in the YAML. In fact, you can specify basically anything you want, but being quite new to R Markdown, I don’t think that would be helpful. For now, let me draw your attention to the <code>output</code> field. R Markdown (with the power of a utility known as Pandoc) can technically generate a wide variety of output formats, including Word documents, PDFs, ioslides (presentations), and even powerpoint (if you really insist on it). In this class, we’ll stick with the default HTML output, so the only thing you will need to specify in the YAML is the title, author, and date.</p>
 </div>
 <div id="exercises-4" class="section level3 exercises">
-<h3 class="exercises">Exercises 🏋</h3>
+<h3 class="exercises">🏋 Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Let’s create a new rmd document in RStudio. To do that, follow these steps:
 <ul>
@@ -711,10 +787,11 @@ output: html_document
 <h2>Homework</h2>
 <p>There is no R related homework assignment for this week. Please fill out the pre-course self-assessment survey on Canvas.</p>
 </div>
+
+
+
 </div>
-
-
-
+</div>
 
 </div>
 
@@ -747,6 +824,35 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
