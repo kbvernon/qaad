@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
 ## Research Question
 
 <!--- 
-Please state your research question in one or two sentences 
+Please state your research question in one or two sentences.
+If this is a replication analysis, please state the name of the original paper and the  question it poses. Then, state that you intend to replicate the analysis in that paper.
 --->
 
 
@@ -36,7 +37,7 @@ Provide some context (one or two paragraphs) explaining the subject matter, the 
 ## Hypotheses
 
 <!--- 
-Please state your null (H~0~) and alternative (H~1~) hypotheses as clearly and concisely as possible.
+Please state your/their null (H~0~) and alternative (H~1~) hypotheses as clearly and concisely as possible.
 --->
 
 H~0~: 
@@ -47,15 +48,6 @@ H~1~:
 
 
 ## Data
-
-<!--- 
-What data are needed to answer your research question? How will you get those data? 
---->
-
-
-
-
-## Expected Results
 
 <!--- 
 What data are needed to answer your research question? How will you get those data? 
