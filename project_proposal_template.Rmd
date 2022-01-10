@@ -1,0 +1,65 @@
+---
+title: "Project Proposal"
+author: 
+date: 
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+```
+
+## Research Question
+
+<!--- 
+Please state your research question in one or two sentences 
+--->
+
+
+
+
+## Research Problem
+
+<!--- 
+Provide some context (one or two paragraphs) explaining the subject matter, the theory you are drawing on, and why you think it is interesting.
+--->
+
+
+
+
+## Hypotheses
+
+<!--- 
+Please state your null (H~0~) and alternative (H~1~) hypotheses as clearly and concisely as possible.
+--->
+
+H~0~: 
+
+H~1~: 
+
+
+
+
+## Data
+
+<!--- 
+What data are needed to answer your research question? How will you get those data? 
+--->
+
+
+
+
+## Expected Results
+
+<!--- 
+What data are needed to answer your research question? How will you get those data? 
+--->
+
+
+
