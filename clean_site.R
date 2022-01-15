@@ -2,6 +2,10 @@
 # a purely R version of this:
 # https://github.com/rstudio/distill/issues/158#issuecomment-692138534
 
+rmarkdown::render_site(encoding = 'UTF-8')
+
+### run after building site! ###
+
 do.call(
   file.remove,
   list(

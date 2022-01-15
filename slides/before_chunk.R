@@ -1,6 +1,7 @@
 
 library(here)
 library(fontawesome)
+library(ggtext)
 library(glue)
 library(knitr)
 library(kableExtra)
@@ -46,7 +47,7 @@ figure <- function(x) {
 sysfonts::font_add_google("Fira Mono")
 
 # ggplot theme
-ggplot2::theme_set(ggplot2::theme_bw(14))
+ggplot2::theme_set(ggplot2::theme_bw(18))
 ggplot2::theme_update(
   panel.grid = element_blank(),
   text = element_text(family = "Fira Mono")

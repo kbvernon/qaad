@@ -5,11 +5,11 @@ output:
   xaringan::moon_reader:
     lib_dir: libs
     css: [xaringan-themer.css, custom_style.css]
-    seal: TRUE
+    seal: true
     nature:
       highlightStyle: magula
-      highlightLines: TRUE
-      countIncrementalSlides: TRUE
+      highlightLines: true
+      countIncrementalSlides: false
       ratio: '16:9'
 ---
 

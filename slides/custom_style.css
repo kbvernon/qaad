@@ -3,21 +3,30 @@ html {
   line-height: 1.4;
 }
 
-/* 
-To vertical center divs
-https://github.com/gnab/remark/issues/409
-*/
-.container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+ol li ul {
+  margin-top: 0.4rem;
+  margin-bottom: 1.0rem;
 }
 
-.center-vertical {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
+ul li ul {
+  margin-top: 0.4rem;
+  margin-bottom: 1.0rem;
 }
+
+ol > li {
+  margin-bottom: 1.0rem;
+}
+
+.highlight-last-item > ul > li,
+.highlight-last-item > ol > li {
+  opacity: 0.4;
+}
+
+.highlight-last-item > ul > li:last-of-type,
+.highlight-last-item > ol > li:last-of-type {
+  opacity: 1;
+}
+
 
 /* 
 for xaringanExtra panelset, 
