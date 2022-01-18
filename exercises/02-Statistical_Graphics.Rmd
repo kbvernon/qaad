@@ -30,7 +30,6 @@ This lab will guide you through the process of
     - facets
     - scales
     - themes
-    - saving images
 
 
 ### &#x1F4E6; R Packages
@@ -747,45 +746,6 @@ ggplot(data = penguins) +
 ```
 
 
-
-## Saving
-
-Saving a ggplot is simple enough. You use the `ggsave()` function, specify the plot you want to save, and tell it where you want to save it. Here is an example:
-
-```{r, eval = FALSE}
-
-penguins_plot <- ggplot(data = penguins) + 
-  geom_point(
-    mapping = aes(x = body_mass_g, y = bill_length_mm)
-  )
-
-ggsave(
-  plot = penguins_plot,
-  filename = "../figures/penguins.png",
-  width = 5,
-  height = 4.5
-)
-
-```
-
-There are two things to note here. First, you can specify the dimensions of the resulting figure with width and height (the unit for these is inches). Second, check out the weird "../" in the `filename` argument. What is that about? Well, right now, the working directory for your R Markdown document is the `R` folder within your `qaad` project folder, as shown in the schematic below.
-
-```
-|-+ qaad
-  |-+ data
-  |-+ figures
-  |-+ R
-    |-+ lab01-introduction.Rmd
-    |-+ lab02-statistical_graphics.Rmd
-```
-
-However, you want to save the plot into your `figures` folder, which is at the same level as `R`. So, what the file path "../figures/penguins.png" says is "go up one level from your current directory in R to the qaad directory, then go back down into the figures folder, and put the penguins.png file there." Later on, I'll introduce you to the `here` package, which makes writing file paths in your project folder a lot easier. For now, though, we'll just use this old-school technique for generating a file path.
-
-### &#x1F3CB; Exercises {.exercises}
-
-1. Run the code above to save the `penguins_plot` to your figures folder.
-
-
 ## &#x1F3E0; Homework {.homework}
 
 1. __Load data.__ For this homework exercise, we'll work with the `DartPoints` dataset from the `archdata` package. When you ran `library(archdata)`, this dataset should have been attached to your current R session, so don't worry about loading it into R. It's already there!
@@ -803,6 +763,4 @@ However, you want to save the plot into your `figures` folder, which is at the s
     - Use `scale_color_viridis()` to make the color scale colorblind safe. Feel free to use whichever palette you prefer. (Hint: dart point type is a categorical variable, so you need to set `discrete = TRUE`!)
     - Try out `facet_wrap()` on the dart point `Name` variable.
     - Does this make it easier or harder to see differences between types?
-    - Finally, assign your graphic to object, maybe `dartpoints_plot` and save that to the figures folder in your project directory with `ggsave()`. (Hint: make sure to use "../" in the filename.)
-
-
+    

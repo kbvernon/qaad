@@ -258,7 +258,6 @@ div.tocify {
 <li>facets</li>
 <li>scales</li>
 <li>themes</li>
-<li>saving images</li>
 </ul></li>
 </ol>
 </div>
@@ -785,35 +784,6 @@ ggplot(data = penguins) +
   theme_    # &lt;------- insert value here</code></pre>
 </div>
 </div>
-<div id="saving" class="section level2">
-<h2>Saving</h2>
-<p>Saving a ggplot is simple enough. You use the <code>ggsave()</code> function, specify the plot you want to save, and tell it where you want to save it. Here is an example:</p>
-<pre class="r"><code>penguins_plot &lt;- ggplot(data = penguins) + 
-  geom_point(
-    mapping = aes(x = body_mass_g, y = bill_length_mm)
-  )
-
-ggsave(
-  plot = penguins_plot,
-  filename = &quot;../figures/penguins.png&quot;,
-  width = 5,
-  height = 4.5
-)</code></pre>
-<p>There are two things to note here. First, you can specify the dimensions of the resulting figure with width and height (the unit for these is inches). Second, check out the weird “../” in the <code>filename</code> argument. What is that about? Well, right now, the working directory for your R Markdown document is the <code>R</code> folder within your <code>qaad</code> project folder, as shown in the schematic below.</p>
-<pre><code>|-+ qaad
-  |-+ data
-  |-+ figures
-  |-+ R
-    |-+ lab01-introduction.Rmd
-    |-+ lab02-statistical_graphics.Rmd</code></pre>
-<p>However, you want to save the plot into your <code>figures</code> folder, which is at the same level as <code>R</code>. So, what the file path “../figures/penguins.png” says is “go up one level from your current directory in R to the qaad directory, then go back down into the figures folder, and put the penguins.png file there.” Later on, I’ll introduce you to the <code>here</code> package, which makes writing file paths in your project folder a lot easier. For now, though, we’ll just use this old-school technique for generating a file path.</p>
-<div id="exercises-7" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
-<ol style="list-style-type: decimal">
-<li>Run the code above to save the <code>penguins_plot</code> to your figures folder.</li>
-</ol>
-</div>
-</div>
 <div id="homework" class="section level2 homework">
 <h2 class="homework">🏠 Homework</h2>
 <ol style="list-style-type: decimal">
@@ -835,7 +805,6 @@ ggsave(
 <li>Use <code>scale_color_viridis()</code> to make the color scale colorblind safe. Feel free to use whichever palette you prefer. (Hint: dart point type is a categorical variable, so you need to set <code>discrete = TRUE</code>!)</li>
 <li>Try out <code>facet_wrap()</code> on the dart point <code>Name</code> variable.</li>
 <li>Does this make it easier or harder to see differences between types?</li>
-<li>Finally, assign your graphic to object, maybe <code>dartpoints_plot</code> and save that to the figures folder in your project directory with <code>ggsave()</code>. (Hint: make sure to use “../” in the filename.)</li>
 </ul></li>
 </ol>
 </div>
