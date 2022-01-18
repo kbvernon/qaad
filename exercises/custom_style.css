@@ -30,18 +30,15 @@ h2:after {
 }
 
 h3 {
-  margin-top: 1em;
+  margin-top: 2em;
 }
 
-ol li ul {
-  margin-top: 0.4rem;
+li ul {
+  margin-top: 0.2rem;
+  margin-bottom: 0.4rem;
 }
 
-ol > li {
-  margin-bottom: 0.9rem;
-}
-
-.exercises ol {
+.exercises, .homework ol {
   padding-left: 18px;
 }
 

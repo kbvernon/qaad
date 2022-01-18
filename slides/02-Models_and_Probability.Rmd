@@ -51,6 +51,7 @@ s <- sd(cars$distance) %>% round(digits = 3)
 - &#x1F697; Cars Model
 - Brief Review
 - A Simple Formula
+- A Note About Complexity
 
 
 
@@ -1692,6 +1693,31 @@ $$\epsilon \sim N(0, \sigma^2) $$
     - **I**dentically **D**istributed = all the errors are drawn from the same probability distribution.
 --
 - The distribution is now a model of the errors!
+
+
+
+---
+class: highlight-last-item
+
+## A Note About Complexity
+
+Here, again, is our simple formula:
+
+$$y_i = E[y] + \epsilon_i$$ 
+$$\epsilon \sim N(0, \sigma^2) $$
+
+--
+- We can use something besides the mean to define our expectation, $E[y]$.
+    - For instance, we can define it as a linear function of another variable. 
+    - $E[y] = \beta x$
+
+--
+- The goal should be to minimize expected errors in our model (i.e., uncertainty).
+
+--
+- However, we have to weigh the reduced uncertainty against the increase in model complexity. 
+    - We want to know: is the increased complexity worth it?
+    - This question is central to model building and evaluation (to statistical inference).
 
 
 

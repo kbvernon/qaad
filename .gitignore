@@ -3,5 +3,8 @@
 .RData
 .Ruserdata
 _misc/
-slides/images/
-exercises/images/
+/slides/*_files/
+/slides/*.html
+/slides/libs/
+/exercises/*_files/
+/exercises/*.html

@@ -16,6 +16,9 @@ set.seed(12345)
 
 knitr::opts_chunk$set(
   echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  error = FALSE,
   collapse = TRUE,
   strip.white = TRUE,
   fig.align = "center",
