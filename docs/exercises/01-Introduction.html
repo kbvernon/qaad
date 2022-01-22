@@ -11,7 +11,7 @@
 
 
 
-<title>Lab 01 - Introduction to R</title>
+<title>Lab 01</title>
 
 <script src="01-Introduction_files/header-attrs/header-attrs.js"></script>
 <script src="01-Introduction_files/jquery/jquery-3.6.0.min.js"></script>
@@ -33,6 +33,41 @@
 <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
 <link href="01-Introduction_files/font-awesome/css/all.css" rel="stylesheet" />
 <link href="01-Introduction_files/font-awesome/css/v4-shims.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    
+    const ttl = $('.title.toc-ignore').text();
+    const subttl = $('.subtitle').text();
+    
+    $('.title.toc-ignore').remove();
+    $('.subtitle').remove();
+    
+    $('<h1 class = "title toc-ignore">' + ttl + '</h1><h3 class = "subtitle">' + subttl + '</h3>')
+      .appendTo('.tocify');
+    
+    $('.section.level2:first').show();
+      
+  });
+  
+  $(window).on('load', function() {
+  
+    $('.tocify-item.list-group-item').click(function(event){
+        
+      $('.section.level2').hide();
+      
+      var id = $(this).data('unique');
+      
+      $('#'+id).show(100, function(){
+        $('html').scrollTop(0);
+      });
+      
+    });
+  
+  });
+
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -237,16 +272,17 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 01 - Introduction to R</h1>
+<h1 class="title toc-ignore">Lab 01</h1>
+<h3 class="subtitle">Introduction to R</h3>
 
 </div>
 
 
-<div id="outline" class="section level2">
+<div id="Outline" class="section level2">
 <h2>Outline</h2>
 <p><strong>tl;dr</strong> An introduction to R and R Markdown.</p>
-<div id="objectives" class="section level3 objectives">
-<h3 class="objectives">🎯 Objectives</h3>
+<div id="objectives" class="section level3">
+<h3>Objectives</h3>
 <p>This lab will guide you through the process of</p>
 <ol style="list-style-type: decimal">
 <li>making sense of RStudio</li>
@@ -267,17 +303,17 @@ div.tocify {
 </ul></li>
 </ol>
 </div>
+<div id="r-packages" class="section level3">
+<h3>R Packages</h3>
+<p>No additional packages are required for this lab.</p>
+</div>
 <div id="data" class="section level3">
-<h3>💾 Data</h3>
+<h3>Data</h3>
 <p>The <code>cars</code> dataset from the base R <code>datasets</code> package.</p>
 <p>For more information, see here: <a href="https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html</a></p>
 </div>
-<div id="r-packages" class="section level3">
-<h3>📦 R Packages</h3>
-<p>No additional packages are required for this lab.</p>
 </div>
-</div>
-<div id="rstudio" class="section level2">
+<div id="RStudio" class="section level2">
 <h2>RStudio</h2>
 <p><img src="images/rstudio_panes.png" width="718" style="display: block; margin: auto;" /></p>
 <p>If you are going to do anything with R, <a href="https://rstudio.com/">RStudio</a> is hands-down the best place to do it. RStudio is an open-source integrated development environment (or IDE) that makes programming in R simpler, more efficient, and most importantly, more reproducible. Some of its more user-friendly features are syntax highlighting (it displays code in different colors depending on what it is or does, which makes it easier for you to navigate the code that you’ve written), code completion (it will try to guess what code you are attempting to write and write it for you), and keyboard shortcuts for the more repetitive tasks.</p>
@@ -303,8 +339,8 @@ div.tocify {
 <p>As you work through this lab, you can practice running code in the Console, but make sure to do the actual exercises in an R script.</p>
 </div>
 </div>
-<div id="exercises" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>First, let’s open a new R script. To open an R script in RStudio, just click <strong>File &gt; New File &gt; R Script</strong> (or hit <code>Ctrl + Shift + N</code>, <code>Cmd + Shift + N</code> on Mac OS).</li>
 <li>Copy this code into the console and hit Enter.</li>
@@ -315,7 +351,7 @@ div.tocify {
 </ol>
 </div>
 </div>
-<div id="plot" class="section level2">
+<div id="Plot" class="section level2">
 <h2>Plot</h2>
 <p>To ease you into working with R, let’s visualize some data to answer a simple question: Do fast moving objects take longer to slow down than slow moving objects? Don’t worry about understanding all of this! It’s just to give you a feel for the sort of graphics you can make with R. We’ll actually spend all of the next lab learning how to make even better graphics.</p>
 <div id="the-data" class="section level3">
@@ -358,8 +394,8 @@ div.tocify {
 )</code></pre>
 <p><img src="01-Introduction_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="exercises-1" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Complete the following line of code to preview only the first three rows of the <code>cars</code> table.</li>
 </ol>
@@ -401,7 +437,7 @@ div.tocify {
 )</code></pre>
 </div>
 </div>
-<div id="r-basics" class="section level2">
+<div id="R_Basics" class="section level2">
 <h2>R Basics</h2>
 <p><img src="images/r-stuff.png" width="75%" style="display: block; margin: auto;" /></p>
 <div id="r-is-a-calculator" class="section level3">
@@ -459,8 +495,8 @@ exp(logx)
 ## [1] 1 3 5</code></pre>
 </div>
 </div>
-<div id="exercises-2" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-2" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li><p>Use <code>seq()</code> to generate a sequence of numbers from 3 to 12.</p></li>
 <li><p>Use <code>seq()</code> to generate a sequence of numbers from 3 to 12 with length 25.</p></li>
@@ -475,7 +511,7 @@ exp(logx)
 <pre class="r"><code>2bob &lt;- 10</code></pre>
 </div>
 </div>
-<div id="workflow" class="section level2">
+<div id="Workflow" class="section level2">
 <h2>Workflow</h2>
 <p><img src="images/r-workflow.png" width="55%" style="display: block; margin: auto;" /></p>
 <p>As you work more and more in R, you will learn that statistical analyses tend to involve the same basic set of tasks:</p>
@@ -585,13 +621,13 @@ title(
 </div>
 </div>
 </div>
-<div id="r-projects" class="section level2">
+<div id="R_Projects" class="section level2">
 <h2>R Projects</h2>
 <p><a href="https://github.com/allisonhorst/stats-illustrations"><img src="https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/cracked_setwd.png" /></a></p>
 <p>YOU CANNOT EAT R CODE. Believe me. You can’t. Eventually, you’ll have to close out of R, turn off your computer, walk away, and do whatever it is that you do to maintain your existence. That means, you need some way to save your progress and you need some place to save it. R has a few built-in tools for this, and they are really convenient, at least early on. However, you will be much better off if you get into the habit of using RStudio <a href="https://support.rstudio.com/hc/en-us/articles/200526207-Using-RStudio-Projects">Projects</a>. What is an R Project? Basically, it’s a folder on your computer that you can use to organize all the data, code, figures, texts, and analyses associated with a single scientific research project.</p>
 <p>When you open your project in RStudio, it will establish your project folder as your working directory by default. The advantage of this is that you can access R scripts and data using relative file paths, rather than specifying the full path from your computer’s root directory. Why is this advantageous? Because you can copy the project folder to any computer you want and your relative file paths will just work!</p>
-<div id="exercises-3" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-3" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Before we setup your project, let’s turn off some of R’s default settings.
 <ul>
@@ -616,7 +652,7 @@ title(
 </ol>
 </div>
 </div>
-<div id="r-markdown" class="section level2">
+<div id="R_Markdown" class="section level2">
 <h2>R Markdown</h2>
 <p><a href="https://github.com/allisonhorst/stats-illustrations"><img src="https://github.com/allisonhorst/stats-illustrations/blob/master/rstats-artwork/rmarkdown_wizards.png?raw=true" /></a></p>
 <p>R Markdown (or <code>rmarkdown</code>) offers a unified framework for statistical programming and science communication by letting you write and run R code alongside text to explain your methods to others. The text you write is formatted using Markdown syntax (hence “R Markdown”). Note that in this section, I will, for the sake of brevity, refer to <code>rmarkdown</code> simply as “rmd”.</p>
@@ -760,8 +796,8 @@ output: html_document
 ---</code></pre>
 <p>Notice the three dashes <code>---</code> at the top and bottom. These must be there in order for R Markdown to recognize it as the YAML. You should always include this at the beginning of the document. There’s A LOT you can specify in the YAML. In fact, you can specify basically anything you want, but being quite new to R Markdown, I don’t think that would be helpful. For now, let me draw your attention to the <code>output</code> field. R Markdown (with the power of a utility known as Pandoc) can technically generate a wide variety of output formats, including Word documents, PDFs, ioslides (presentations), and even powerpoint (if you really insist on it). In this class, we’ll stick with the default HTML output, so the only thing you will need to specify in the YAML is the title, author, and date.</p>
 </div>
-<div id="exercises-4" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-4" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Let’s create a new rmd document in RStudio. To do that, follow these steps:
 <ul>
@@ -781,7 +817,7 @@ output: html_document
 </ol>
 </div>
 </div>
-<div id="homework" class="section level2">
+<div id="Homework" class="section level2">
 <h2>Homework</h2>
 <p>There is no R related homework assignment for this week. Please fill out the pre-course self-assessment survey on Canvas.</p>
 </div>
@@ -845,7 +881,7 @@ $(document).ready(function ()  {
       scrollTo: 0
     };
     options.showAndHide = true;
-    options.smoothScroll = true;
+    options.smoothScroll = false;
 
     // tocify
     var toc = $("#TOC").tocify(options).data("toc-tocify");

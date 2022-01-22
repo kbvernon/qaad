@@ -11,7 +11,7 @@
 
 
 
-<title>Lab 02: Statistical Graphics</title>
+<title>Lab 02</title>
 
 <script src="02-Statistical_Graphics_files/header-attrs/header-attrs.js"></script>
 <script src="02-Statistical_Graphics_files/jquery/jquery-3.6.0.min.js"></script>
@@ -33,6 +33,41 @@
 <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
 <link href="02-Statistical_Graphics_files/font-awesome/css/all.css" rel="stylesheet" />
 <link href="02-Statistical_Graphics_files/font-awesome/css/v4-shims.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    
+    const ttl = $('.title.toc-ignore').text();
+    const subttl = $('.subtitle').text();
+    
+    $('.title.toc-ignore').remove();
+    $('.subtitle').remove();
+    
+    $('<h1 class = "title toc-ignore">' + ttl + '</h1><h3 class = "subtitle">' + subttl + '</h3>')
+      .appendTo('.tocify');
+    
+    $('.section.level2:first').show();
+      
+  });
+  
+  $(window).on('load', function() {
+  
+    $('.tocify-item.list-group-item').click(function(event){
+        
+      $('.section.level2').hide();
+      
+      var id = $(this).data('unique');
+      
+      $('#'+id).show(100, function(){
+        $('html').scrollTop(0);
+      });
+      
+    });
+  
+  });
+
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -237,16 +272,17 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 02: Statistical Graphics</h1>
+<h1 class="title toc-ignore">Lab 02</h1>
+<h3 class="subtitle">Statistical Graphics</h3>
 
 </div>
 
 
-<div id="outline" class="section level2">
-<h2>📋 Outline</h2>
+<div id="Outline" class="section level2">
+<h2>Outline</h2>
 <p><strong>tl;dr</strong> summary statistics and statistical graphics.</p>
-<div id="objectives" class="section level3 objectives">
-<h3 class="objectives">🎯 Objectives</h3>
+<div id="objectives" class="section level3">
+<h3>Objectives</h3>
 <p>This lab will guide you through the process of</p>
 <ol style="list-style-type: decimal">
 <li>loading (or “attaching”) R packages with <code>library()</code></li>
@@ -262,7 +298,7 @@ div.tocify {
 </ol>
 </div>
 <div id="r-packages" class="section level3">
-<h3>📦 R Packages</h3>
+<h3>R Packages</h3>
 <p>We will be using the following packages:</p>
 <ul>
 <li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
@@ -277,7 +313,7 @@ div.tocify {
 )</code></pre>
 </div>
 <div id="data" class="section level3">
-<h3>💾 Data</h3>
+<h3>Data</h3>
 <ul>
 <li><code>penguins</code>
 <ul>
@@ -294,15 +330,14 @@ div.tocify {
 </ul>
 </div>
 </div>
-<div id="the-library" class="section level2">
-<h2>The  <code>library()</code></h2>
+<div id="The_Library" class="section level2">
+<h2>The Library</h2>
 <p>R is an extensible programming language, meaning you can write R code to extend the functionality of base R. To share that code, R users will often bundle it into a <strong>package</strong>, a collection of functions, data, and documentation. You can think of packages like apps, but specifically for R. To make the functionality a package offers available in R, you have to load them in with the <code>library()</code> function (the technical term is <em>attach</em>).</p>
 <p>You will occasionally encounter <code>library()</code> calls littered throughout an R script or R Markdown document. DO NOT DO THIS. You should always, always, always load all the packages you use at the beginning of a document. That way, people who read your code know exactly what packages you are using all at once and right away. To make this really, really explicit, I prefer to set this off with its own section that I call the “R Preamble.” In an R script, it looks like this:</p>
 <pre class="r"><code># R PREAMBLE --------------------------------------------------------------
 
 library(archdata)
 library(ggplot2)
-library(khroma)
 library(palmerpenguins)
 library(skimr)
 library(viridis)</code></pre>
@@ -330,7 +365,6 @@ knitr::opts_chunk$set(
 
 library(archdata)
 library(ggplot2)
-library(khroma)
 library(palmerpenguins)
 library(skimr)
 library(viridis)
@@ -349,16 +383,16 @@ library(viridis)
 1. 
 </code></pre>
 <p>Note that in an R script, the hashtag <code>#</code> tells R that the text that follows on the same line is not R code, but rather a comment. In an R Markdown document, it is markdown syntax that signals a section header. Another important difference is that you have to put the <code>library()</code> calls in a code chunk in R Markdown to signal that it is R code. In an R script, however, everything is assumed to be R code.</p>
-<div id="exercises" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Open a new R Markdown document for this lab and copy the template above into that document, replacing the author with your name.</li>
 <li>Run each <code>library()</code> call, either by highlighting them and hitting Ctrl + Enter (Cmd + Enter) or by clicking the green arrow in the top right of the code chunk.</li>
 </ol>
 </div>
 </div>
-<div id="summary-statistics" class="section level2">
-<h2>Summary statistics</h2>
+<div id="Summary_Statistics" class="section level2">
+<h2>Summary Statistics</h2>
 <div class="figure" style="text-align: center">
 <img src="https://allisonhorst.github.io/palmerpenguins/reference/figures/culmen_depth.png" alt="Artwork by @allison_horst" width="70%" />
 <p class="caption">
@@ -465,8 +499,8 @@ Artwork by <span class="citation">@allison_horst</span>
 ## 5 2009   2009   &lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2587&gt;&lt;U+2581&gt;&lt;U+2587&gt;</code></pre>
 <p>As you can see, there are three major sections of this printout: (i) Data Summary, (ii) Factor variables, and (iii) Numeric variables. The Data Summary gives you an overview of your table, with counts of the number of rows and columns, as well as counts of the different types of variables (factor, numeric, etc). The section on factor variables gives you counts for each level of the factor (for example, counts of the different species of penguins), as well as information about missing data. Finally, the section on numeric variables gives you information on missing data, as well as measures of dispersion and central tendency, including the mean, median (<code>p50</code>), and standard deviation (<code>sd</code>), the range or min and max values (<code>p0</code> and <code>p100</code>), and the inner quartiles (<code>p25</code> and <code>p75</code>).</p>
 </div>
-<div id="exercises-1" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Have a look at the <code>penguins</code> data again. Use <code>head()</code> to preview the first 15 rows.</li>
 <li>With the <code>penguins</code> data, calculate all of the following:
@@ -479,8 +513,8 @@ Artwork by <span class="citation">@allison_horst</span>
 </ol>
 </div>
 </div>
-<div id="the-grammar-of-graphics" class="section level2">
-<h2>The grammar of graphics</h2>
+<div id="The_Grammar_of_Graphics" class="section level2">
+<h2>The Grammar of Graphics</h2>
 <p>It’s easy to imagine how you would go about with pen and paper drawing a bar chart of, say, the number of penguins in each species in the <code>penguins</code> dataset. But, what if you had to dictate the steps to make that graph to another person, one you can’t see or physically interact with? All you can do is use words to communicate the graphic you want. How would you do it? Regardless of how you answer that question, you should see right away that one thing is essential. You and your illustrator must share a coherent vocabulary for describing graphics. That way you can unambiguously communicate your intent. That’s essentially what the grammar of graphics is, a language with a set of rules (a grammar) for specifying each component of a graphic.</p>
 <p>In R, the <code>ggplot2</code> package provides an elegant implementation of the grammar of graphics, and that’s what we’ll be using here. Basically, R is your illustrator, and <code>ggplot2</code> is the language you are going to speak to R to make your graphics. So, how do we do that? Well, let’s start with the basics. Suppose we want to know if there’s some kind of relationship (an allometric relationship) among the Palmer Station penguins between their body mass and bill length. Here’s how we would visualize that.</p>
 <pre class="r"><code>ggplot(data = penguins) + 
@@ -506,15 +540,15 @@ Artwork by <span class="citation">@allison_horst</span>
 
 penguins_plot</code></pre>
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
-<div id="exercises-2" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-2" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Recreate the scatterplot above, but switch the axes. Put bill length on the x-axis and body mass on the y-axis.</li>
 <li>Fill in the template above to create a scatterplot of bill length (on the y-axis) by bill depth (on the x-axis).</li>
 </ol>
 </div>
 </div>
-<div id="aesthetics" class="section level2">
+<div id="Aesthetics" class="section level2">
 <h2>Aesthetics</h2>
 <p>In the plot above, we only specified the position of the points (the x- and y-coordinates) in the aesthetic mapping, but there are many aesthetics (see the figure below), and we can map the same or other variables to those.</p>
 <div class="figure" style="text-align: center">
@@ -541,8 +575,8 @@ Commonly used aesthetics. Figure from <a href="https://clauswilke.com/dataviz">C
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Notice that we specified the shape with a number. R has 25 built-in shapes that you can specify with a number, as shown in the figure below. Some important differences in these shapes concern the border and fill colors. The hollow shapes (0-14) have a border that you specify with with <code>color</code>, the solid shapes (15-20) have a border and fill, both specified with <code>color</code>, and the filled shapes (21-24) have separate border and fill colors, specified with <code>color</code> and <code>fill</code> respectively.</p>
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-21-1.png" width="70%" style="display: block; margin: auto;" /></p>
-<div id="exercises-3" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-3" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Change the code below to map the <code>species</code> variable to the x-axis (in addition to the color).</li>
 </ol>
@@ -579,7 +613,7 @@ ggplot(data = penguins) +
   )</code></pre>
 </div>
 </div>
-<div id="geometries" class="section level2">
+<div id="Geometries" class="section level2">
 <h2>Geometries</h2>
 <p>Have a look at these two plots.</p>
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-26-1.png" width="50%" /><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-26-2.png" width="50%" /></p>
@@ -637,7 +671,7 @@ ggplot(data = penguins) +
 </ul>
 <p>We’ll actually cover those last three in the section on plotting distributions. For a complete list of available geometries, see the <a href="https://ggplot2.tidyverse.org/reference/index.html#section-layers">layers section</a> of the ggplot2 website reference page.</p>
 </div>
-<div id="facets" class="section level2">
+<div id="Facets" class="section level2">
 <h2>Facets</h2>
 <p>Sometimes mapping variables to aesthetics can generate a lot of noise and clutter, making it hard to read or interpret a figure. One way to handle this is to split your plot into multiple plots or <strong>facets</strong> based on levels of a categorical variable like <code>species</code>. To do this for one categorical variable, you use the <code>facet_wrap()</code> function.</p>
 <pre class="r"><code>ggplot(data = penguins) +
@@ -660,8 +694,8 @@ ggplot(data = penguins) +
   ) +
   facet_grid(sex ~ species)</code></pre>
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
-<div id="exercises-4" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-4" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>use <code>facet_wrap()</code> to split the following scatterplot of the penguins data by sex.</li>
 </ol>
@@ -684,7 +718,7 @@ ggplot(data = penguins) +
 </ol>
 </div>
 </div>
-<div id="scales" class="section level2">
+<div id="Scales" class="section level2">
 <h2>Scales</h2>
 <p>Scales provide the basic structure that determines how data values get mapped to visual properties in a graph. The most obvious example is the axes because these determine where things will be located in the graph, but color scales are also important if you want your figure to provide additional information about your data. Here, we will briefly cover two aspects of scales that you will often want to change: axis labels and color palettes, in particular palettes that are colorblind safe.</p>
 <div id="labels" class="section level3">
@@ -720,8 +754,8 @@ ggplot(data = penguins) +
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-39-1.png" width="50%" /><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-39-2.png" width="50%" /></p>
 <p>For comparison, I’m showing the viridis scale next to the default ggplot2 scale, so you can see the difference. Two things to note about <code>scale_color_viridis()</code>. First, you choose a specific colorblind safe palette with the <code>option</code> parameter. In this case, I chose <code>viridis</code>, but there are others, including <code>magma</code>, <code>cividis</code>, and <code>inferno</code>, to name a few. Second, if the variable is continuous rather than discrete, you will have to set <code>discrete = FALSE</code> in the function, otherwise it will throw an error.</p>
 </div>
-<div id="exercises-5" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-5" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li><p>Using the <code>penguins</code> dataset, plot body mass (y variable) by bill length (x variable) and change the axis labels to reflect this.</p></li>
 <li><p>Using the <code>penguins</code> dataset, plot bill length (y variable) by bill depth (x variable) and change the axis labels to reflect this.</p></li>
@@ -747,7 +781,7 @@ ggplot(data = penguins) +
   )</code></pre>
 </div>
 </div>
-<div id="themes" class="section level2">
+<div id="Themes" class="section level2">
 <h2>Themes</h2>
 <p>To control the display of non-data elements in a figure, you can specify a theme. This is done with the <code>theme()</code> function. Using this can get pretty complicated, pretty quick, so rather than elaborate on it in detail, I want to draw your attention to pre-defined themes that you can use to modify your plots in a consistent way.</p>
 <p>Here is an example of the black and white theme, which removes filled background grid squares, leaving only the grid lines.</p>
@@ -762,8 +796,8 @@ ggplot(data = penguins) +
   ) +
   theme_bw()</code></pre>
 <p><img src="02-Statistical_Graphics_files/figure-html/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" /></p>
-<div id="exercises-6" class="section level3 exercises">
-<h3 class="exercises">🏋 Exercises</h3>
+<div id="exercises-6" class="section level3">
+<h3>Exercises</h3>
 <ol style="list-style-type: decimal">
 <li>Complete the code below, trying out each separate theme:
 <ul>
@@ -784,8 +818,8 @@ ggplot(data = penguins) +
   theme_    # &lt;------- insert value here</code></pre>
 </div>
 </div>
-<div id="homework" class="section level2 homework">
-<h2 class="homework">🏠 Homework</h2>
+<div id="Homework" class="section level2">
+<h2>Homework</h2>
 <ol style="list-style-type: decimal">
 <li><strong>Load data.</strong> For this homework exercise, we’ll work with the <code>DartPoints</code> dataset from the <code>archdata</code> package. When you ran <code>library(archdata)</code>, this dataset should have been attached to your current R session, so don’t worry about loading it into R. It’s already there!</li>
 <li><strong>Summary statistics.</strong> Let’s summarize these data now.
@@ -868,7 +902,7 @@ $(document).ready(function ()  {
       scrollTo: 0
     };
     options.showAndHide = true;
-    options.smoothScroll = true;
+    options.smoothScroll = false;
 
     // tocify
     var toc = $("#TOC").tocify(options).data("toc-tocify");

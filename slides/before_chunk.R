@@ -1,8 +1,8 @@
 
-library(here)
 library(fontawesome)
 library(ggtext)
 library(glue)
+library(here)
 library(knitr)
 library(kableExtra)
 library(lubridate)

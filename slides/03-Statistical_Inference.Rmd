@@ -6,14 +6,125 @@ output:
   xaringan::moon_reader:
     lib_dir: libs
     css: [xaringan-themer.css, custom_style.css]
-    seal: TRUE
+    seal: true
     nature:
       highlightStyle: magula
-      highlightLines: TRUE
-      countIncrementalSlides: TRUE
+      highlightLines: true
+      countIncrementalSlides: false
       ratio: '16:9'
 ---
 
-```{r, echo = FALSE, child = here::here("slides", "before_chunk.Rmd")}
+```{r, include = FALSE, code=xfun::read_utf8(here::here("slides", "before_chunk.R"))}
 ```
+
+## &#x1F4CB; Lecture Outline
+
+
+---
+
+## Why statistics?
+
+.pull-rleft[
+
+```{r}
+
+figure("samples_and_populations-0.png")
+
+```
+
+]
+
+.pull-rright[
+
+<br><br>
+
+We want to understand something about a __population__.  
+
+]
+
+
+---
+count: false
+
+## Why statistics?
+
+.pull-rleft[
+
+```{r}
+
+figure("samples_and_populations-1.png")
+
+```
+
+]
+
+.pull-rright[
+
+<br><br>
+
+We want to understand something about a __population__.  
+
+We can never observe the entire population, so we draw a __sample__. 
+
+]
+
+
+
+---
+count: false
+
+## Why statistics?
+
+.pull-rleft[
+
+```{r}
+
+figure("samples_and_populations-2.png")
+
+```
+
+]
+
+.pull-rright[
+
+<br><br>
+
+We want to understand something about a __population__.  
+
+We can never observe the entire population, so we draw a __sample__. 
+
+We then use a model to __describe__ the sample.
+
+]
+
+
+
+---
+count: false
+
+## Why statistics?
+
+.pull-rleft[
+
+```{r}
+
+figure("samples_and_populations-3.png")
+
+```
+
+]
+
+.pull-rright[
+
+<br><br>
+
+We want to understand something about a __population__.  
+
+We can never observe the entire population, so we draw a __sample__. 
+
+We then use a model to __describe__ the sample.
+
+By comparing that model to an alternative model, we can __infer__ something about the population.
+
+]
 

@@ -1,12 +1,16 @@
 ---
-title: "Lab 02: Statistical Graphics"
+title: "Lab 02"
+subtitle: "Statistical Graphics"
 output: 
   html_document:
     toc: true
     toc_depth: 2
-    toc_float: true
+    toc_float:
+      smooth_scroll: false
     self_contained: false
     css: custom_style.css
+    includes:
+      in_header: toggle.html
     theme: 
       bootswatch: sandstone
 ---
@@ -14,11 +18,11 @@ output:
 ```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
 ```
 
-## &#x1F4CB; Outline
+## Outline {#Outline}
 
 __tl;dr__ summary statistics and statistical graphics. 
 
-### &#x1F3AF;  Objectives {.objectives}
+### Objectives
 
 This lab will guide you through the process of  
 
@@ -32,7 +36,7 @@ This lab will guide you through the process of
     - themes
 
 
-### &#x1F4E6; R Packages
+### R Packages
 
 We will be using the following packages:
 
@@ -61,7 +65,7 @@ library(skimr)
 ```
 
 
-### &#x1F4BE; Data
+### Data
 
 - `penguins` 
     - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
@@ -73,7 +77,7 @@ library(skimr)
     - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
 
 
-## The&nbsp; `library()`
+## The Library {#The_Library}
 
 R is an extensible programming language, meaning you can write R code to extend the functionality of base R. To share that code, R users will often bundle it into a __package__, a collection of functions, data, and documentation. You can think of packages like apps, but specifically for R. To make the functionality a package offers available in R, you have to load them in with the `library()` function (the technical term is _attach_). 
 
@@ -85,7 +89,6 @@ You will occasionally encounter `library()` calls littered throughout an R scrip
 
 library(archdata)
 library(ggplot2)
-library(khroma)
 library(palmerpenguins)
 library(skimr)
 library(viridis)
@@ -118,7 +121,6 @@ knitr::opts_chunk$set(
 
 library(archdata)
 library(ggplot2)
-library(khroma)
 library(palmerpenguins)
 library(skimr)
 library(viridis)
@@ -140,14 +142,14 @@ library(viridis)
 
 Note that in an R script, the hashtag `#` tells R that the text that follows on the same line is not R code, but rather a comment. In an R Markdown document, it is markdown syntax that signals a section header. Another important difference is that you have to put the `library()` calls in a code chunk in R Markdown to signal that it is R code. In an R script, however, everything is assumed to be R code.  
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Open a new R Markdown document for this lab and copy the template above into that document, replacing the author with your name.
 2. Run each `library()` call, either by highlighting them and hitting Ctrl + Enter (Cmd + Enter) or by clicking the green arrow in the top right of the code chunk.
 
 
 
-## Summary statistics
+## Summary Statistics {#Summary_Statistics}
 
 ```{r, echo = FALSE, out.width = "70%", fig.cap = "Artwork by @allison_horst"}
 
@@ -239,7 +241,7 @@ skim(penguins)
 As you can see, there are three major sections of this printout: (i) Data Summary, (ii) Factor variables, and (iii) Numeric variables. The Data Summary gives you an overview of your table, with counts of the number of rows and columns, as well as counts of the different types of variables (factor, numeric, etc). The section on factor variables gives you counts for each level of the factor (for example, counts of the different species of penguins), as well as information about missing data. Finally, the section on numeric variables gives you information on missing data, as well as measures of dispersion and central tendency, including the mean, median (`p50`), and standard deviation (`sd`), the range or min and max values (`p0` and `p100`), and the inner quartiles (`p25` and `p75`).  
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Have a look at the `penguins` data again. Use `head()` to preview the first 15 rows.
 1. With the `penguins` data, calculate all of the following:
@@ -249,7 +251,7 @@ As you can see, there are three major sections of this printout: (i) Data Summar
     - standard deviation in bill length
 
 
-## The grammar of graphics
+## The Grammar of Graphics {#The_Grammar_of_Graphics}
 
 It's easy to imagine how you would go about with pen and paper drawing a bar chart of, say, the number of penguins in each species in the `penguins` dataset. But, what if you had to dictate the steps to make that graph to another person, one you can't see or physically interact with? All you can do is use words to communicate the graphic you want. How would you do it? Regardless of how you answer that question, you should see right away that one thing is essential. You and your illustrator must share a coherent vocabulary for describing graphics. That way you can unambiguously communicate your intent. That's essentially what the grammar of graphics is, a language with a set of rules (a grammar) for specifying each component of a graphic. 
 
@@ -300,13 +302,13 @@ penguins_plot
 ```
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Recreate the scatterplot above, but switch the axes. Put bill length on the x-axis and body mass on the y-axis. 
 2. Fill in the template above to create a scatterplot of bill length (on the y-axis) by bill depth (on the x-axis).
 
 
-## Aesthetics
+## Aesthetics {#Aesthetics}
 
 In the plot above, we only specified the position of the points (the x- and y-coordinates) in the aesthetic mapping, but there are many aesthetics (see the figure below), and we can map the same or other variables to those.
 
@@ -369,7 +371,7 @@ ggplot(shapes, aes(x, y)) +
 ```
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Change the code below to map the `species` variable to the x-axis (in addition to the color).
 
@@ -423,7 +425,7 @@ ggplot(data = penguins) +
 ```
 
 
-## Geometries
+## Geometries {#Geometries}
 
 Have a look at these two plots.  
 
@@ -523,7 +525,7 @@ Some of the more important geometries you are likely to use include:
 We'll actually cover those last three in the section on plotting distributions. For a complete list of available geometries, see the [layers section](https://ggplot2.tidyverse.org/reference/index.html#section-layers) of the ggplot2 website reference page.
 
 
-## Facets
+## Facets {#Facets}
 
 Sometimes mapping variables to aesthetics can generate a lot of noise and clutter, making it hard to read or interpret a figure. One way to handle this is to split your plot into multiple plots or __facets__ based on levels of a categorical variable like `species`. To do this for one categorical variable, you use the `facet_wrap()` function.
 
@@ -562,7 +564,7 @@ ggplot(data = na.omit(penguins)) +
 ```
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. use `facet_wrap()` to split the following scatterplot of the penguins data by sex.
 
@@ -593,7 +595,7 @@ ggplot(data = na.omit(penguins)) +
 4. What does this tell you about how species are distributed across islands?
 
 
-## Scales
+## Scales {#Scales}
 
 Scales provide the basic structure that determines how data values get mapped to visual properties in a graph. The most obvious example is the axes because these determine where things will be located in the graph, but color scales are also important if you want your figure to provide additional information about your data. Here, we will briefly cover two aspects of scales that you will often want to change: axis labels and color palettes, in particular palettes that are colorblind safe.
 
@@ -670,7 +672,7 @@ For comparison, I'm showing the viridis scale next to the default ggplot2 scale,
 
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Using the `penguins` dataset, plot body mass (y variable) by bill length (x variable) and change the axis labels to reflect this.
 
@@ -701,7 +703,7 @@ ggplot(data = penguins) +
 
 
 
-## Themes
+## Themes {#Themes}
 
 To control the display of non-data elements in a figure, you can specify a theme. This is done with the `theme()` function. Using this can get pretty complicated, pretty quick, so rather than elaborate on it in detail, I want to draw your attention to pre-defined themes that you can use to modify your plots in a consistent way.
 
@@ -723,7 +725,7 @@ ggplot(data = penguins) +
 ```
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Complete the code below, trying out each separate theme:
     - `theme_minimal()`
@@ -746,7 +748,7 @@ ggplot(data = penguins) +
 ```
 
 
-## &#x1F3E0; Homework {.homework}
+## Homework {#Homework}
 
 1. __Load data.__ For this homework exercise, we'll work with the `DartPoints` dataset from the `archdata` package. When you ran `library(archdata)`, this dataset should have been attached to your current R session, so don't worry about loading it into R. It's already there!
 2. __Summary statistics.__ Let's summarize these data now.

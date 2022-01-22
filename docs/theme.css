@@ -63,14 +63,14 @@ d-appendix {
   --text-color:       rgba(255, 255, 255, 0.9);
   --text-size:        15px;
   --hover-color:      white;
-  --bkgd-color:       #A20000;
+  --bkgd-color:       #262A10;
 }
 
 .distill-site-footer {
   --text-color:       rgba(255, 255, 255, 0.9);
   --text-size:        15px;
   --hover-color:      white;
-  --bkgd-color:       #A20000;
+  --bkgd-color:       #262A10;
 }
 
 /*-- Additional custom styles --*/
@@ -85,5 +85,5 @@ d-article ul ul {
 }
 
 strong {
-  color: #A20000;
+  color: #262A10;
 }

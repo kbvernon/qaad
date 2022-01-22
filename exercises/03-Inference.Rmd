@@ -1,0 +1,81 @@
+---
+title: "Lab 03"
+subtitle: "Statistical Inference"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      smooth_scroll: false
+    self_contained: false
+    css: custom_style.css
+    includes:
+      in_header: toggle.html
+    theme: 
+      bootswatch: sandstone
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
+```
+
+
+## Outline {#Outline}
+
+__tl;dr__ wrangling data and evaluating models. 
+
+### Objectives {.objectives}
+
+This lab will guide you through the process of  
+
+1. loading (or "attaching") R packages with `library()`
+2. generating summary statistics for your data
+2. visualizing data with the grammar of graphics (gg)
+    - aesthetic mappings
+    - geometric objects
+    - facets
+    - scales
+    - themes
+
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [skimr](https://docs.ropensci.org/skimr/)
+- [ggplot2](https://ggplot2.tidyverse.org/index.html)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+To install these packages, run the following code in your console:
+
+```{r, eval = FALSE}
+
+install.packages(
+  c("archdata", "palmerpenguins", "skimr", "ggplot2", "viridis")
+)
+
+```
+
+```{r, echo = FALSE}
+
+library(khroma)
+library(palmerpenguins)
+library(skimr)
+
+```
+
+
+### Data
+
+- `penguins` 
+    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+    - package: `palmerpenguins`
+    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+- `DartPoints`
+    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+    
+    
+## Homework {#Homework}

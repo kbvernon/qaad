@@ -1,12 +1,16 @@
 ---
-title: "Lab 01 - Introduction to R"
+title: "Lab 01"
+subtitle: "Introduction to R"
 output: 
   html_document:
     toc: true
     toc_depth: 2
-    toc_float: true
+    toc_float:
+      smooth_scroll: false
     self_contained: false
     css: custom_style.css
+    includes:
+      in_header: toggle.html
     theme: 
       bootswatch: sandstone
 ---
@@ -14,11 +18,11 @@ output:
 ```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
 ```
 
-## Outline
+## Outline {#Outline}
 
 __tl;dr__ An introduction to R and R Markdown. 
 
-### &#x1F3AF;  Objectives {.objectives}
+### Objectives
 
 This lab will guide you through the process of  
 
@@ -35,19 +39,18 @@ This lab will guide you through the process of
    - styling with markdown
    - knitting
 
-### &#x1F4BE; Data
+### R Packages
+
+No additional packages are required for this lab.
+
+### Data
 
 The `cars` dataset from the base R `datasets` package.
 
 For more information, see here: <https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html>
 
-### &#x1F4E6; R Packages
 
-No additional packages are required for this lab.
-
-
-
-## RStudio
+## RStudio {#RStudio}
 
 ```{r, echo = FALSE}
 
@@ -76,7 +79,7 @@ Let's try out a few bits of code just to give you a sense of the difference betw
 As you work through this lab, you can practice running code in the Console, but make sure to do the actual exercises in an R script.
 :::
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. First, let's open a new R script. To open an R script in RStudio, just click __File > New File > R Script__ (or hit `Ctrl + Shift + N`, `Cmd + Shift + N` on Mac OS). 
 2. Copy this code into the console and hit Enter.
@@ -91,7 +94,7 @@ rep("Boba Fett", 5)
 
 
 
-## Plot
+## Plot {#Plot}
 
 To ease you into working with R, let's visualize some data to answer a simple question: Do fast moving objects take longer to slow down than slow moving objects? Don't worry about understanding all of this! It's just to give you a feel for the sort of graphics you can make with R. We'll actually spend all of the next lab learning how to make even better graphics.  
 
@@ -145,7 +148,7 @@ plot(
 ```
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Complete the following line of code to preview only the first three rows of the `cars` table.
 
@@ -206,7 +209,7 @@ plot(
 
 
 
-## R Basics
+## R Basics {#R_Basics}
 
 ```{r, echo = FALSE, out.width = "75%"}
 
@@ -315,7 +318,7 @@ exp(logx)
 ```
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Use `seq()` to generate a sequence of numbers from 3 to 12.
 
@@ -341,7 +344,7 @@ seq(1, 5, by = 2, length = 10)
 
 ```
 
-## Workflow
+## Workflow {#Workflow}
 
 ```{r, echo = FALSE, out.width = "55%"}
 
@@ -475,7 +478,7 @@ save(distance_model, file = "distance_model.Rds")
 And that's it! Now, all we have to do is write this up and publish it! Easy peasy.
 
 
-## R Projects
+## R Projects {#R_Projects}
 
 [![](https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/cracked_setwd.png)](https://github.com/allisonhorst/stats-illustrations)
 
@@ -483,7 +486,7 @@ YOU CANNOT EAT R CODE. Believe me. You can't. Eventually, you'll have to close o
 
 When you open your project in RStudio, it will establish your project folder as your working directory by default. The advantage of this is that you can access R scripts and data using relative file paths, rather than specifying the full path from your computer's root directory. Why is this advantageous? Because you can copy the project folder to any computer you want and your relative file paths will just work!
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Before we setup your project, let's turn off some of R's default settings.
     - In RStudio, go to __Tools > Global Options...__.
@@ -500,7 +503,7 @@ When you open your project in RStudio, it will establish your project folder as 
 3. Once you have your project folder setup, have a look at the Files pane again. You should see a button that says "New Folder." Click that, and in the dialog box that appears, enter "R" and hit "OK." You should now see a folder in your project directory called "R." This is where you will keep all the files with your R code in it. Repeat this process to add "data", "figures", and "misc" folders to your project. The "misc" folder is short for miscellaneous. This folder is not strictly necessary but I find it helpful. It's like that drawer in the kitchen where random stuff goes. It might not be clean, but at least your kitchen is! 
 4. Just to check that everything is working, minimize RStudio and navigate to the location of your R Project on your computer. Do you see the folders you have created and the "qaad.Rproj" file?
 
-## R Markdown
+## R Markdown {#R_Markdown}
 
 ```{r, echo = FALSE, eval = FALSE}
 
@@ -683,7 +686,7 @@ output: html_document
 Notice the three dashes `---` at the top and bottom. These must be there in order for R Markdown to recognize it as the YAML. You should always include this at the beginning of the document. There's A LOT you can specify in the YAML. In fact, you can specify basically anything you want, but being quite new to R Markdown, I don't think that would be helpful. For now, let me draw your attention to the `output` field. R Markdown (with the power of a utility known as Pandoc) can technically generate a wide variety of output formats, including Word documents, PDFs, ioslides (presentations), and even powerpoint (if you really insist on it). In this class, we'll stick with the default HTML output, so the only thing you will need to specify in the YAML is the title, author, and date.  
 
 
-### &#x1F3CB; Exercises {.exercises}
+### Exercises
 
 1. Let's create a new rmd document in RStudio. To do that, follow these steps:
    - Go to __File > New File > R Markdown...__.
@@ -697,6 +700,6 @@ Notice the three dashes `---` at the top and bottom. These must be there in orde
 4. Now, go back through this lab and re-do the exercises by adding them to this rmd document. Make sure to save that again. Then _knit_ it to html and submit it on the Canvas course page. This is the process that you will go through each week! 
 
 
-## Homework
+## Homework {#Homework}
 
 There is no R related homework assignment for this week. Please fill out the pre-course self-assessment survey on Canvas.

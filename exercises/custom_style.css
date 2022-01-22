@@ -15,11 +15,58 @@ a:hover {
   color: #A20000;
 }
 
+.title {
+  margin-bottom: 0;
+}
+
+.subtitle {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #9e9a99;
+}
+
 h2 {
   display: flex;
   flex-direction: row;
-  margin-top: 3em;
+  margin-top: 0.3em;
   font-weight: bold;
+}
+
+#Outline h2:before {
+  content: "\01F4CB \00a0";
+}
+
+li[data-unique = "Outline"]:before {
+  content: "\01F4CB \00a0";
+}
+
+#objectives h3:before {
+  content: "\01F3AF \00a0";
+}
+
+#r-packages h3:before {
+  content: "\01F4E6  \00a0";
+}
+
+#data h3:before {
+  content: "\01F4BE  \00a0";
+}
+
+div[id*="exercises"] h3:before {
+  content: "\01F3CB  \00a0";
+}
+
+#Homework h2:before {
+  content: "\01F3E0 \00a0";
+}
+
+li[data-unique = "Homework"]:before {
+  content: "\01F3E0 \00a0";
+}
+
+.toc-content {
+  margin-top: 1em;
+  padding-top: 25px;
 }
 
 h2:after {
@@ -38,7 +85,11 @@ li ul {
   margin-bottom: 0.4rem;
 }
 
-.exercises, .homework ol {
+div[id*="exercises"] ol {
+  padding-left: 18px;
+}
+
+.homework ol {
   padding-left: 18px;
 }
 
@@ -46,11 +97,28 @@ li ul {
   max-width: 1200px !important;
 }
 
-/* 
+/* toggle sections -- very hacky code */
 
-relative paths built by knitr are confusing  
+.section.level2 {
+  display: none
+}
 
-*/
+#TOC {
+  margin: 21px 0px 20px 0px;
+}
+
+.tocify {
+  border: none !important;
+}
+
+
+
+.container-fluid.main-container {
+  margin-top: 2em;
+}
+
+
+/* relative paths built by knitr are confusing */
 
 .rmdcaution {
   background-image: url(../../images/caution.png);

@@ -10,6 +10,8 @@ navbar:
   search: false
   source_url: true
   right:
+    - text: "Help"
+      href: "help.html"
     - text: "Lectures"
       menu: 
         - text: "01-Introduction"
