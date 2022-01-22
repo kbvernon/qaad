@@ -8,11 +8,13 @@ output:
     toc_float: true
 ---
 
-```{r, echo = FALSE, fig.align = "center", out.width = "50%", fig.cap = "Wisdom of the Ancients (xkcd 979).", fig.link = "https://xkcd.com/"}
+::: {style="width: 75%; margin-left: auto; margin-right: auto;"}
+```{r, echo = FALSE, fig.cap = "Wisdom of the Ancients (xkcd 979).", fig.link = "https://xkcd.com/"}
 
 knitr::include_graphics("https://imgs.xkcd.com/comics/wisdom_of_the_ancients.png")
 
 ```
+:::
 
 ## The Google Search Paradox
 
@@ -35,22 +37,22 @@ Of course, the situation is not nearly so dire as this. In truth, you always kno
 
 ## R helpers
 
-Typically, though not always, R code will have lots of supporting documentation. These come in two varieties. We'll call them short-form and long-form documentation. The former is typically geared toward specific functions and object classes, with definitions of code components and examples of how to use them. Long-form documentation (also referred to as "vignettes") goes over code usage and examples in greater detail. If you are having trouble specifying some particular component of your code and you know what that component is, you may find the short-form documentation more helpful. If you are having trouble getting through some analysis and you cannot pinpoint the exact reason for your trouble, the vignettes are probably where you should look. In general, though, you should think of these two forms of R documentation as the first stop along the way to troubleshooting your code. There are a couple of ways to access this documentation.
+Typically, though not always, R code will have lots of supporting documentation. These come in two varieties: function help pages and vignettes. If you are having trouble a single function to work properly, you may find its help page more useful. If you are having trouble getting through some analysis and you cannot pinpoint the exact reason for your trouble, the vignettes are probably where you should look. There are a couple of ways to access this documentation.
 
-1. From within R, you can use the `help()` and `?...` functions to access short-form documentation. Examples include `help("plot")` and `?plot`. This will call up the function's documentation page and display it in your computer's graphical device. All R functions have a similar page, which provides a brief description of the function, the parameters that it takes and how these change the way it works. It is also worth scrolling down - at the bottom of the help page will be some examples of usage which you can run to get a feel for how the function works. 
+1. From within R, you can use the `help()` and `?...` functions to access short-form documentation. Examples include `help("plot")` and `?plot`. This will call up the function's documentation page and display it in your computer's graphical device. 
 
-2. `help.search(...)` and `??...` both provide means of searching through help pages to find multiple functions with the same name (and potentially the same or similar uses). Simply replace the ellipses (three dots) with a character string and these functions will return all help pages with that string. So if you want to carry out a cluster analysis, typing `??cluster` will search for any functions that use the word cluster; hopefully, including some that are relevant to cluster analysis.  
+2. `help.search(...)` and `??...` both provide means of searching through help pages to find multiple functions with the same name (and potentially the same or similar uses). Simply replace the ellipses (three dots) with a character string and these functions will return all help pages with that string. So if you want to carry out a cluster analysis, typing `??cluster` will search for any functions in your installed packages that use the word cluster.  
 
-3. There are two very useful websites that host short-form R documentation. Those are [rdrr.io](https://rdrr.io/) and [rdocumentation.org](https://www.rdocumentation.org/). If you Google an R function, links to its documentation on these websites are typically the first that you will see. For the best search results, I recommend Googling "_R \<package name\> \<function name\>_." 
+3. The [rdrr.io](https://rdrr.io/) website provides access to all function help pages online. If you Google an R function, a link to its documentation on this website is typically the first that you will see. For the best search results, I recommend Googling "_R \<package name\> \<function name\>_." 
 
-4. From within R, you can also access the long-form documentation using some combination of `vignette()`, `browseVignettes()`, and `RShowDoc()`. (Note that if you want to know what these functions do, you can also use, for example, `help("vignettes")`). 
-    + The function `vignette()` with no argument specified will bring up a list of all available long-form documents or vignettes, organized by package. If you want the vignettes for a particular R package, you can also type `vignette(package = ...)`, for example, `vignette(package = "grid")` will bring up the vignettes for the __grid__ package.  
+4. From within R, you can also access the vignettes using some combination of `vignette()`, `browseVignettes()`, and `RShowDoc()`. 
+    + The function `vignette()` with no argument specified will bring up a list of all available vignettes, organized by package. If you want the vignettes for a particular R package, you can also type `vignette(package = ...)`, for example, `vignette(package = "grid")` will bring up the vignettes for the __grid__ package.  
     + `browseVignettes()` will open a locally hosted HTML page in your browser with links to all available R vignettes. This is actually quite helpful, and you should give it a try when you get a chance. Just browsing through these vignettes will give you a great feel for all that you can do in R.    
-    + `RShowDoc()` is mostly for opening a single vignette (either as a PDF in your viewport or as an HTML page in your browser, depending on what is available). This is usefully paired with `vignette()`, which will give you the name of the vignette and package, so that you can, for example, call `RShowDoc(what = "plotExample", package = "grid")`. This will bring up the "plotExample" vignette from the __grid__ package.  
+    + `RShowDoc()` is mostly for opening a single vignette. This is usefully paired with `vignette()`, which will give you the name of the vignette and package, so that you can, for example, call `RShowDoc(what = "plotExample", package = "grid")`. This will bring up the "plotExample" vignette from the __grid__ package.  
 
-5. Package authors have lots of resources for sharing their documentation now, including websites designed specifically to present both short- and long-form pages. Here is an example of the [website for the __colorspace__](http://colorspace.r-forge.r-project.org/) package.  
+5. Package authors have lots of resources for sharing their documentation now, including websites designed specifically to present both function help pages and vignettes. Here is an example of the [website for the __colorspace__](http://colorspace.r-forge.r-project.org/) package.  
 
-6. Finally, you can access all available documentation (short- and long-form) for official R packages by navigating the Comprehensive R Archive Network (CRAN) website, here: [https://cran.r-project.org/](https://cran.r-project.org/).  
+6. Finally, you can access all available documentation for official R packages by navigating the Comprehensive R Archive Network (CRAN) website, here: [https://cran.r-project.org/](https://cran.r-project.org/).  
 
 ## RStudio helpers
 
@@ -58,7 +60,7 @@ While RStudio provides loads of support to R users, here we mention some of the 
 
 1. [RStudio How To Articles](https://support.rstudio.com/hc/en-us/categories/200035113-Documentation) provide loads of how-to guides for working with R and RStudio. This is a very comprehensive suite of useful documentation.  
 
-2. [RStudio Cheatsheets](https://rstudio.com/resources/cheatsheets/) strive to communicate short- and long-form documentation together in a single, concise poster format with lots of visual queues and simple definitions. These can be really helpful when you need a quick refresher on the use of some bit of code.   
+2. [RStudio Cheatsheets](https://rstudio.com/resources/cheatsheets/) strive to communicate package information in a single, concise poster format with lots of visual queues and simple definitions. These can be really helpful when you need a quick refresher on the use of some bit of code.   
 
 3. [RStudio Community](https://community.rstudio.com/) is an online forum where individuals ask and answer questions about R and RStudio. They have a very strict code of conduct for their members that emphasizes mutual respect and inclusivity, so you will generally find the discussions here much more friendly and supportive. Use of this forum is highly recommended.
 
@@ -67,7 +69,7 @@ Please note that, with the exception of number 4, these RStudio help tools can b
 
 ## R Community helpers
 
-The R community refers to R users who are actively communicating with and supporting other R users. As there are lots and lots of engaged R users these days, and more and more every day, the community is definitely thriving. There is also an expanding ethos within this community driven largely by RStudio and its code of conduct, so you will generally find R users to be a friendly bunch (if a little hoity-toity; plus, there's always the bad apple). So, let's talk about where you can engage with this community. We have already mentioned one, RStudio Community, but here we will list some more.
+The R community refers to R users who are actively communicating with and supporting other R users. As there are lots and lots of engaged R users these days, and more and more every day, the community is definitely thriving. There is also an expanding ethos within this community driven largely by RStudio and its code of conduct, so you will generally find R users to be a friendly bunch (if a little hoity-toity). So, let's talk about where you can engage with this community. We have already mentioned one, RStudio Community, but here we will list some more.
 
 1. [Stack Overflow](https://stackoverflow.com/) is a forum for programmers in all programming languages to ask and answer questions, much like RStudio Community. It's just been around longer (2008 to be exact), which means its code of conduct has evolved over time to address a number of unanticipated issues. The consequence is that answers to questions will run the gamut from being respectful and clear to downright insulting. Still, it is a rich resource for addressing your R coding issues. And it has gotten a lot better.  
 
@@ -77,7 +79,7 @@ The R community refers to R users who are actively communicating with and suppor
 
 4. The [#rstats Twitter community](https://twitter.com/search?q=%23rstats&src=typd) is something. Use this if you use Twitter, I guess...
 
-5. The [rstats subreddit](https://www.reddit.com/r/rstats/) is a helpful community of Redditors that are pretty good about answering questions you might have. Though do not go there asking them to do your homework for you!
+5. The [rstats subreddit](https://www.reddit.com/r/rstats/) is a helpful community of Redditors that are pretty good about answering questions you might have. 
 
 ## Other resources
 
@@ -85,9 +87,9 @@ The R community refers to R users who are actively communicating with and suppor
 
 ## Reproducible examples
 
-Others have likely asked the same question you want to ask, so you will not always need to make a post yourself. But, in the off chance that you do find yourself confronted with a question never asked before, you need to make sure you provide R users with all the information and resources they need to help troubleshoot your code and to do so with the least effort possible. This involves providing a "reproducible example" or _reprex_. There are two essential ingredients to a reprex: 
+Others have likely asked the same question you want to ask, so you will not always need to make a post yourself. But, in the off chance that you do find yourself confronted with a question never asked before, you need to make sure you provide R users with all the information and resources they need to help troubleshoot your code and to do so with the least effort possible. This involves providing a "*repr*oducible *ex*ample" or _reprex_. There are two essential ingredients to a reprex: 
 
-1. It needs to be __reproducible__. It might not seem obvious, but you need to make sure you provide everything needed to reproduce your error as is, for instance, all `library()` calls in your code.
+1. It needs to be __reproducible__, obviously. That means you need to make sure you provide everything needed to reproduce your error as is, for instance, all `library()` calls in your code.
 2. It needs to be __minimal__. In other words, do not include anything extraneous or burdensome, like a 400 MB data object. A much smaller R object should suffice.   
 
 A lot has been written about how to put together a reprex, so rather than belabor the point here, it is perhaps best to direct you to Jenny Bryan's [reprex package](https://reprex.tidyverse.org/), which will walk you through the process of submitting a help request on the various forums mentioned above.  
