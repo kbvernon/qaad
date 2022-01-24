@@ -14,7 +14,15 @@ ul li ul {
 }
 
 ol > li {
-  margin-bottom: 1.0rem;
+  margin-bottom: 0.25rem;
+}
+
+ul {
+  margin-top: 5px;
+}
+
+p {
+  margin-bottom: 10px;
 }
 
 .highlight-last-item > ul > li,
@@ -77,9 +85,38 @@ font stuff
 
 .pull-rright {
   float: right;
-  width: 39%;
+  width: 37%;
 }
 
 .pull-rright ~ * {
+  clear: both;
+}
+
+
+.pull-left-38 {
+  float: left;
+  width: 38%;
+}
+
+.pull-right-60 {
+  float: right;
+  width: 60%;
+}
+
+.pull-right-60 ~ * {
+  clear: both;
+}
+
+.pull-left-40 {
+  float: left;
+  width: 58%;
+}
+
+.pull-right-40 {
+  float: right;
+  width: 40%;
+}
+
+.pull-right-40 ~ * {
   clear: both;
 }

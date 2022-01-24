@@ -394,6 +394,10 @@ figure("random_variable-variable.png")
 
 Two types of random variable:
 
+<!---
+https://github.com/allisonhorst/stats-illustrations/blob/master/other-stats-artwork/continuous_discrete.png?raw=true
+--->
+
 --
 
 1. __Discrete__ random variables often take only _integer_ (non-decimal) values.
