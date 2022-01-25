@@ -45,9 +45,10 @@ No additional packages are required for this lab.
 
 ### Data
 
-The `cars` dataset from the base R `datasets` package.
-
-For more information, see here: <https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html>
+- `cars`
+    - Includes measurements of car speed and stopping distance.
+    - package: `datasets`
+    - reference: <https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html>
 
 
 ## RStudio {#RStudio}
