@@ -120,3 +120,47 @@ font stuff
 .pull-right-40 ~ * {
   clear: both;
 }
+
+div[class^="pull-"] p:first-child{
+  margin-top: 0;
+}
+
+.h1rem {
+  height: 1rem;
+}
+
+.h1rem {
+  height: 1rem;
+}
+
+.h1rem {
+  height: 1rem;
+}
+
+.h2rem {
+  height: 2rem;
+}
+
+.h3rem {
+  height: 3rem;
+}
+
+.h4rem {
+  height: 4rem;
+}
+
+.h5rem {
+  height: 5rem;
+}
+
+.h6rem {
+  height: 6rem;
+}
+
+.h7rem {
+  height: 7rem;
+}
+
+.h8rem {
+  height: 8rem;
+}

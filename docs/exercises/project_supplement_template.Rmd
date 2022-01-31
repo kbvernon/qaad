@@ -1,0 +1,108 @@
+---
+title: "Supplementary Materials for <<put the title of your project here>>"
+author: ""
+date: ""
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 3
+---
+
+<!--- 
+this is a template for the supplementary R Markdown document that is part of your term project
+--->
+
+```{r setup, include = FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  error = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  fig.retina = 3,
+  fig.asp = 0.7
+)
+
+```
+
+## Overview
+
+<!---
+Give a one or two sentence description of each these elements of your research project.
+--->
+
+__Goal__:   
+
+__Data__:   
+
+__Method__: 
+
+
+
+
+
+## R Preamble
+
+<!---
+Load all the packages required for your analysis.
+Note: I have already included a few you will want to use.
+Recommend that you put these in alphabetical order.
+--->
+
+```{r libraries}
+
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+library(skimr)
+
+```
+
+
+
+
+
+## Data
+
+<!---
+- Answer this question: what data are you using? 
+  - It would be a good idea to define each variable in your data, including its unit of measure.
+- Load your data here.
+- Prepare your data for analysis. Make sure to explain what you are doing first!
+- Summarize your data using the skimr package.
+- Provide a figure summarizing your data.
+--->
+
+
+
+
+
+## Analysis
+
+<!---
+- Build your models here.
+- Explain what those models are and why you are using them.
+- Evaluate the model.
+--->
+
+
+
+
+
+## Results
+
+<!---
+- Include a model summary using the broom package.
+- Describe your results. 
+  - Do they confirm or refute your hypothesis?
+  - Do
+- Provide a figure summarizing your results.
+--->
+
+
+
+
+

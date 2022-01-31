@@ -159,3 +159,7 @@ div[id*="exercises"] ol {
 .rmdexamples {
   background-color: #f7f7f7;
 }
+
+.tocify-extend-page {
+  display: none;
+}
