@@ -163,3 +163,7 @@ div[id*="exercises"] ol {
 .tocify-extend-page {
   display: none;
 }
+
+.figure {
+  width: 100%;
+}

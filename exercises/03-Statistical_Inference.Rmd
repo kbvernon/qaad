@@ -75,7 +75,7 @@ library(skimr)
     - reference: <https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html>
 - `titanic`
     - Provides information on the fate of passengers of the Titanic, including economic status, sex, age, and survival.
-    - package: `dviz.supp`
+    - package: none
     - reference: <https://wilkelab.org/SDS375/>
     - note: we're going to download this one rather than get it from a package
 - `Snodgrass`

@@ -28,6 +28,7 @@ knitr::opts_chunk$set(
 )
 
 options(
+  digits = 3,
   htmltools.dir.version = FALSE,
   str = strOptions(vec.len = 3)
 )
