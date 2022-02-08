@@ -55,22 +55,34 @@ ggplot2::theme_update(
 )
 
 # generate loads of variations on the color palette with different opacity
-colors <- c(
-  flame_orange = "#F15A29",
-  celadon_blue = "#477998",
-  rufous_red = "#A20000",
-  dark_purple = "#0F0326",
-  maize_crayola = "#FACC4E",
-  powder_blue = "#B6E1E1"
-)
+qaad_colors <- function(...){
+  
+  qaad_palette <- c(
+    flame_orange = "#F15A29",
+    celadon_blue = "#477998",
+    rufous_red = "#A20000",
+    dark_purple = "#0F0326",
+    maize_crayola = "#FACC4E",
+    powder_blue = "#B6E1E1"
+  )
+  
+  choices <- unlist(list(...))
+  
+  if (length(choices) == 0) return(names(qaad_palette))
+  
+  selection <- qaad_palette[choices]
+  
+  unname(selection)
+  
+} 
 
-colors <- lapply(
-  names(colors),
+qaad_colors_with_alphas <- lapply(
+  qaad_colors(),
   function(x){
     
     o <- seq(0.1, 0.9, by = 0.1)
     
-    this_color <- colors[[x]]
+    this_color <- qaad_colors(x)
     
     alphas <- c(ggplot2::alpha(this_color, o), this_color)
     
@@ -80,12 +92,10 @@ colors <- lapply(
     
   })
 
-colors <- unlist(colors)
-
 xaringanthemer::style_duo_accent(
   primary_color = "#5E5E5E",
   secondary_color = "#A20000",
-  colors = colors,
+  colors = unlist(qaad_colors_with_alphas),
   inverse_header_color = "#FFFFFF",
   code_font_google = google_font("Fira Mono"),
   header_h1_font_size = "45px",

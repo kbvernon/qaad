@@ -107,19 +107,21 @@ font stuff
   clear: both;
 }
 
-.pull-left-40 {
+.pull-left-60 {
   float: left;
-  width: 58%;
+  width: 60%;
 }
 
-.pull-right-40 {
+.pull-right-38 {
   float: right;
-  width: 40%;
+  width: 38%;
 }
 
-.pull-right-40 ~ * {
+.pull-right-38 ~ * {
   clear: both;
 }
+
+
 
 div[class^="pull-"] p:first-child{
   margin-top: 0;

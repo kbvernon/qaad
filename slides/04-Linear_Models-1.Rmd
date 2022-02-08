@@ -72,7 +72,6 @@ cars <- cars %>%
 
 
 ---
-count: false
 
 ## &#x1F9EA; A simple experiment
 
