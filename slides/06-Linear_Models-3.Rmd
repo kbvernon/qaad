@@ -1,37 +1,51 @@
 ---
-title: "Quantitative Analysis of Archaeological Data"
-subtitle: "Lecture 06: Linear Models 3"  
+title: "Lecture 06: Linear Models 3"  
 date: 'Last updated: `r Sys.Date()`'
 output:
   xaringan::moon_reader:
     lib_dir: libs
     css: [xaringan-themer.css, custom_style.css]
-    seal: TRUE
+    seal: true
     nature:
       highlightStyle: magula
-      highlightLines: TRUE
-      countIncrementalSlides: TRUE
+      highlightLines: true
+      countIncrementalSlides: false
       ratio: '16:9'
 ---
 
-```{r, echo = FALSE, child = here::here("slides", "before_chunk.Rmd")}
+```{r, include = FALSE, code=xfun::read_utf8(here::here("slides", "before_chunk.R"))}
 ```
 
-```{r setup, include = FALSE}
+## &#x1F4CB; Lecture Outline
 
-knitr::opts_chunk$set(
-  echo = FALSE,
-  warning = FALSE,
-  message = FALSE,
-  error = TRUE,
-  collapse = TRUE, 
-  fig.align = "center",
-  dpi = 300
-)
 
-options(
-  htmltools.dir.version = FALSE,
-  str = strOptions(vec.len = 3)
-)
+---
+
+## &#x1F52D; Looking Ahead
+
+```{r}
+
+schedule <- here("_misc", "course_outline.xlsx") %>% 
+  readxl::read_excel(1) %>% 
+  mutate(
+    date = lubridate::ymd(date),
+    description = glue::glue(
+    "<b>{topic}</b> <span style = 'font-size: 80%; color: #9C9C9C;'>({date})</span><br>
+    <div style = 'font-size: 80%; font-style: italic; color: #9C9C9C;'>{details}</div>"
+  )) %>% 
+  select(description)
 
 ```
+
+.pull-left[
+
+```{r}
+
+schedule %>% 
+  slice(6:9) %>% 
+  kbl(escape = FALSE, col.names = NULL) %>% 
+  kable_paper(c("striped", "hover"))
+
+```
+
+]
