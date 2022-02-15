@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 06</title>
+
+<script src="06-Linear_Models-3_files/header-attrs/header-attrs.js"></script>
+<script src="06-Linear_Models-3_files/jquery/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<link href="06-Linear_Models-3_files/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<script src="06-Linear_Models-3_files/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="06-Linear_Models-3_files/bs3compat/transition.js"></script>
+<script src="06-Linear_Models-3_files/bs3compat/tabs.js"></script>
+<script src="06-Linear_Models-3_files/bs3compat/bs3compat.js"></script>
+<script src="06-Linear_Models-3_files/jqueryui/jquery-ui.min.js"></script>
+<link href="06-Linear_Models-3_files/tocify/jquery.tocify.css" rel="stylesheet" />
+<script src="06-Linear_Models-3_files/tocify/jquery.tocify.js"></script>
+<script src="06-Linear_Models-3_files/navigation/tabsets.js"></script>
+<link href="06-Linear_Models-3_files/highlightjs/default.css" rel="stylesheet" />
+<script src="06-Linear_Models-3_files/highlightjs/highlight.js"></script>
+<script src="06-Linear_Models-3_files/clipboard/clipboard.min.js"></script>
+<link href="06-Linear_Models-3_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+<script src="06-Linear_Models-3_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+<script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
+<link href="06-Linear_Models-3_files/font-awesome/css/all.css" rel="stylesheet" />
+<link href="06-Linear_Models-3_files/font-awesome/css/v4-shims.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    
+    const ttl = $('.title.toc-ignore').text();
+    const subttl = $('.subtitle').text();
+    
+    $('.title.toc-ignore').remove();
+    $('.subtitle').remove();
+    
+    $('<h1 class = "title toc-ignore">' + ttl + '</h1><h3 class = "subtitle">' + subttl + '</h3>')
+      .appendTo('.tocify');
+    
+    $('.section.level2:first').show();
+      
+  });
+  
+  $(window).on('load', function() {
+  
+    $('.tocify-item.list-group-item').click(function(event){
+        
+      $('.section.level2').hide();
+      
+      var id = $(this).data('unique');
+      
+      $('#'+id).show(100, function(){
+        $('html').scrollTop(0);
+      });
+      
+    });
+  
+  });
+
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 06</h1>
+<h3 class="subtitle">Diagnostic Plots</h3>
+
+</div>
+
+
+<div id="Outline" class="section level2">
+<h2>Outline</h2>
+<p><strong>TL;DR</strong> linear models, prediction, and diagnostic plots.</p>
+<p><strong>Caution!</strong> Please note that all labs assume that you are working in an RStudio Project directory!</p>
+<div id="objectives" class="section level3">
+<h3>Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol style="list-style-type: decimal">
+<li>Predicting with a linear model
+<ul>
+<li>Visualizing a linear model</li>
+<li>Prediction and Confidence intervals</li>
+</ul></li>
+<li>visualizing model assumptions
+<ul>
+<li>histogram of residuals</li>
+<li>diagnostic plots with base <code>plot()</code></li>
+<li>diagnostic plots with <code>check_model()</code></li>
+</ul></li>
+</ol>
+</div>
+<div id="r-packages" class="section level3">
+<h3>R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
+<li><a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></li>
+<li><a href="https://easystats.github.io/performance/">performance</a></li>
+</ul>
+<p>To install these packages, <strong>run the following code in your console</strong>:</p>
+<pre class="r"><code>install.packages(
+  c(&quot;archdata&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;palmerpenguins&quot;, &quot;performance&quot;, &quot;tibble&quot;)
+)</code></pre>
+<p><strong>Note:</strong> You should not <code>install.packages()</code> in an Rmd document. Use that function in your R console instead. Then use <code>library()</code> as part of the preamble in your Rmd document to check packages out of the library and use them in that R session. This should always go at the start of your document!</p>
+<pre class="r"><code>library(archdata)
+library(dplyr)
+library(ggplot2)
+library(palmerpenguins)
+library(performance)
+library(tibble)</code></pre>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<ul>
+<li><code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code></li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>OxfordPots</code>
+<ul>
+<li>Includes percentages of late Romano-British Oxford Pottery on 30 sites, along with their distance from Oxford.</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code></li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="Visualize_Model" class="section level2">
+<h2>Visualize Model</h2>
+<p>To aid in the interpretation of your model, it is useful to visualize the relationship or trend it suggests (if it does suggest one!). Before building that model, however, you should, as always, make sure to visualize your data!</p>
+<pre class="r"><code># clean up data, remove rows with missing data
+penguins &lt;- filter(
+  penguins, 
+  !is.na(body_mass_g), # !is.na(x) == exclude rows with NA values for x
+  !is.na(bill_length_mm)
+)
+
+ggplot(penguins, aes(body_mass_g, bill_length_mm)) +
+  geom_point(size = 2) +
+  theme_minimal() +
+  labs(
+    x = &quot;Body Mass (g)&quot;,
+    y = &quot;Bill Length (mm)&quot;
+  )</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>What is the relationship here? Let’s see if a linear model can help us out.</p>
+<pre class="r"><code>penguins_model &lt;- lm(bill_length_mm ~ body_mass_g, data = penguins)
+
+summary(penguins_model)
+## 
+## Call:
+## lm(formula = bill_length_mm ~ body_mass_g, data = penguins)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -10.125  -3.043  -0.809   2.071  16.111 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 2.69e+01   1.27e+00    21.2   &lt;2e-16 ***
+## body_mass_g 4.05e-03   2.97e-04    13.6   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 4.39 on 340 degrees of freedom
+## Multiple R-squared:  0.354,  Adjusted R-squared:  0.352 
+## F-statistic:  186 on 1 and 340 DF,  p-value: &lt;2e-16</code></pre>
+<p>There are two ways to visualize this model:<br />
+1. With <strong>abline</strong>. Use the estimated coefficients (the slope and intercept) to construct a formula that will calculate values of y across the range of x. The formula has the form: <span class="math inline">\(y \sim a + bx\)</span>, where is <span class="math inline">\(a\)</span> is the intercept and <span class="math inline">\(b\)</span> is the slope, hence <em>abline</em>. 2. With <strong>predict</strong>. Use the model to estimate values of <span class="math inline">\(y\)</span> for specified values of <span class="math inline">\(x\)</span> and construct a line from those values.</p>
+<p>There’s actually a third much more direct way that <code>ggplot()</code> offers that uses <code>geom_smooth()</code>, but we’ll save that one for another time.</p>
+<p>Anyway, let’s try an example of each, so you can get a feel for how to do this.</p>
+<div id="abline" class="section level3">
+<h3>ABline</h3>
+<p><code>ggplot()</code> has a geometry for this. As you might have guessed, it’s <code>geom_abline()</code>. All we need to do is extract the values of the coefficients from the model and feed these to the <code>slope</code> and <code>intercept</code> parameters, respectively. To do that, we will use the <code>coefficients()</code> function. This provides a named vector that we can use to get our estimates. Notice that we use <code>&lt;vector&gt;[[&lt;variable]]</code> like we do with tables, only this time we are extracting a single value.</p>
+<pre class="r"><code>betas &lt;- coefficients(penguins_model)
+
+betas
+## (Intercept) body_mass_g 
+##    26.89887     0.00405
+intercept &lt;- betas[[&quot;(Intercept)&quot;]]
+slope &lt;- betas[[&quot;body_mass_g&quot;]]</code></pre>
+<p>Now, we can plot our model over the data. This is always useful, as you can see how the model compares to the actual observations.</p>
+<pre class="r"><code>ggplot(penguins, aes(body_mass_g, bill_length_mm)) +
+  geom_point(size = 2) +
+  theme_minimal() +
+  labs(
+    x = &quot;Body Mass (g)&quot;,
+    y = &quot;Bill Length (mm)&quot;
+  ) +
+  geom_abline(
+    slope = slope,
+    intercept = intercept,
+    color = &quot;darkred&quot;,
+    size = 1 # increase line thickness to make it more visible
+  )</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>With this method, we simply supply the coefficients. <code>ggplot()</code> then uses those to estimate values of y for each value of x shown within the range of x shown in the plot. Notice that the line continues across the full range of the graph. This shows that the model assumes the relationship is <em>linear</em>, meaning in this case that it will always increase to the right (to infinity) and always decrease to the left (to negative infinity)</p>
+</div>
+<div id="predict" class="section level3">
+<h3>Predict</h3>
+<p>We can also generate values of y manually with the <code>predict()</code> function. The key here is to supply it with our model, which it will then use to make predictions.</p>
+<pre class="r"><code>estimates &lt;- predict(penguins_model)
+
+# add to the penguins table
+penguins$estimates &lt;- estimates
+
+ggplot(penguins) +
+  geom_point(
+    aes(body_mass_g, bill_length_mm),
+    size = 2
+  ) +
+  theme_minimal() +
+  labs(
+    x = &quot;Body Mass (g)&quot;,
+    y = &quot;Bill Length (mm)&quot;
+  ) +
+  geom_line(
+    aes(body_mass_g, estimates),
+    color = &quot;darkred&quot;,
+    size = 1
+  )</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>This is very similar to our abline graph above. Note, however, that the trend line or modeled relationship does not extend across the entire graph, suggesting that this linear model is not continuous from negative to positive infinity, which is misleading. There are ways to correct for this in <code>ggplot()</code>. Unfortunately, they are beyond the scope of this lab.</p>
+<p>In the meantime, note that you can use <code>predict()</code> to estimate the value of the response at specific values of the independent variable. To do that, you simply feed the <code>predict()</code> function, specifically its <code>newdata</code> parameter, a table with the values of the independent variable that interest you. For example, suppose you wanted to know what bill length this model would expect for a penguin having a body mass of, say, 4,500 grams. We can figure that out this way:</p>
+<pre class="r"><code>new_data &lt;- tibble(
+  body_mass_g = 4500
+)
+
+predict(penguins_model, newdata = new_data)
+##    1 
+## 45.1</code></pre>
+<p>If you like, you can also do that for multiple values like so:</p>
+<pre class="r"><code>new_data &lt;- tibble(
+  body_mass_g = c(3000, 4500)
+)
+
+predict(penguins_model, newdata = new_data)
+##    1    2 
+## 39.1 45.1</code></pre>
+</div>
+<div id="intervals" class="section level3">
+<h3>Intervals</h3>
+<p>You can use <code>predict()</code> to calculate the prediction interval for these estimates by specifying <code>interval = "prediction"</code>. Note, too, that we ask it to provide that interval at <code>level = 0.95</code> to ensure the prediction interval is estimated at the 95% tolerance level.</p>
+<pre class="r"><code>predict(
+  penguins_model, 
+  newdata = new_data,
+  interval = &quot;prediction&quot;,
+  level = 0.95
+)
+##    fit  lwr  upr
+## 1 39.1 30.4 47.7
+## 2 45.1 36.5 53.8</code></pre>
+<p>If we set <code>interval = "confidence"</code>, we can get the standard errors instead.</p>
+<pre class="r"><code>predict(
+  penguins_model, 
+  newdata = new_data,
+  interval = &quot;confidence&quot;,
+  level = 0.95
+)
+##    fit  lwr  upr
+## 1 39.1 38.2 39.9
+## 2 45.1 44.6 45.6</code></pre>
+<p>Here, the prediction interval refers to uncertainty around the expected value, and the confidence interval refers to uncertainty around the estimated coefficients.</p>
+<p>We can actually add these to our model using the function <code>geom_ribbon()</code> like so.</p>
+<pre class="r"><code>confidence &lt;- predict(
+  penguins_model, 
+  interval = &quot;confidence&quot;,
+  level = 0.95
+)
+
+# coerce to a table
+confidence &lt;- as_tibble(confidence)
+confidence$body_mass_g &lt;- penguins$body_mass_g
+
+ggplot() +
+  geom_ribbon(
+    data = confidence,
+    aes(x = body_mass_g, ymin = lwr, ymax = upr),
+    fill = &quot;gray95&quot;
+  ) +
+  geom_line(
+    data = confidence, 
+    aes(body_mass_g, fit),
+    color = &quot;darkred&quot;,
+    size = 1
+  ) +
+  geom_point(
+    data = penguins,
+    aes(body_mass_g, bill_length_mm),
+    size = 2
+  ) +
+  theme_minimal() +
+  labs(
+    x = &quot;Body Mass (g)&quot;,
+    y = &quot;Bill Length (mm)&quot;
+  )</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The ribbon geometry is, in effect, a polygon defined by an upper and lower line (<code>ymax</code> and <code>ymin</code>, respectively).</p>
+</div>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Build a model of penguin flipper length by body mass.
+<ul>
+<li>Make sure to visualize your data first! Make a scatter plot!</li>
+</ul></li>
+<li>Now plot the modeled relationship between flipper length and body mass.
+<ul>
+<li>Use <code>coefficients()</code> and <code>geom_abline()</code>.</li>
+<li>Use <code>predict()</code> and <code>geom_line()</code>.</li>
+<li>Add the confidence interval to the second plot using <code>geom_ribbon()</code>.</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Visualize_Assumptions" class="section level2">
+<h2>Visualize Assumptions</h2>
+<p>Whenever you build a model, it is critically important to visualize the model and its assumptions as this will give you some indication about whether those assumptions have been met. Here, we’ll visualize our penguins model, starting with the residuals.</p>
+<div id="residuals" class="section level3">
+<h3>Residuals</h3>
+<p>One important assumption of OLS regression is that the errors are normally distributed. A simple histogram of the residuals will give us some indication of that. To get the residuals in our model, we can use the <code>residuals()</code> function.</p>
+<pre class="r"><code>penguin_residuals &lt;- residuals(penguins_model)
+
+penguin_fit &lt;- tibble(
+  residuals = penguin_residuals
+)
+
+ggplot(penguin_fit, aes(residuals)) +
+  geom_histogram() +
+  labs(
+    x = &quot;Residual Bill Length (mm)&quot;,
+    y = &quot;Count&quot;
+  )</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Do these look normally distributed to you? Do they have the approximate shape of a bell curve? If a visual check does not suffice, you can always try a Shapiro-Wilk test for normality. To do that in R, you can use the <code>shapiro.test()</code> function. Note that the null hypothesis for this test is that the variable is <em>not</em> normally distributed.</p>
+<pre class="r"><code>shapiro.test(penguin_residuals)
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  penguin_residuals
+## W = 1, p-value = 8e-09</code></pre>
+</div>
+<div id="diagnostic-plots" class="section level3">
+<h3>Diagnostic Plots</h3>
+<p>Base R provides a really useful <code>plot()</code> method for linear models. You just feed this function your linear model and tell it <code>which</code> kind of plot you want to make. Here is a list of options, which you can supply to the <code>which</code> parameter:</p>
+<ol style="list-style-type: decimal">
+<li>Residuals vs Fitted plot</li>
+<li>Normal Q-Q</li>
+<li>Scale-Location</li>
+<li>Cook’s Distance</li>
+<li>Residuals vs Leverage</li>
+<li>Cook’s Distance vs Leverage</li>
+</ol>
+<p>Here is an example of the Q-Q Plot for our penguins model.</p>
+<pre class="r"><code>plot(penguins_model, which = 2)</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The <code>plot()</code> function in this case is extremely utilitarian. If you just want a quick visual diagnostic for your own edification, I recommend using this. However, if you want to present all these plots together in a clean way that easily communicates the assumptions being tested by each, I recommend using the <code>check_model()</code> function from the <code>performance</code> package.</p>
+<pre class="r"><code>check_model(penguins_model)</code></pre>
+<p><img src="06-Linear_Models-3_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>With this, we can hazard all the following conclusions:</p>
+<ol style="list-style-type: decimal">
+<li>The relationship is linear.</li>
+<li>The model departs from homoscedasticity, but only slightly.</li>
+<li>No observations have an undue influence on the model.</li>
+<li>The residuals are more or less normally distributed.</li>
+</ol>
+<p>Note that none of the assumptions are met perfectly. This will never be the case, not with real world data. It should also clue you in to the fact that model evaluation is never certain. It always involves some risks that you might be wrong about your model.</p>
+</div>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Extract the residuals from your model of flipper length by body mass and visualize their distribution with a histogram.
+<ul>
+<li>Do the residuals look normally distributed?</li>
+<li>Use the Shapiro Wilk test to verify this.</li>
+</ul></li>
+<li>Explore the model with base <code>plot()</code>.</li>
+<li>Now, use <code>check_model()</code>.
+<ul>
+<li>What do these plots tell you about the model?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Homework" class="section level2">
+<h2>Homework</h2>
+<ol style="list-style-type: decimal">
+<li>Load the following datasets from the <code>archdata</code> package using <code>data()</code>.
+<ul>
+<li><code>DartPoints</code></li>
+<li><code>OxfordPots</code></li>
+</ul></li>
+<li>Using the <code>DartPoints</code> dataset, build a linear model showing the relationship (if any) between the length and width of dart points. Be sure to do all of the following:
+<ul>
+<li>Visualize the data with a scatter plot!</li>
+<li>Use <code>summary()</code> to report the model.</li>
+<li>Use <code>coefficients()</code> and <code>geom_abline()</code> to visualize the modeled relationship. Be sure to plot this over the data!</li>
+<li>Use <code>check_model()</code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul></li>
+<li>Using the <code>OxfordPots</code> dataset, build a linear model showing the relationship (if any) between the percentage of Oxford Pots found on an archaeological site and the distance of that site from the city of Oxford. Be sure to do all of the following:
+<ul>
+<li>Visualize the data with a scatter plot!</li>
+<li>Use <code>summary()</code> to report the model.</li>
+<li>Use <code>predict()</code> and <code>geom_line()</code> to visualize the modeled relationship. Be sure to plot this over the data!</li>
+<li>Add a confidence interval with <code>geom_ribbon()</code>.</li>
+<li>Use <code>check_model()</code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul></li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
