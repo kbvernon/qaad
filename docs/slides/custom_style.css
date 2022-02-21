@@ -121,6 +121,20 @@ font stuff
   clear: both;
 }
 
+.pull-left-70 {
+  float: left;
+  width: 70%;
+}
+
+.pull-right-28 {
+  float: right;
+  width: 28%;
+}
+
+.pull-right-28 ~ * {
+  clear: both;
+}
+
 
 
 div[class^="pull-"] p:first-child{
@@ -165,4 +179,21 @@ div[class^="pull-"] p:first-child{
 
 .h8rem {
   height: 8rem;
+}
+
+.table-fullwidth {
+  width: 100% !important;
+}
+
+.table-left {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+.table-model thead > tr th { 
+  background: #EEE !important; 
+}
+
+.table-model tr:nth-child(even) { 
+  background: #EEE !important; 
 }

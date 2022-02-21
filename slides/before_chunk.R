@@ -27,13 +27,14 @@ knitr::opts_chunk$set(
   fig.align = "center",
   fig.asp = 0.7,
   fig.retina = 3,
-  dev.args = list(type = "cairo-png")
+  dev = "svglite"
 )
 
 options(
   digits = 3,
   htmltools.dir.version = FALSE,
-  str = strOptions(vec.len = 3)
+  str = strOptions(vec.len = 3),
+  knitr.kable.NA = ''
 )
 
 # just a short-hand for loading figures
@@ -45,13 +46,14 @@ figure <- function(x) {
   
 }
 
-sysfonts::font_add_google("Fira Mono")
+sysfonts::font_add_google("Noto Sans")
 
 # ggplot theme
 ggplot2::theme_set(ggplot2::theme_bw(18))
 ggplot2::theme_update(
   panel.grid = element_blank(),
-  text = element_text(family = "Fira Mono")
+  text = element_text(family = "Noto Sans"),
+  plot.margin = margin(0, 0, 0, 0, "null")
 )
 
 # generate loads of variations on the color palette with different opacity
