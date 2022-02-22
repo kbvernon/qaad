@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 07</title>
+
+<script src="07-Linear_Models-4_files/header-attrs/header-attrs.js"></script>
+<script src="07-Linear_Models-4_files/jquery/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<link href="07-Linear_Models-4_files/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<script src="07-Linear_Models-4_files/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="07-Linear_Models-4_files/bs3compat/transition.js"></script>
+<script src="07-Linear_Models-4_files/bs3compat/tabs.js"></script>
+<script src="07-Linear_Models-4_files/bs3compat/bs3compat.js"></script>
+<script src="07-Linear_Models-4_files/jqueryui/jquery-ui.min.js"></script>
+<link href="07-Linear_Models-4_files/tocify/jquery.tocify.css" rel="stylesheet" />
+<script src="07-Linear_Models-4_files/tocify/jquery.tocify.js"></script>
+<script src="07-Linear_Models-4_files/navigation/tabsets.js"></script>
+<link href="07-Linear_Models-4_files/highlightjs/default.css" rel="stylesheet" />
+<script src="07-Linear_Models-4_files/highlightjs/highlight.js"></script>
+<script src="07-Linear_Models-4_files/clipboard/clipboard.min.js"></script>
+<link href="07-Linear_Models-4_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+<script src="07-Linear_Models-4_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+<script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
+<link href="07-Linear_Models-4_files/font-awesome/css/all.css" rel="stylesheet" />
+<link href="07-Linear_Models-4_files/font-awesome/css/v4-shims.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    
+    const ttl = $('.title.toc-ignore').text();
+    const subttl = $('.subtitle').text();
+    
+    $('.title.toc-ignore').remove();
+    $('.subtitle').remove();
+    
+    $('<h1 class = "title toc-ignore">' + ttl + '</h1><h3 class = "subtitle">' + subttl + '</h3>')
+      .appendTo('.tocify');
+    
+    $('.section.level2:first').show();
+      
+  });
+  
+  $(window).on('load', function() {
+  
+    $('.tocify-item.list-group-item').click(function(event){
+        
+      $('.section.level2').hide();
+      
+      var id = $(this).data('unique');
+      
+      $('#'+id).show(100, function(){
+        $('html').scrollTop(0);
+      });
+      
+    });
+  
+  });
+
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 07</h1>
+<h3 class="subtitle">Multiple Linear Regression</h3>
+
+</div>
+
+
+<div id="Outline" class="section level2">
+<h2>Outline</h2>
+<p><strong>TL;DR</strong> multiple linear models, multicollinearity, and ANOVA.</p>
+<p><strong>Caution!</strong> Please note that all labs assume that you are working in an RStudio Project directory!</p>
+<div id="objectives" class="section level3">
+<h3>Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol style="list-style-type: decimal">
+<li>Creating multiple linear models
+<ul>
+<li>histogram of residuals</li>
+<li>diagnostic plots</li>
+</ul></li>
+<li>Checking for correlation in the predictors
+<ul>
+<li>Scatterplot matrix with <code>plot.data.frame()</code></li>
+<li>Pearson’s Correlation with <code>cor()</code></li>
+<li>Variance Inflation Factor with <code>vif()</code></li>
+</ul></li>
+</ol>
+</div>
+<div id="r-packages" class="section level3">
+<h3>R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://socialsciences.mcmaster.ca/jfox/Books/Companion/index.html">car</a></li>
+<li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
+<li><a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a></li>
+<li><a href="https://here.r-lib.org/">here</a></li>
+<li><a href="https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf">ISLR2</a></li>
+<li><a href="https://easystats.github.io/performance/">performance</a></li>
+<li><a href="https://docs.ropensci.org/skimr/">skimr</a></li>
+</ul>
+<p>To install these packages, <strong>run the following code in your console</strong>:</p>
+<pre class="r"><code>install.packages(
+  c(&quot;archdata&quot;, &quot;car&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;here&quot;, &quot;performance&quot;)
+)</code></pre>
+<p><strong>Note:</strong> You should not <code>install.packages()</code> in an Rmd document. Use that function in your R console instead. Then use <code>library()</code> as part of the preamble in your Rmd document to check packages out of the library and use them in that R session. This should always go at the start of your document!</p>
+<pre class="r"><code>library(archdata)
+library(car)
+library(dplyr)
+library(ggplot2)
+library(here)
+library(ISLR2)
+library(performance)
+library(skimr)</code></pre>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<ul>
+<li><code>Boston</code>
+<ul>
+<li>A dataset containing housing values in 506 suburbs of Boston.</li>
+<li>package: <code>ISLR2</code></li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf" class="uri">https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf</a></li>
+</ul></li>
+<li><code>HandAxes</code>
+<ul>
+<li>Includes measurements of handaxes from the Furze Platt site stored at the Royal Ontario Museum.</li>
+<li>package: <code>archdata</code></li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code></li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="Download_Data" class="section level2">
+<h2>Download Data</h2>
+<p>We’ll be working with the advertising dataset used in the textbook <a href="https://www.statlearning.com/"><em>An Introduction to Statistical Learning With Applications in R</em></a>. The website for this book hosts many of the datasets it uses. The others you can find in the companion R packages (ISLR and ISLR2, for the first and second editions, respectively). You can download this data then load it into R like so:</p>
+<pre class="r"><code>fn &lt;- here(&quot;data&quot;, &quot;advertising.csv&quot;)
+
+download.file(
+  url = &quot;https://www.statlearning.com/s/Advertising.csv&quot;,
+  destfile = fn
+)
+
+adverts &lt;- read.csv(fn)
+
+remove(fn)</code></pre>
+<p>You can actually do this directly with <code>read.csv("https://www.statlearning.com/s/Advertising.csv")</code>, but the round-about way allows you to practice saving and loading data with <code>here()</code>.</p>
+<p>Now, have a look at some summaries of the data with <code>skim()</code>.</p>
+<pre class="r"><code>skim(adverts)</code></pre>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+adverts
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+200
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+sales
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+14.0
+</td>
+<td style="text-align:right;">
+5.22
+</td>
+<td style="text-align:right;">
+1.6
+</td>
+<td style="text-align:right;">
+10.38
+</td>
+<td style="text-align:right;">
+12.9
+</td>
+<td style="text-align:right;">
+17.4
+</td>
+<td style="text-align:right;">
+27.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tv
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+147.0
+</td>
+<td style="text-align:right;">
+85.85
+</td>
+<td style="text-align:right;">
+0.7
+</td>
+<td style="text-align:right;">
+74.38
+</td>
+<td style="text-align:right;">
+149.8
+</td>
+<td style="text-align:right;">
+218.8
+</td>
+<td style="text-align:right;">
+296.4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+radio
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+23.3
+</td>
+<td style="text-align:right;">
+14.85
+</td>
+<td style="text-align:right;">
+0.0
+</td>
+<td style="text-align:right;">
+9.97
+</td>
+<td style="text-align:right;">
+22.9
+</td>
+<td style="text-align:right;">
+36.5
+</td>
+<td style="text-align:right;">
+49.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+newspaper
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+30.6
+</td>
+<td style="text-align:right;">
+21.78
+</td>
+<td style="text-align:right;">
+0.3
+</td>
+<td style="text-align:right;">
+12.75
+</td>
+<td style="text-align:right;">
+25.8
+</td>
+<td style="text-align:right;">
+45.1
+</td>
+<td style="text-align:right;">
+114.0
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Notice that the dataset has four variables: <code>sales</code>, <code>tv</code>, <code>radio</code>, and <code>newspaper</code>. The <code>sales</code> variable refers to the number of units (in thousands) sold in a given market. The other three variables refer to investments (in thousands of dollars) in different advertising media.</p>
+</div>
+<div id="Multiple_Regression" class="section level2">
+<h2>Multiple Regression</h2>
+<p>In this section, we will walk through how to build a multiple linear model in R. This is not fundamentally different than building a simple linear model. The only difference is that we need to update the model formula. For the simple linear model, the formula is just <code>y ~ x</code>, for the multiple linear model, it’s <code>y ~ x1 + x2 + ... + xn</code>. We simply add the covariates together using the plus-sign. Let’s work through an example with the <code>adverts</code> table. We want to know whether investment in different advertising media increases sales of some product.</p>
+<pre class="r"><code>adverts_lm &lt;- lm(sales ~ tv + radio + newspaper, data = adverts)
+
+summary(adverts_lm)
+## 
+## Call:
+## lm(formula = sales ~ tv + radio + newspaper, data = adverts)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -8.828 -0.891  0.242  1.189  2.829 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  2.93889    0.31191    9.42   &lt;2e-16 ***
+## tv           0.04576    0.00139   32.81   &lt;2e-16 ***
+## radio        0.18853    0.00861   21.89   &lt;2e-16 ***
+## newspaper   -0.00104    0.00587   -0.18     0.86    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.69 on 196 degrees of freedom
+## Multiple R-squared:  0.897,  Adjusted R-squared:  0.896 
+## F-statistic:  570 on 3 and 196 DF,  p-value: &lt;2e-16</code></pre>
+<p>Note the change in how we interpret the coefficients! Each coefficient must be interpreted relative to some value of the other covariates. For example, the coefficient estimate for television is 0.046. We interpret this as saying, “For some given investment in radio and newspaper advertising, increasing tv advertising by $1000 will increase the number of units sold by approximately 46 units (because the units are measured in thousands, so 1000 x 0.046).”</p>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Load the <code>Boston</code> dataset from the <code>ISLR2</code> package with <code>data()</code>.</li>
+<li>Subset the variables in the dataset using the <code>select()</code> function from <code>dplyr</code>. Choose all the following variables:
+<ul>
+<li><code>medv</code> = median household value</li>
+<li><code>rm</code> = number of rooms</li>
+<li><code>crim</code> = per capita crime rate</li>
+<li><code>lstat</code> = percent of households with low socioeconomic status</li>
+</ul></li>
+<li>Summarize the table with <code>skim()</code>.</li>
+<li>Make a simple linear model of median household value (<code>medv</code>) as a function of average number of rooms (<code>rm</code>).
+<ul>
+<li>Call the model <code>simple_lm</code>.</li>
+</ul></li>
+<li>Now make a multiple linear model of median household value (<code>medv</code>) as a function of average number of rooms, per capita crime rate, and percent of household with low socioeconomic status (<code>rm</code>, <code>crim</code>, and <code>lstat</code>, respectively).
+<ul>
+<li>Call the model <code>boston_lm</code>.</li>
+</ul></li>
+<li>Summarize the model with <code>summary()</code>.
+<ul>
+<li>Are all the coefficients significant?</li>
+<li>How much of the variance in house value is explained by these variables?</li>
+</ul></li>
+<li>How do you interpret the coefficient for number of rooms? What effect does increasing the number of rooms have?</li>
+</ol>
+</div>
+</div>
+<div id="Model_Evaluation" class="section level2">
+<h2>Model Evaluation</h2>
+<p>As always, we can use the base <code>plot()</code> function to check model assumptions, using the <code>which</code> argument to specify the type of plot we want to make. For example, we can make a Q-Q plot like so:</p>
+<pre class="r"><code>plot(adverts_lm, which = 2)</code></pre>
+<p><img src="07-Linear_Models-4_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Or, we can use the <code>check_model()</code> function from the <code>performance</code> package.</p>
+<pre class="r"><code>check_model(adverts_lm)</code></pre>
+<p><img src="07-Linear_Models-4_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>How does it look? Have we met the assumptions of linear regression?</p>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Plot a histogram of the residuals.
+<ul>
+<li>Use <code>residuals()</code> to get the residuals out of the model object.</li>
+<li>Use <code>geom_histogram()</code>.</li>
+</ul></li>
+<li>Run <code>check_model()</code> on <code>boston_lm</code>.</li>
+<li>Does the model meet the assumptions of linear regression?</li>
+</ol>
+</div>
+</div>
+<div id="ANOVA" class="section level2">
+<h2>ANOVA</h2>
+<p>As always, we want to check whether adding variables actually makes a significant improvement on the model. To do that, we need to compare the complex model to a simpler model. In R, we do that with the <code>anova()</code> function. Suppose, for example, we had made this simple linear model:</p>
+<pre class="r"><code>adverts_simple &lt;- lm(sales ~ tv, data = adverts)</code></pre>
+<p>Then we can compare the more complex model to it like so:</p>
+<pre class="r"><code>anova(adverts_simple, adverts_lm)
+## Analysis of Variance Table
+## 
+## Model 1: sales ~ tv
+## Model 2: sales ~ tv + radio + newspaper
+##   Res.Df  RSS Df Sum of Sq   F Pr(&gt;F)    
+## 1    198 2103                            
+## 2    196  557  2      1546 272 &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Note that the simpler model is a subset of the more complex model (ie, these are nested models)! The ANOVA woudn’t work otherwise! The interpretation of this ANOVA table is as follows. The degrees of freedom (<code>DF</code>) represents the difference in residual degrees of freedom (<code>Res.Df</code>) between the simple and complex models. The sum of squares (<code>Sum of Sq</code>) is the difference in the Residual Sum of Squares (<code>RSS</code>) for each model. The <code>F</code> statistic is then the following ratio:</p>
+<p><span class="math display">\[F = \frac{\text{Sum of Sq}/\text{Df}}{\text{RSS}_2/\text{Res.Df}_2}\]</span></p>
+<p>This is then compared to an F distribution with the degrees of freedom to determine how likely that particular value is, assuming the null hypothesis that there is no significant improvement. Because it is extremely unlikely, we reject the null and accept the alternate hypothesis, which - in a word - is that the more complex model is better (in spite of its complexity).</p>
+<div id="exercises-2" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Use the <code>anova()</code> function to compare <code>simple_lm</code> to <code>boston_lm</code>.
+<ul>
+<li>State your null and alternate hypotheses.</li>
+</ul></li>
+<li>Is the complex model worth it?</li>
+</ol>
+</div>
+</div>
+<div id="Multicollinearity" class="section level2">
+<h2>Multicollinearity</h2>
+<p>Linear regression assumes that the predictor or independent variables are uncorrelated. However, this is often not the case. To evaluate this assumption, you can do one of two things. I actually recommend that you always do both. First, you can check for pairwise correlations visually with the <code>pairs()</code> function from base R or analytically with the <code>cor()</code> argument. Both work with tables. Second, you check for multicollinearity using the <code>vif()</code> function to estimate the Variance Inflation Factor for each covariate.</p>
+<div id="collinearity" class="section level3">
+<h3>Collinearity</h3>
+<pre class="r"><code>pairs(adverts)</code></pre>
+<p><img src="07-Linear_Models-4_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(adverts)
+##           sales     tv  radio newspaper
+## sales     1.000 0.7822 0.5762    0.2283
+## tv        0.782 1.0000 0.0548    0.0566
+## radio     0.576 0.0548 1.0000    0.3541
+## newspaper 0.228 0.0566 0.3541    1.0000</code></pre>
+<p>Notice that <code>pairs()</code> generates a scatterplot matrix with all pairwise combination of variables. If there’s no correlation, the scatterplot should look like a cloud of random points. If there is a correlation, the points will cluster along some line. The <code>cor()</code> function generates a correlation matrix (by default a Pearson’s correlation matrix). Of course, every variable correlates perfectly with itself, hence a value of 1 along the diagonal. Values above and below the diagonal are simply mirrors of each other, as is the case with the scatterplot matrix. The fact that each variable correlates with sales is not problematic in this case, as that is the relationship we are trying to model. What we want to focus on here is the degree of correlation between the predictors <code>tv</code>, <code>radio</code>, and <code>newspaper</code>. It is preferable that the correlations between these be as close to zero as possible, but again, it will rarely be the case that they are exactly zero.</p>
+</div>
+<div id="multicollinearity" class="section level3">
+<h3>Multicollinearity</h3>
+<p>Generally, it’s a good idea to test for correlations between predictors before building a model. However, the <code>vif()</code> function only works on model objects, which makes sense as the variance being inflated is variance around coefficient estimates made by the model. That means, of course, that you have to build a model first before evaluating its covariates for multicollinearity. Using the linear model we made with the advertising data, that looks like this:</p>
+<pre class="r"><code>vif(adverts_lm)
+##        tv     radio newspaper 
+##      1.00      1.14      1.15</code></pre>
+<p>This generates a named vector, with one value for each covariate. A general rule of thumb is that VIF for a coefficient should be less than 5. After that, you should consider changes to your model.</p>
+</div>
+<div id="exercises-3" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Use <code>pairs()</code> on the <code>Boston</code> data to visualize pairwise relationships between variables.
+<ul>
+<li>Do you see any potential trends?</li>
+</ul></li>
+<li>Use <code>cor()</code> on the <code>Boston</code> data to estimate the Pearson correlation coefficient for each pair of variables.
+<ul>
+<li>Are there any strong correlations?</li>
+</ul></li>
+<li>Use <code>vif()</code> on the <code>bostom_lm</code> model to estimate the Variance Inflation Factor for each covariate.
+<ul>
+<li>Are any greater than 5 for any of them?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Homework" class="section level2">
+<h2>Homework</h2>
+<ol style="list-style-type: decimal">
+<li>Load the <code>Handaxes</code> dataset from the <code>archdata</code> package using <code>data()</code>.</li>
+<li>Now let’s explore this dataset.
+<ul>
+<li>Check the variables that it includes with <code>names()</code>. You should see maximum length (<code>L</code>), breadth (<code>B</code>), and thickness (<code>T</code>), among others.</li>
+<li>Using <code>select()</code> to subset this table, taking only those three variables (length, breadth, and thickness).</li>
+<li>Summarize this table with <code>skim()</code>.</li>
+<li>Visualize the pairwise relationships between variables with <code>pairs()</code>.</li>
+<li>Estimate Pearson’s correlation coefficient for each pair of variables with <code>cor()</code>.</li>
+</ul></li>
+<li>Now making a simple linear model showing the relationship (if any) between the length and breadth of handaxes. Be sure to do all of the following:
+<ul>
+<li>Use <code>summary()</code> to report the model.</li>
+<li>Use <code>predict()</code> and <code>geom_line()</code> to visualize the modeled relationship. Be sure to plot this over the data!</li>
+<li>Add a confidence interval with <code>geom_ribbon()</code>.</li>
+<li>Use <code>check_model()</code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul></li>
+<li>Build a multiple linear model of handaxe length as a function of breadth and thickness. Be sure to do all of the following:
+<ul>
+<li>Use <code>summary()</code> to report the model.</li>
+<li>Use <code>check_model()</code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul></li>
+<li>Use the <code>vif()</code> function on the multiple linear model.
+<ul>
+<li>Is the VIF for either variable greater than 5?</li>
+</ul></li>
+<li>Conduct an ANOVA using the <code>anova()</code> function to compare the simple and complex models.
+<ul>
+<li>Does the complex model significantly improve on the simpler model?</li>
+</ul></li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
