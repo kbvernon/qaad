@@ -1,5 +1,5 @@
 ---
-title: "Lecture 07: Linear Models 4"  
+title: "Lecture 08: Linear Models 5"  
 date: 'Last updated: `r Sys.Date()`'
 output:
   xaringan::moon_reader:
@@ -492,7 +492,7 @@ Model child IQ as a function of mother's IQ<sup>1</sup>
 
 __Question__ What is the intercept?
 
-.footnote[<sup>1</sup>_Whether or not IQ is meaningful, this example is illustrative!_]
+.footnote[<sup>1</sup>_No commitment here to IQ being meaningful._]
 
 ]
 
@@ -558,9 +558,9 @@ models %>%
 
 ```
 
-Model child IQ as a function of mother's IQ<sup>1</sup> 
+Model child IQ as a function of mother's IQ  
 
-.footnote[<sup>1</sup>_Whether or not IQ is meaningful, this example is illustrative!_]
+__Question__ What is the intercept? 
 
 ]
 
@@ -792,7 +792,8 @@ gg_cars
 ```{r}
 
 models <- broom::tidy(lm_cars) %>% 
-  rename("t.statistic" = statistic)
+  rename("t.statistic" = statistic) %>% 
+  mutate(term = c("(Intercept)", "Horsepower", "Weight"))
 
 models %>% 
   kbl(table.attr = "class='table-model table-fullwidth'") %>% 
@@ -940,6 +941,7 @@ ggplot() +
 
 models <- broom::tidy(lm_cars) %>% 
   rename("t.statistic" = statistic) %>% 
+  mutate(term = c("(Intercept)", "Horsepower", "Weight")) %>% 
   bind_rows(models, .)
 
 models %>% 
