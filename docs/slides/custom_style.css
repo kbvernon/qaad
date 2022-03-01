@@ -197,3 +197,16 @@ div[class^="pull-"] p:first-child{
 .table-model tr:nth-child(even) { 
   background: #EEE !important; 
 }
+
+.table-simple thead > tr th { 
+  background: #EEE !important; 
+}
+
+.table-simple tr:nth-child(even) { 
+  background: white !important; 
+}
+
+.table-simple {
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+}

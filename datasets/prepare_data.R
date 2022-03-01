@@ -18,3 +18,23 @@ write_csv(
   advertising, 
   file = here("datasets", "advertising.csv")
 )
+
+
+
+# Kid's IQ ----------------------------------------------------------------
+
+# https://cran.r-project.org/web/packages/rstanarm/rstanarm.pdf
+
+library(rstanarm)
+
+kidiq <- kidiq %>% 
+  rename(
+    "kid" = kid_score,
+    "mom" = mom_iq
+  ) %>% 
+  select(kid, mom, everything())
+
+write_csv(
+  kidiq,
+  file = here("datasets", "kidiq.csv")
+)

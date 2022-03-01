@@ -32,7 +32,7 @@ This lab will guide you through the process of
 
 1. Modifying tables by
     - Adding or changing variables with `mutate()`
-    - Grouping factors and aggregating with `group_by()` and `summary()`
+    - Grouping variables and aggregating with `group_by()` and `summary()`
 2. Creating multiple linear models
     - histogram of residuals
     - diagnostic plots

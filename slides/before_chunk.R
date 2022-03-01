@@ -15,8 +15,6 @@ library(viridis)
 library(xaringanExtra)
 library(xaringanthemer)
 
-set.seed(12345)
-
 knitr::opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
