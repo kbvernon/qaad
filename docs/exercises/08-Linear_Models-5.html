@@ -487,9 +487,8 @@ summarize(
 </ol>
 </div>
 </div>
-<div id="The_Piping" class="section level2">
+<div id="The_Pipe" class="section level2">
 <h2>The Pipe</h2>
-<pre class="r"><code>knitr::include_graphics(&quot;https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg&quot;)</code></pre>
 <p><img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" style="display: block; margin: auto;" /></p>
 <p>Up to now, if we wanted to make a series of changes to our data, we had to save to intermediate objects or overwrite the object we were working with. For example,</p>
 <pre class="r"><code>bob &lt;- select(penguins, species, island, bill_length_mm, body_mass_g)
@@ -516,7 +515,7 @@ remove(bob, tom)</code></pre>
 ## 3 Gentoo             5485.</code></pre>
 <p>If you were to transpose this code into a natural language like English, it would sound something like this,</p>
 <blockquote>
-<p>Take the penguins take, then select the variables species, sex, and body mass, then filter the males, then group by species, and then calculate the mean body mass for each species.</p>
+<p>Take the penguins table, then select the variables species, sex, and body mass, then filter the males, then group by species, and then calculate the mean body mass for each species.</p>
 </blockquote>
 <p>The ‘then’ in each case is the pipe operator. Crucially, the pipe assumes that the data being transformed is the first argument to the function, which is true for all the <code>dplyr</code> functions (and, in fact, all the functions in the <code>tidyverse</code>) as they were all designed very intentionally to work with the pipe. Unfortunately, many parts of R were written long before the pipe was ever introduced, so they may not work as easily with it.</p>
 <p>This is easily one of the most powerful tools for working with data in R, which is probably why it is so popular these days. RStudio gives a keyboard shortcut to make inserting this operator into your code easier. It’s <code>Ctrl + Shift + M</code> on Windows and <code>Cmd + Shift + M</code> on Mac.</p>

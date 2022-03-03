@@ -233,9 +233,9 @@ summarize(
 3. Group the penguins data by sex and summarize the mean and variance in body mass.
 4. Group the penguins data by sex and species and summarize the mean and variance in body mass.
 
-## The Pipe {#The_Piping}
+## The Pipe {#The_Pipe}
 
-```{r}
+```{r, echo = FALSE}
 
 knitr::include_graphics("https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg")
 
@@ -275,7 +275,7 @@ penguins %>%
 
 If you were to transpose this code into a natural language like English, it would sound something like this,
 
-> Take the penguins take, then select the variables species, sex, and body mass, then filter the males, then group by species, and then calculate the mean body mass for each species.
+> Take the penguins table, then select the variables species, sex, and body mass, then filter the males, then group by species, and then calculate the mean body mass for each species.
 
 The 'then' in each case is the pipe operator. Crucially, the pipe assumes that the data being transformed is the first argument to the function, which is true for all the `dplyr` functions (and, in fact, all the functions in the `tidyverse`) as they were all designed very intentionally to work with the pipe. Unfortunately, many parts of R were written long before the pipe was ever introduced, so they may not work as easily with it. 
 
