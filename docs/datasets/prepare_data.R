@@ -48,4 +48,25 @@ Snodgrass %>%
   rename_with(tolower) %>% 
   mutate(inside = ifelse(inside == "Inside", 1L, 0L)) %>% 
   write_csv(here("datasets", "snodgrass.csv"))
-  
+
+
+
+# Site counts by elevation ------------------------------------------------
+
+n <- 100
+
+set.seed(123)
+
+elevation <- rnorm(n, mean = 1.5, sd = 0.3)
+
+b0 <- log(2)
+b1 <- log(3.5)
+
+lambda <- exp(b0 + b1 * elevation) 
+
+sites <- rpois(n, lambda)
+
+write_csv(
+  tibble(sites, elevation),
+  here("datasets", "site_counts.csv")
+)

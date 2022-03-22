@@ -46,8 +46,9 @@ class: center, middle, inverse, title-slide
     - Distribution function
     - Linear predictor
     - Link function
-- Gaussian
-- Binomial
+- Gaussian for continuous data
+- Binomial for binary data (and proportions)
+- Poisson for count data
 - Deviance
 - Information Criteria
 - ANOVA _aka_ Likelihood Ratio Test
@@ -391,6 +392,106 @@ For a house structure with an area of 300 square feet, the estimated probability
 
 ---
 
+## Poisson GLM
+
+.pull-left[
+
+&lt;img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-24-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Site counts is a Poisson distributed variable and has expectation `\(E(Y) = \lambda\)` where
+
+`$$\lambda = exp(\beta X)$$`
+
+By taking the exponent, this constrains the expected count to be greater than zero.
+
+]
+
+---
+
+## Poisson GLM
+
+.pull-left[
+
+&lt;img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-25-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Taking the log gives us
+
+`$$log(\lambda) = \beta X$$`
+
+Now there is a linear relation to expected value.
+
+]
+
+---
+
+## Poisson GLM
+
+
+
+
+.pull-left[
+
+&lt;img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-27-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = 0.707\)`  
+`\(\beta_1 = 1.244\)`   
+
+For these, the log Likelihood is
+
+`\(\mathcal{l} = -271.027\)`  
+
+]
+
+---
+
+## Poisson GLM
+
+.pull-left[
+
+&lt;img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-28-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = 0.707\)`  
+`\(\beta_1 = 1.244\)`   
+
+Note that these coefficient estimates are on the log scale! To get back to counts, need to take the exponent.   
+
+`\(\beta_0 = exp(0.707) = 2.029\)`  
+`\(\beta_1 = exp(1.244) = 3.47\)`  
+
+For a one unit increase in elevation, the count of sites increases by 3.47.
+
+]
+
+---
+
 ## Deviance
 
 - Measure of goodness of fit, so __smaller is better__
@@ -445,11 +546,11 @@ $$
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Linear Models 2&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-03-22)&lt;/span&gt;&lt;br&gt;
-&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Link Function. Error Distributions. Gaussian and Binomial GLMs.&lt;/div&gt; &lt;/td&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Link Function. Error Distributions. Gaussian and Binomial GLMs. Deviance. Information Criteria. ANOVA (LRT).&lt;/div&gt; &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Linear Models 3&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-03-29)&lt;/span&gt;&lt;br&gt;
-&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Poisson GLMS. Deviance, Information Criteria, Prediction, Overdispersion, Offsets&lt;/div&gt; &lt;/td&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Poisson GLMS. Prediction, Overdispersion, Offsets&lt;/div&gt; &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Linear Models 4&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-05)&lt;/span&gt;&lt;br&gt;

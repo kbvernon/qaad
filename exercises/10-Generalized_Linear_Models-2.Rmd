@@ -1,0 +1,79 @@
+---
+title: "Lab 08"
+subtitle: "Linear Model Extensions"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      smooth_scroll: false
+    self_contained: false
+    css: custom_style.css
+    includes:
+      in_header: toggle.html
+    theme: 
+      bootswatch: sandstone
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
+```
+
+
+## Outline {#Outline}
+
+__TL;DR__  
+
+__Caution!__ Please note that all labs assume that you are working in an RStudio Project directory!
+
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. 
+
+
+### R Packages
+
+We will be using the following packages:
+
+- [dplyr](https://dplyr.tidyverse.org/)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+
+To install these packages, __run the following code in your console__:
+
+```{r, eval = FALSE}
+
+install.packages(
+  c("dplyr", "palmerpenguins")
+)
+
+```
+
+__Note:__ You should not `install.packages()` in an Rmd document. Use that function in your R console instead. Then use `library()` as part of the preamble in your Rmd document to check packages out of the library and use them in that R session. This should always go at the start of your document!
+
+```{r}
+
+library(dplyr)
+library(palmerpenguins)
+
+```
+
+
+### Data
+
+- `penguins` 
+    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+    - package: `palmerpenguins`
+    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+
+
+## Gaussian GLM {#Gaussian_GLM}
+
+## Binomial GLM {#Binomial_GLM}
+
+## Poisson GLM {#Poisson_GLM}
+    
+## Homework {#Homework}
+
+No homework this week! Enjoy your spring break!

@@ -21,13 +21,14 @@ output:
 
 ```{r}
 
-library(archdata)
-
 snodgrass <- here("datasets", "snodgrass.csv") %>% 
   read_csv() %>% 
   select(inside, area)  
 
-remove(Snodgrass)
+sites <- here("datasets", "site_counts.csv") %>% 
+  read_csv()
+
+library(archdata)
 
 data("DartPoints")
 
@@ -48,8 +49,9 @@ remove(DartPoints)
     - Distribution function
     - Linear predictor
     - Link function
-- Gaussian
-- Binomial
+- Gaussian for continuous data
+- Binomial for binary data (and proportions)
+- Poisson for count data
 - Deviance
 - Information Criteria
 - ANOVA _aka_ Likelihood Ratio Test
@@ -844,6 +846,175 @@ To get the probability, we can use the mean function (also known as the inverse 
 $$p = \frac{1}{1+exp(-\beta X)}$$
 
 For a house structure with an area of 300 square feet, the estimated probability that it occurs inside the inner wall is `r est`.
+
+]
+
+---
+
+## Poisson GLM
+
+.pull-left[
+
+```{r}
+
+sites_gg <- ggplot(sites, aes(elevation, sites)) +
+  labs(
+    x = "Elevation (km)",
+    y = "Site count"
+  )
+
+sites_gg + 
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Site counts is a Poisson distributed variable and has expectation $E(Y) = \lambda$ where
+
+$$\lambda = exp(\beta X)$$
+
+By taking the exponent, this constrains the expected count to be greater than zero.
+
+]
+
+---
+
+## Poisson GLM
+
+.pull-left[
+
+```{r}
+
+sites_gg + 
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Taking the log gives us
+
+$$log(\lambda) = \beta X$$
+
+Now there is a linear relation to expected value.
+
+]
+
+---
+
+## Poisson GLM
+
+```{r}
+
+sites_glm <- glm(
+  sites ~ elevation,
+  family = poisson,
+  data = sites
+)
+
+b0 <- coefficients(sites_glm)[["(Intercept)"]]
+b1 <- coefficients(sites_glm)[["elevation"]]
+
+ll <- logLik(sites_glm)
+
+```
+
+
+.pull-left[
+
+```{r}
+
+sites_gg + 
+  geom_line(
+    data = tibble(
+      x = sites$elevation,
+      y = predict(sites_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qaad_colors("rufous_red"),
+    size = 1
+  ) +
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+For these, the log Likelihood is
+
+$\mathcal{l} = `r ll`$  
+
+]
+
+---
+
+## Poisson GLM
+
+.pull-left[
+
+```{r}
+
+sites_gg + 
+  geom_line(
+    data = tibble(
+      x = sites$elevation,
+      y = predict(sites_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qaad_colors("rufous_red"),
+    size = 1
+  ) +
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+Note that these coefficient estimates are on the log scale! To get back to counts, need to take the exponent.   
+
+$\beta_0 = exp(`r b0`) = `r exp(b0)`$  
+$\beta_1 = exp(`r b1`) = `r exp(b1)`$  
+
+For a one unit increase in elevation, the count of sites increases by `r exp(b1)`.
 
 ]
 
