@@ -1,0 +1,706 @@
+---
+title: "Lab 01"
+subtitle: "Introduction to R"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      smooth_scroll: false
+    self_contained: false
+    css: custom_style.css
+    includes:
+      in_header: toggle.html
+    theme: 
+      bootswatch: sandstone
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
+```
+
+## Outline {#Outline}
+
+__tl;dr__ An introduction to R and R Markdown. 
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. making sense of RStudio
+2. making your first plot in R
+3. learning the basics of R
+   - doing math
+   - creating objects
+   - using functions
+4. working through a typical workflow
+4. creating an R Project folder
+5. putting together an Rmarkdown document
+   - adding R code
+   - styling with markdown
+   - knitting
+
+### R Packages
+
+No additional packages are required for this lab.
+
+### Data
+
+- `cars`
+    - Includes measurements of car speed and stopping distance.
+    - package: `datasets`
+    - reference: <https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html>
+
+
+## RStudio {#RStudio}
+
+```{r, echo = FALSE}
+
+figure("rstudio_panes.png")
+
+```
+
+If you are going to do anything with R, [RStudio](https://rstudio.com/) is hands-down the best place to do it. RStudio is an open-source integrated development environment (or IDE) that makes programming in R simpler, more efficient, and most importantly, more reproducible. Some of its more user-friendly features are syntax highlighting (it displays code in different colors depending on what it is or does, which makes it easier for you to navigate the code that you've written), code completion (it will try to guess what code you are attempting to write and write it for you), and keyboard shortcuts for the more repetitive tasks. 
+
+### Pane layout
+
+When you first open RStudio, you should see three window panes: the Console, the Environment, and the Viewer. If you open an R script, a fourth Source pane will also open. The default layout of these panes is shown in the figure above.  
+
+- __Source__. The Source pane provides basic text editing functionality, allowing you to create and edit R scripts. Importantly, you cannot execute the code in these scripts directly, but you can save the scripts that you write as simple text files. A dead give away that you have an R script living on your computer is the _.R_ extension, for example, _my_script.R_.   
+- __Console__. The Console pane, as its name suggests, provides an interface to the R console, which is where your code actually gets run. While you can type R code directly into the console, you can't save the R code you write there into an R script like you can with the Source editor. That means you should reserve the console for _non-essential_ tasks, meaning tasks that are not required to replicate your results.
+- __Environment__. The Environment pane is sort of like a census of your digital zoo, providing a list of its denizens, i.e., the objects that you have created during your session. This pane also has the History tab, which shows the R code you have sent to the console in the order that you sent it.  
+- __Viewer__. The Viewer pane is a bit of a catch-all, including a Files tab, a Plots tab, a Help tab, and a Viewer tab. 
+    - The Files tab works like a file explorer. You can use it to navigate through folders and directories. By default, it is set to your working directory.
+    - The Plots tab displays any figures you make with R.
+    - The Help tab is where you can go to find helpful R documentation, including function pages and vignettes.
+    - The actual Viewer tab provides a window to visualize R Markdown.
+
+Let's try out a few bits of code just to give you a sense of the difference between Source and Console.
+
+:::rmdnote
+As you work through this lab, you can practice running code in the Console, but make sure to do the actual exercises in an R script.
+:::
+
+### Exercises
+
+1. First, let's open a new R script. To open an R script in RStudio, just click __File > New File > R Script__ (or hit `Ctrl + Shift + N`, `Cmd + Shift + N` on Mac OS). 
+2. Copy this code into the console and hit Enter.
+```{r, eval = FALSE}
+
+rep("Boba Fett", 5)
+
+```
+3. Now, copy that code into the R script you just opened and hit Enter again. As you see, the code does not run. Instead, the cursor moves down to the next line. To actually run the code, put the cursor back on the line with the code, and hit `Ctrl + Enter` (`CMD + Enter` on Mac OS).
+
+
+
+
+
+## Plot {#Plot}
+
+To ease you into working with R, let's visualize some data to answer a simple question: Do fast moving objects take longer to slow down than slow moving objects? Don't worry about understanding all of this! It's just to give you a feel for the sort of graphics you can make with R. We'll actually spend all of the next lab learning how to make even better graphics.  
+
+### The data
+
+To answer that question, we'll use the `cars` data.frame that comes pre-loaded with R. A data.frame is simply an R object that stores tabular data, with rows for each observation and columns for each variable. Let's have a look at the first _n_ rows of this table, specifically the first 5 rows. We can do this using the function `head()`.
+
+```{r}
+
+head(cars, n = 5)
+
+```
+
+Note that, in this case, each row represents a car. The first column, or variable, records the  __speed__ (in miles per hour) each car was traveling when it applied its brakes, and the second column provides measures of the **dist**ances (in feet) that each took to stop.   
+
+### The &nbsp; `plot()` &nbsp; function
+
+The base R `graphics` package provides a generic function for plotting, which - as you might have guessed - is called `plot()`. To see how it works, try running this code:
+
+```{r}
+
+plot(cars)
+
+```
+
+
+### Customizing your plot
+
+With the `plot()` function, you can do a lot of customization to the resulting graphic. For instance, you can modify all of the following:
+
+- `pch` will change the point type,
+- `main` will change the main plot title,
+- `xlab` and `ylab` will change the x and y axis labels,
+- `cex` will change the size of shapes within the plot region,
+- `pch` will change the type of point used (you can use triangles, squares, or diamonds, among others), 
+- `col` changes the color of the point (or its border), and
+- `bg` changes the color of the point fill (depending on the type of point it is)
+
+For instance, try running this code:
+
+```{r}
+
+plot(
+  cars,
+  pch = 21,
+  bg = "darkorange",
+  col = "darkred",
+  cex = 2
+)
+
+```
+
+
+### Exercises
+
+1. Complete the following line of code to preview only the first three rows of the `cars` table.
+
+```{r, eval = FALSE}
+
+head(cars, n = )
+
+```
+
+2. Modify the code below to change the size (`cex`) of the points from 2 to 1.5.
+
+```{r, eval = FALSE}
+
+plot(
+  cars,
+  pch = 21,
+  bg = "darkorange",
+  col = "darkred",
+  cex = 2
+)
+
+```
+
+3. What does this plot tell us about the relationship between car speed and stopping distance? Is it positive or negative? Or is there no relationship at all? If there is a relationship, what might explain it?
+
+4. Complete the code below to add "Stopping distance for cars" as the `main` title.
+
+```{r, eval = FALSE}
+
+plot(
+  cars,
+  pch = 21,
+  bg = "darkorange",
+  col = "darkred",
+  cex = 1,
+  main = 
+)
+
+```
+
+5. Complete the code below to add "Speed (mph)" as the x-axis label and "Distance (ft)" as the y-axis label.
+
+```{r, eval = FALSE}
+
+plot(
+  cars,
+  pch = 21,
+  bg = "darkorange",
+  col = "darkred",
+  cex = 2,
+  main = "Stopping distance for cars",
+  xlab = ,
+  ylab = 
+)
+
+```
+
+
+
+
+## R Basics {#R_Basics}
+
+```{r, echo = FALSE, out.width = "75%"}
+
+figure("r-stuff.png")
+
+```
+
+### R is a calculator
+
+You can just do math with it:
+
+```{r}
+
+300 * (2/25)
+
+3^2 + 42
+
+sin(17)
+
+```
+
+### Objects and Functions
+
+But, R is more than just a calculator. With it, you can _make_ things and you can _do_ things. The things that you make are called __objects__ and the things that you do things with are called __functions__. Any complex statistical operation you want to conduct in R will almost certainly involve the use of one or more functions.  
+
+#### Calling functions
+
+To use a function, we _call_ it like this: 
+
+```{r, eval = FALSE}
+
+function_name(arg1 = value1, arg2 = value2, ...)
+
+```
+
+Try calling the `seq()` function.
+
+```{r}
+
+seq(from = 1, to = 5)
+
+```
+
+As you can see, this generates a sequence of numbers starting at 1 and ending at 5. There are two things to note about this. First, we do not have to specify the __arguments__ explicitly, but they must be in the correct order:
+
+```{r}
+
+seq(1, 5) 
+
+seq(5, 1)
+
+```
+
+Second, the `seq()` function has additional arguments you can specify, like `by` and `length`. We did not have to specify these because they have default values, in this case, `by = 1`, which entails the length. You can change one or the other of these (but not both):
+
+```{r}
+
+seq(1, 5, by = 2)
+
+seq(1, 5, length = 10)
+
+```
+
+#### Creating objects
+
+To make an object in R, you use the arrow, `<-`, like so:  
+
+```{r, eval = FALSE}
+
+object_name <- value
+
+```
+
+Try creating an object with value 5.137 and assigning it to the name `bob`, like this:
+
+```{r}
+
+bob <- 5.137
+
+```
+
+There are three things to note here. First, names in R must start with a letter and can only contain letters, numbers, underscores, and periods.  
+
+```{r, eval = FALSE}
+
+# Good
+winter_solder <- "Buckey"
+object4 <- 23.2
+
+# Bad
+winter soldier <- "Buckey" # spaces not allowed
+4object <- 23.2            # cannot start with a number
+
+```
+
+Second, when you create an object with `<-`, it ends up in your _workspace_ or _environment_ (you can see it in the RStudio environment pane). Finally, it is worth noting that the advantage of creating objects is that we can take the output of one function and pass it to another.
+
+```{r}
+
+x <- seq(1, 5, length = 3)
+
+logx <- log(x)
+
+exp(logx)
+
+```
+
+
+### Exercises
+
+1. Use `seq()` to generate a sequence of numbers from 3 to 12.
+
+2. Use `seq()` to generate a sequence of numbers from 3 to 12 with length 25.
+
+3. Why doesn't this code work?
+
+```{r, eval = FALSE}
+
+seq(1, 5, by = 2, length = 10)
+
+```
+
+4. Use `<-` to create an object with value 25 and assign it to a name of your choice.
+
+5. Now try to create another object with a different value and name.  
+
+6. What is wrong with this code?
+
+```{r, eval = FALSE}
+
+2bob <- 10
+
+```
+
+## Workflow {#Workflow}
+
+```{r, echo = FALSE, out.width = "55%"}
+
+figure("r-workflow.png")
+
+```
+
+As you work more and more in R, you will learn that statistical analyses tend to involve the same basic set of tasks: 
+
+- __importing__ data, 
+- __wrangling__ data to get it into a format necessary for analysis, 
+- __exploring__ data with some simple descriptive statistics,  
+- __analyzing__ data with models to investigate potential trends or relationships, and 
+- __summarizing__ the results. 
+
+At various stages, you will also spend considerable time  
+
+- __visualizing__ the data and the results, either to explore the data further or to help communicate the results to others. 
+
+A lot of the output of this process, we will also want to save for later, perhaps to include in a publication (like a figure or model summary), but maybe also to avoid repetition of difficult and time-consuming tasks, so the workflow will also involve  
+
+- __exporting__ refined data and models.  
+
+To make this more concrete, let's try out an example, working with the `cars` data again. As we go through this, try running all the code in the console.   
+
+### An Example
+
+Suppose we return to the question we asked in the plotting section:  Does the speed a car is going when it applies its brakes determine the distance it takes the car to stop? Obviously, the answer is Yes, but let's pretend we don't know the answer, so we can walk through the process of answering the question anyway. 
+
+#### Import
+
+First, we need some data. In this case, we do not actually need to import the `cars` dataset because it is already available to us in R, so let's just pretend like we did. 
+
+#### Explore
+
+Now, let's explore the data. Always, always, always, the best way to explore data is to visualize data! We already did this once, but it can't hurt to try it again!
+
+```{r}
+
+plot(
+  cars,
+  pch = 21,
+  bg = adjustcolor("gray", 0.75),
+  col = "gray25",
+  cex = 1.5
+)
+
+```
+
+Then, we can do things like calculate the mean stopping distance.
+
+```{r}
+
+mean(cars$dist)
+
+```
+
+Note that we use the `$` operator to pull the distance (`dist`) values from the `cars` table and supply it to the `mean()` function. Don't worry too much about wrapping your head around that idea as we will talk about it more in another lab. We can also make a histogram to explore the distribution of stopping distances:
+
+```{r}
+
+hist(cars$dist)
+
+```
+
+What does this tell you about car stopping distances? Is it clustered? Random? 
+
+#### Wrangle
+
+Maybe we think that one really long distance is exceptional, perhaps owing to measurement error, and we want to remove it from our analysis. In that case, we want to _subset_ the data, including only distance values less than some amount, say 100 ft.
+
+```{r}
+
+cars <- subset(cars, dist < 100)
+
+```
+
+This is data wrangling, preparing the data for analysis. 
+
+#### Analyze
+
+Now, finally, we might want to answer our question directly by modeling the relationship between car speeds and stopping distances. Here, our hypothesis is that there is _no_ relationship. This is called the __null hypothesis__. If we can show that this hypothesis is very likely false, then we can with some confidence accept the __alternative hypothesis__, namely, that there _is_ a relationship. To test the null hypothesis, we can construct a simple linear model.  In R, we do this:
+
+```{r}
+
+distance_model <- lm(dist ~ speed, data = cars)
+
+summary(distance_model)
+
+```
+
+Woah! That's a lot to digest. For now, just note that the asterisks (*) imply that that there is very likely a relationship between speed and distance. But, what is that relationship? Or, what does it look like? Well, let's try to visualize that in R, too.
+
+```{r}
+
+plot(
+  cars,
+  pch = 21,
+  bg = adjustcolor("gray", 0.75),
+  col = "gray25",
+  cex = 1.5,
+  xlab = "Speed (mph)",
+  ylab = "Distance (ft)"
+)
+
+abline(
+  distance_model, 
+  col = "#A20000",
+  lwd = 2
+)
+
+title(
+  "Distance Model",
+  line = 0.3, 
+  adj = 0, 
+  cex = 1.5
+)
+
+```
+
+#### Export
+
+Now, if we feel it necessary, we can save our model, so we can inspect it again later.
+
+```{r, eval = FALSE}
+
+save(distance_model, file = "distance_model.Rds")
+
+```
+
+And that's it! Now, all we have to do is write this up and publish it! Easy peasy.
+
+
+## R Projects {#R_Projects}
+
+[![](https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/cracked_setwd.png)](https://github.com/allisonhorst/stats-illustrations)
+
+YOU CANNOT EAT R CODE. Believe me. You can't. Eventually, you'll have to close out of R, turn off your computer, walk away, and do whatever it is that you do to maintain your existence. That means, you need some way to save your progress and you need some place to save it. R has a few built-in tools for this, and they are really convenient, at least early on. However, you will be much better off if you get into the habit of using RStudio [Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-RStudio-Projects). What is an R Project? Basically, it's a folder on your computer that you can use to organize all the data, code, figures, texts, and analyses associated with a single scientific research project. 
+
+When you open your project in RStudio, it will establish your project folder as your working directory by default. The advantage of this is that you can access R scripts and data using relative file paths, rather than specifying the full path from your computer's root directory. Why is this advantageous? Because you can copy the project folder to any computer you want and your relative file paths will just work!
+
+### Exercises
+
+1. Before we setup your project, let's turn off some of R's default settings.
+    - In RStudio, go to __Tools > Global Options...__.
+    - In the dialog box that appears, navigate to the General section, and under __Workspace__, make sure "Restore .RData into workspace at startup" is unchecked.
+    - Then, for "Save workspace to .Rdata on exit", select _Never_.
+    - Hit "Apply", then hit "OK."  
+2. Now, we are going to create a new project for you for this class. You will use this folder to save all your lab and homework exercises, required datasets, and figures. To do that, follow these steps:
+    - In RStudio, go to __File > New Project...__.
+    - In the dialog box that appears, select __New Directory__, then __New Project__.
+    - Put "qaad" as the Directory name.
+    - Then Browse to a location on your computer where you would like to keep this project and hit "OK."
+    - Make sure "Create a git repository" and "Use renv with this project" are unchecked.  
+    - Then click "Create Project." This will restart RStudio with your project loaded. You can confirm this by looking at the top left of the RStudio window. It should say "qaad - RStudio" now. If you look in the File pane (bottom-right), you will also see a file called "qaad.Rproj."
+3. Once you have your project folder setup, have a look at the Files pane again. You should see a button that says "New Folder." Click that, and in the dialog box that appears, enter "R" and hit "OK." You should now see a folder in your project directory called "R." This is where you will keep all the files with your R code in it. Repeat this process to add "data", "figures", and "misc" folders to your project. The "misc" folder is short for miscellaneous. This folder is not strictly necessary but I find it helpful. It's like that drawer in the kitchen where random stuff goes. It might not be clean, but at least your kitchen is! 
+4. Just to check that everything is working, minimize RStudio and navigate to the location of your R Project on your computer. Do you see the folders you have created and the "qaad.Rproj" file?
+
+## R Markdown {#R_Markdown}
+
+```{r, echo = FALSE, eval = FALSE}
+
+image_link(
+  image = "https://github.com/rstudio/rmarkdown/raw/main/man/figures/logo.png",
+  url = "https://rmarkdown.rstudio.com",
+  width = paste0(120, "px"),
+  height = paste0(139, "px"),
+  style = "float: left; margin-left: 10px; margin-right: 40px;"
+)
+
+```
+
+[![](https://github.com/allisonhorst/stats-illustrations/blob/master/rstats-artwork/rmarkdown_wizards.png?raw=true)](https://github.com/allisonhorst/stats-illustrations)
+
+R Markdown (or `rmarkdown`) offers a unified framework for statistical programming and science communication by letting you write and run R code alongside text to explain your methods to others. The text you write is formatted using Markdown syntax (hence "R Markdown"). Note that in this section, I will, for the sake of brevity, refer to `rmarkdown` simply as "rmd".
+
+An rmd document is a simple plain text file with an  ".Rmd" extension, for example "my_awesome_analysis.Rmd." In just about every one of these documents you come across, you will find three major components: 
+
+1. a __YAML header__ surrounded at the top and bottom by three hyphens, `---`, 
+2. R code __chunks__ surrounded at the top and bottom by three back ticks, ```` ``` ````, and 
+3. text formatted with __markdown syntax__ like `# heading 1` and `_italics_`. 
+
+Here is an example:
+
+````md
+---
+title: "Week 01"
+author: "Kenneth Blake Vernon"
+date: "1/11/2022"
+output: html_document
+---
+
+```{r setup, include = FALSE}`r ''`
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+```
+
+## Lab Exercises
+
+### Plot
+
+1. Complete the following line of code to preview only the first three rows of the `cars` table.
+
+```{r}`r ''`
+
+head(cars, n = )
+
+```
+
+***
+
+## Homework Exercises
+
+1. 
+
+````
+
+Let's start with some simple markdown formatting and work our way back to the YAML.
+
+### Markdown formatting
+
+Markdown is a lightweight markup language for formatting plain text and is designed to be easy to read and write. The markdown you will use most often includes all of the following (borrowed from [here](https://r4ds.had.co.nz/r-markdown.html#text-formatting-with-markdown):
+
+````md
+Text formatting 
+------------------------------------------------------------
+
+*italic*  or _italic_
+**bold**   __bold__
+`code`
+superscript^2^ and subscript~2~
+
+Headings
+------------------------------------------------------------
+
+# 1st Level Header
+
+## 2nd Level Header
+
+### 3rd Level Header
+
+Lists
+------------------------------------------------------------
+
+*   Bulleted list item 1
+
+*   Bulleted list item 2
+
+    * Nested list item 2a
+
+    * Nested list item 2b
+
+1.  Numbered list item 1
+
+1.  Numbered list item 2. The numbers are incremented automatically in the output.
+
+1.  Numbered list item 3. 
+
+Links and images
+------------------------------------------------------------
+
+<http://example.com>
+
+[linked phrase](http://example.com)
+
+![optional caption text](path/to/img.png)
+````
+
+### R code chunks
+
+All R code that you want to run needs to be "fenced" by three back ticks ```` ``` ````. You also need to tell RMarkdown that it's R code and not, say, Python or SQL. To do that, you add `{r}` after the first set of back ticks. Altogether, it should look like this:
+
+````md
+```{r}`r ''`
+
+1+1
+
+```
+````
+
+Instead of typing this every time, you can use `Ctrl + Alt + I` (or `CMD`). You can run the code in these chunks like you would code in an R script, by place the cursoe over it and hitting `Ctrl + Enter`. You can specify options for code chunks in R Markdown that will affect the way that they behave or are displayed. You can find a complete list of chunk options at <http://yihui.name/knitr/options/>. Here are a few examples:
+
+- `eval = FALSE` prevents code from being evaluated. 
+- `echo = FALSE` hides the code but not the results of running the code. 
+- `message = FALSE` prevents R messages from appearing in the knitted document. 
+- `warning = FALSE` prevents R warnings from appearing in the knitted document.
+
+Here is how it would look to specify these in a code chunk:
+
+````md
+```{r, echo = FALSE, warning = FALSE}`r ''`
+
+1+1
+
+```
+````
+You can also set these globally, applying them to all code chunks, by specifying them with `knitr::opts_chunk$set()` in the setup code chunk at the beginning of your R Markdown document. It would look like this:
+
+````md
+---
+title: "Week 01"
+author: "Kenneth Blake Vernon"
+date: "1/11/2022"
+output: html_document
+---
+
+```{r setup, include = FALSE}`r ''`
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+```
+````
+
+There are loads more of these options, some of the more important ones involve figures you generate with these documents. Rather than overload you with all of those now, we'll try to go over some of those here or there in future labs and homework exercises.
+
+
+### YAML
+
+'YAML' is a recursive acronym that means "YAML Ain't Markup Language." You don't actually need to know that. I just think it's funny. The YAML controls features of the whole document, specifying, for instance, the title and author. It looks like this:
+
+````md
+---
+title: "Week 01"
+author: "Kenneth Blake Vernon"
+date: "1/11/2022"
+output: html_document
+---
+````
+
+Notice the three dashes `---` at the top and bottom. These must be there in order for R Markdown to recognize it as the YAML. You should always include this at the beginning of the document. There's A LOT you can specify in the YAML. In fact, you can specify basically anything you want, but being quite new to R Markdown, I don't think that would be helpful. For now, let me draw your attention to the `output` field. R Markdown (with the power of a utility known as Pandoc) can technically generate a wide variety of output formats, including Word documents, PDFs, ioslides (presentations), and even powerpoint (if you really insist on it). In this class, we'll stick with the default HTML output, so the only thing you will need to specify in the YAML is the title, author, and date.  
+
+
+### Exercises
+
+1. Let's create a new rmd document in RStudio. To do that, follow these steps:
+   - Go to __File > New File > R Markdown...__.
+   - In the dialog box that appears, put "Week 01" as the __Title__.
+   - Put your name as __Author__.
+   - Hit "OK".  
+2. RStudio will open a new rmd document for you. By default, it comes with some text explaining what R Markdown is and how to use it. Notice that it sets up the YAML for you, too. Let's replace the default text (everything after the YAML) with the template we will use for these course assignments. To do that, follow these steps:
+   - Highlight everything below the YAML and hit Delete.
+   - Scroll up to the figure above with the example of an rmd document. You can now copy and paste this into your rmd document, but I recommend typing it out by hand, so you can get a feel for it.
+3. Notice that this template has two level two headers, "Lab Exercises" and "Homework Exercises." These are the two major assignments you will have to complete each week. You will enter all your answers in an rmd document with this format, then you will _knit_ that document to html, and submit it via Canvas. To keep these things organized, each exercise section in the lab should have its own level three header, like `### Plot` for this week. Since there is no R related homework assignment for this week, you can just delete that section from this rmd document. Before continuing, save your rmd document to the R folder in your course project directory.
+4. Now, go back through this lab and re-do the exercises by adding them to this rmd document. Make sure to save that again. Then _knit_ it to html and submit it on the Canvas course page. This is the process that you will go through each week! 
+
+
+## Homework {#Homework}
+
+There is no R related homework assignment for this week. Please fill out the pre-course self-assessment survey on Canvas.

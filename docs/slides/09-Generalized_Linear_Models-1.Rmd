@@ -1,0 +1,835 @@
+---
+title: "Quantitative Analysis of Archaeological Data"
+subtitle: "Lecture 09: Generalized Linear Models 1"  
+date: 'Last updated: `r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [xaringan-themer.css, custom_style.css]
+    seal: TRUE
+    nature:
+      highlightStyle: magula
+      highlightLines: TRUE
+      countIncrementalSlides: TRUE
+      ratio: '16:9'
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("slides", "before_chunk.R"))}
+```
+
+## Outline
+
+1. Limitations of OLS
+2. Likelihood
+3. Likelihood Estimation
+4. Maximum Likelihood Estimation (MLE)
+
+
+---
+
+## Limitations of OLS
+
+.pull-left[
+
+```{r}
+
+set.seed(123)
+
+n <- 50
+
+dat <- tibble(
+  x = runif(n, 2, 6),
+  y = abs(-3 + (2.3 * x) + rnorm(n, sd = 2.25))
+)
+
+mod <- lm(y ~ x, data = dat)
+
+beta0 <- coefficients(mod)[["(Intercept)"]]
+beta1 <- coefficients(mod)[["x"]]
+
+ggplot() +
+  geom_hline(
+    yintercept = 0,
+    color = "gray55"
+  ) +
+  geom_abline(
+    intercept = beta0,
+    slope = beta1, 
+    color = qaad_colors("rufous_red"),
+    size = 1
+  ) +
+  geom_point(
+    data = dat, 
+    aes(x, y),
+    size = 4,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Artiodactyl Abundance", 
+    y = "Number of Projectile Points"
+  ) +
+  coord_cartesian(
+    xlim = c(0, round(max(dat$x)+1)),
+    ylim = c(-4, round(max(dat$y)+1))
+  ) +
+  scale_x_continuous(
+    breaks = c(0, round(max(dat$x)+1)),
+    labels = c(0, 1)
+  ) +
+  annotate(
+    "curve",
+    x = 1.5, 
+    xend = 0.6, 
+    y = predict(mod, newdata = tibble(x=0.5)),
+    yend = predict(mod, newdata = tibble(x=0.5)),
+    arrow = arrow(type = "closed", length = unit(0.2, "in")),
+    curvature = -0.5
+  ) +
+  annotate(
+    "text",
+    x = 1.55,
+    y = predict(mod, newdata = tibble(x=0.6)),
+    label = "Negative counts?!",
+    size = 8,
+    hjust = 0,
+    vjust = 0,
+    color = qaad_colors("celadon_blue")
+  )
+
+```
+
+.silver.right[_*This is a made-up dataset._]
+
+]
+
+.pull-right[
+
+Assumes residuals (and the response variable) are continuous and normally distributed, so we can't use it to model counts or binary outcomes. 
+
+Comparison of models with ANOVA is restricted to subsets, so we can't, for example, compare $y \sim x1 + x2$ to $y \sim x1 + x3$.
+
+Need a more flexible approach to quantifying our uncertainty about different types of outcome
+
+]
+
+---
+
+## Likelihood
+
+.pull-left[
+
+```{r}
+
+likelihood <- 
+  ggplot(
+    tibble(x = seq(-5, 5, length = 300)),
+    aes(x)
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(sd = 1.5),
+    xlim = c(1.5, 6),
+    geom = "area",
+    color = "black",
+    fill = qaad_colors("maize_crayola")
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(sd = 1.5)
+    ) +
+  labs(
+    x = NULL, 
+    y = "Density"
+  ) +
+  scale_x_continuous(
+    limits = c(-5.5, 5.5),
+    breaks = seq(-5, 5, by = 2.5)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = 1.5,
+    xend = 1.5,
+    y = 0,
+    yend = dnorm(1.5, sd = 1.5)
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    xend = 2.3,
+    y = 0.02,
+    yend = 0.02,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = -0.1,
+    y = 0.02,
+    label = "Probability",
+    size = 8,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = 1.5,
+    y = dnorm(1.5, sd = 1.5),
+    shape = 8,
+    size = 4,
+    stroke = 2,
+    color = qaad_colors("rufous_red")
+  ) +
+  annotate(
+    "segment",
+    x = 2.7,
+    xend = 1.63,
+    y = 0.23,
+    yend = dnorm(1.42, sd = 1.5),
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 2.703,
+    y = 0.233,
+    label = "Likelihood",
+    size = 8,
+    hjust = 0,
+    vjust = 0
+  )
+
+likelihood
+
+```
+
+]
+
+.pull-right[
+
+__Definition:__ Probability of data, $X$, given model, $\theta$.
+
+$$\mathcal{L}(\theta|X) = P(X|\theta)$$
+
+In English: "The likelihood of the model given the data is equal to the probability of the data given the model."
+
+Answers the __Question__: how unlikely or __strange__ is our dataset?
+
+]
+
+
+---
+
+## Likelihood Estimation
+
+.pull-left[
+
+__A Simple Experiment__
+
+We flip a coin $n = 100$ times and count the number of heads.
+
+```{r}
+
+figure("coins.png")
+
+```
+
+__Result:__ $h = 56$
+
+]
+
+.pull-right[
+
+Suppose our model is that the coin is fair, i.e. the chance of heads is $p = 0.5$.
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?
+
+In English: "How _likely_ is it that the coin is fair given that heads came up 56 out of 100 times?"
+
+__Note!__ This is __NOT__ the _probability_ that the coin is fair! It is the probability that heads comes up 56/100 times _assuming that the coin is fair_.
+
+$$\mathcal{L}(p|h)=P(h|p)$$
+
+]
+
+
+---
+
+## Likelihood Estimation
+
+.pull-left[
+
+__A Simple Experiment__
+
+We flip a coin $n = 100$ times and count the number of heads.
+
+```{r}
+
+figure("coins.png")
+
+```
+
+__Result:__ $h = 56$
+
+]
+
+.pull-right[
+
+Suppose our model is that the coin is fair, i.e. the chance of heads is $p = 0.5$.
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?
+
+This experiment is a series of Bernoulli trials, so we can use the binomial distribution to calculate $\mathcal{L}(p|h)$. 
+
+$$\;\;\;\;\,\mathcal{L}(p|h) = \binom{n}{h}p^{h}(1-p)^{n-h}$$
+]
+
+---
+
+## Likelihood Estimation
+
+.pull-left[
+
+__A Simple Experiment__
+
+We flip a coin $n = 100$ times and count the number of heads.
+
+```{r}
+
+figure("coins.png")
+
+```
+
+__Result:__ $h = 56$
+
+]
+
+.pull-right[
+
+Suppose our model is that the coin is fair, i.e. the chance of heads is $p = 0.5$.
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?
+
+This experiment is a series of Bernoulli trials, so we can use the binomial distribution to calculate $\mathcal{L}(p|h)$. 
+
+$$
+\begin{align}
+\mathcal{L}(p|h) &= \binom{n}{h}p^{h}(1-p)^{n-h}\\\\
+\mathcal{L}(p=0.5|h=56) &= \binom{100}{56}0.5^{56}(1-0.5)^{100-56}\\\\
+\mathcal{L}(p=0.5|h=56) &= 0.039
+\end{align}
+$$
+]
+
+---
+
+## Likelihood Estimation
+
+.pull-left[
+
+```{r}
+
+h <- 56
+n <- 100
+p <- 0.5
+d <- dbinom(h, size = n, prob = p)
+
+ggplot(
+    tibble(x = 0:n),
+    aes(x)
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = length(h:n), 
+    xlim = c(h, n),
+    geom = "area",
+    color = "black",
+    fill = qaad_colors("maize_crayola")
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = n+1
+  ) +
+  labs(
+    x = "Number of Heads", 
+    y = "Density"
+  ) +
+  scale_x_continuous(
+    limits = c(0, n),
+    breaks = seq(0, n, by = 20)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = h,
+    xend = h,
+    y = 0,
+    yend = d,
+    linetype = "dashed",
+    color = qaad_colors("rufous_red"),
+    size = 1
+  ) +
+  annotate(
+    "text",
+    x = h-1.5,
+    y = 0.005,
+    label = "h=56",
+    size = 8,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = h,
+    y = d,
+    shape = 8,
+    size = 4,
+    stroke = 2,
+    color = qaad_colors("rufous_red")
+  ) +
+  annotate(
+    "segment",
+    x = 70,
+    xend = h+2.5,
+    y = 0.06,
+    yend = d+0.003,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 70.5,
+    y = 0.062,
+    label = "L=0.039", # unicode for lagrange L is \U1D4DB, but it won't work till R4.2
+    size = 8,
+    hjust = 0,
+    vjust = 0.75
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = 0.08,
+    label = "p=0.5\nn=100",
+    size = 8,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+]
+
+.pull-right[
+
+Suppose our model is that the coin is fair, i.e. the chance of heads is $p = 0.5$.
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?
+
+This experiment is a series of Bernoulli trials, so we can use the binomial distribution to calculate $\mathcal{L}(p|h)$. 
+
+$$
+\begin{align}
+\mathcal{L}(p|h) &= \binom{n}{h}p^{h}(1-p)^{n-h}\\\\
+\mathcal{L}(p=0.5|h=56) &= \binom{100}{56}0.5^{56}(1-0.5)^{100-56}\\\\
+\mathcal{L}(p=0.5|h=56) &= 0.039
+\end{align}
+$$
+]
+
+
+
+---
+
+## Likelihood Estimation
+
+.pull-left[
+
+```{r}
+
+h <- 56
+n <- 100
+p <- 0.52
+d <- dbinom(h, size = n, prob = p)
+
+ggplot(
+    tibble(x = 0:n),
+    aes(x)
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = length(h:n), 
+    xlim = c(h, n),
+    geom = "area",
+    color = "black",
+    fill = qaad_colors("maize_crayola")
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = n+1
+  ) +
+  labs(
+    x = "Number of Heads", 
+    y = "Density"
+  ) +
+  scale_x_continuous(
+    limits = c(0, n),
+    breaks = seq(0, n, by = 20)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = h,
+    xend = h,
+    y = 0,
+    yend = d,
+    linetype = "dashed",
+    color = qaad_colors("rufous_red"),
+    size = 1
+  ) +
+  annotate(
+    "text",
+    x = h-1.5,
+    y = 0.005,
+    label = "h=56",
+    size = 8,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = h,
+    y = d,
+    shape = 8,
+    size = 4,
+    stroke = 2,
+    color = qaad_colors("rufous_red")
+  ) +
+  annotate(
+    "segment",
+    x = 70,
+    xend = h+2.85,
+    y = 0.06,
+    yend = d+0.001,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 70.5,
+    y = 0.062,
+    label = "L=0.058",
+    size = 8,
+    hjust = 0,
+    vjust = 0.75
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = 0.08,
+    label = "p=0.52\nn=100",
+    size = 8,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+]
+
+.pull-right[
+
+__Question:__ What if the coin is not fair?
+
+Suppose our model is that $p=0.52$.
+
+$$\mathcal{L}(p=0.52|h=56) = 0.058$$
+
+]
+
+---
+
+## Maximum Likelihood Estimation
+
+.pull-left[
+
+```{r}
+
+likelihood <- tibble(
+  p = seq(0, 1, length = 100),
+  l = dbinom(56, size = 100, prob = p)
+)
+
+i <- with(likelihood, which(l == max(l)))
+maxl <- likelihood$l[[i]]
+maxp <- likelihood$p[[i]]
+
+ggplot() +
+  geom_polygon(
+    data = likelihood %>% 
+      filter(p >= maxp) %>% 
+      bind_rows(tibble(p = maxp, l = 0), .), 
+    aes(p, l),
+    color = "transparent",
+    fill = qaad_colors("maize_crayola")
+  ) +
+  geom_polygon(
+    data = likelihood, 
+    aes(p, l),
+    color = "black",
+    fill = "transparent"
+  ) +
+  labs(
+    x = "Probability of Heads (p)", 
+    y = "Likelihood (L)"
+  ) +
+  scale_x_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.25)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = maxp,
+    xend = maxp,
+    y = 0,
+    yend = maxl,
+    linetype = "dashed",
+    color = qaad_colors("rufous_red"),
+    size = 1
+  ) +
+  annotate(
+    "segment",
+    x = 0.37,
+    xend = maxp-0.03,
+    y = 0.01,
+    yend = 0.01,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed"),
+    size = 1
+  ) +
+  annotate(
+    "text",
+    x = 0.36,
+    y = 0.01,
+    label = paste0("p=",round(maxp, digits = 2)),
+    size = 8,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = maxp,
+    y = maxl,
+    shape = 8,
+    size = 4,
+    stroke = 2,
+    color = qaad_colors("rufous_red")
+  ) +
+  annotate(
+    "segment",
+    x = 0.75,
+    xend = maxp+0.05,
+    y = maxl-0.01,
+    yend = maxl-0.002,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 0.76,
+    y = maxl-0.01,
+    label = paste0("L=", round(maxl, digits = 2)),
+    size = 8,
+    hjust = 0
+  )
+
+```
+
+]
+
+.pull-right[
+
+__Question:__ What value of $p$ maximizes $\mathcal{L}(p|h)$?
+
+$$\hat{p} = max\, \mathcal{L}(p|h)$$
+
+In English: "Given a set of models, choose the one that makes what we observe the most probable thing to observe."
+
+This is Maximum Likelihood Estimation (MLE). It's a method for estimating the parameters of a model given some observed data.  
+
+]
+
+
+
+
+---
+
+## Maximum Likelihood Estimation
+
+.pull-left[
+
+What if we have multiple observations?
+
+$$X = [5, 7, 8, 2, 4]$$
+
+__Question:__ What is the probability that this sample comes from a normal distribution with a mean of 5 and a variance of 2?
+
+]
+
+.pull-right[
+
+```{r}
+
+X <- c(5, 7, 8, 2, 4)
+Y <- dnorm(X, 5, 2)
+
+normal_model <- tibble(
+  x = seq(0, 10, length = 300),
+  y = dnorm(x, mean = 5, sd = 2)
+) %>% 
+  bind_rows(
+    c(x = 0, y = 0),
+    .,
+    c(x = 10, y = 0)
+  )
+
+gg_normal <- ggplot() +
+  geom_polygon(
+    data = normal_model,
+    aes(x, y), 
+    size = 1,
+    fill = qaad_colors("powder_blue"),
+    color = "black"
+  ) +
+  geom_segment(
+    aes(x = X, y = 0, xend = X, yend = 0.009),
+    size = 3,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = NULL, 
+    y = "Density"
+  )
+
+gg_normal
+
+```
+
+]
+
+---
+
+## Maximum Likelihood Estimation
+
+.pull-left[
+
+The probability density for a given observation $x_i$ given a normal distribution is:
+
+$$N(x_i,\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\;exp\left[-\frac{1}{2}\left(\frac{x_i-\mu}{\sigma}\right)^2\right]$$
+
+For any set of values $X$, the likelihood is the product of the individual densities:
+
+$$\mathcal{L}(\mu, \sigma^2|x_i)=\prod_{i=1}^{n} N(x_i, \mu, \sigma^2)$$
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_normal <- gg_normal +
+  geom_segment(
+    aes(x = X, y = 0, xend = X, yend = Y),
+    linetype = "dashed",
+    size = 1,
+    color = qaad_colors("rufous_red")
+  ) +
+  geom_point(
+    aes(X, Y),
+    size = 3,
+    shape = 15,
+    color = qaad_colors("rufous_red")
+  )
+
+gg_normal
+
+```
+
+]
+
+
+---
+
+## Maximum Likelihood Estimation
+
+.pull-left[
+
+For $X = [5, 7, 8, 2, 4]$, we have
+
+<br>
+
+```{r}
+
+L <- prod(dnorm(X, 5, 2))
+
+```
+
+
+$$
+\begin{align}
+\mathcal{L}(\mu, \sigma^2|X) &= N(5) \cdot N(7) \cdot N(8) \cdot N(2) \cdot N(4)\\\\ 
+&= `r L`
+\end{align}
+$$
+<br>
+
+where $\mu=5$ and $\sigma^2=2$.
+
+As the likelihood is often very small, a common strategy is to minimize the negative log likelihood rather than maximize the likelihood, (\\(min\;\mathrm{-}\ell\\)) rather than (\\(max\;\mathcal{L}\\)).
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_normal
+
+```
+
+]
+
+
+
+---
+
+## &#x1F52D; Looking Ahead
+
+```{r}
+
+schedule <- here("_misc", "course_outline.xlsx") %>% 
+  readxl::read_excel(1) %>% 
+  mutate(
+    date = lubridate::ymd(date),
+    description = glue::glue(
+    "<b>{topic}</b> <span style = 'font-size: 80%; color: #9C9C9C;'>({date})</span><br>
+    <div style = 'font-size: 80%; font-style: italic; color: #9C9C9C;'>{details}</div>"
+  )) %>% 
+  select(description)
+
+```
+
+.pull-left[
+
+```{r}
+
+schedule %>% 
+  slice(10:13) %>% 
+  kbl(escape = FALSE, col.names = NULL) %>% 
+  kable_paper(c("striped", "hover"))
+
+```
+
+]

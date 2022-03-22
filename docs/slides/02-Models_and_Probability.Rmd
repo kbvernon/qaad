@@ -1,0 +1,1766 @@
+---
+title: "Lecture 02: Models and Probability"  
+date: 'Last updated: `r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [xaringan-themer.css, custom_style.css]
+    seal: true
+    nature:
+      highlightStyle: magula
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("slides", "before_chunk.R"))}
+```
+
+```{r}
+
+data("cars")
+
+set.seed(12345)
+
+cars <- cars %>% 
+  sample_n(10) %>% 
+  rename("distance" = dist) %>% 
+  mutate(
+    id = 1:n(),
+    speed = speed * 0.44704,
+    distance = distance * 0.3048,
+    distance = round(distance, digits = 1)
+  )
+
+barx <- mean(cars$distance) %>% round(digits = 3)
+s <- sd(cars$distance) %>% round(digits = 3)
+
+```
+
+## &#x1F4CB; Lecture Outline
+
+- &#x1F9EA; A simple experiment
+- Some terminology
+- &#x1F3B0; Random variables
+- &#x1F3B2; Probability
+- &#x1F4CA; Probability Distribution
+- Probability Distribution as a Model
+- Probability Distribution as a Function
+- Probability Mass Functions
+- Probability Density Functions
+- &#x1F697; Cars Model
+- Brief Review
+- A Simple Formula
+- A Note About Complexity
+
+
+
+---
+
+## &#x1F9EA; A simple experiment
+
+.pull-left[
+
+```{r}
+
+gg_cars <-
+  ggplot(cars) +
+  labs(
+    x = "Car ID", 
+    y = "Distance (m)", 
+    title = "Distance to complete stop") +
+  scale_x_continuous(breaks = 0:11, limits = c(0, 11.2)
+  ) + 
+  ylim(-2, max(cars$distance) + 2) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  theme(
+    panel.border = element_rect(color = "gray75", fill = "transparent")
+  )
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = 0, yend = distance),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+  ) +
+  geom_text(
+    aes(x = id, y = distance, label = distance),
+    vjust = 0,
+    nudge_y = 1,
+    color = "gray50"
+  )
+
+```
+
+]
+
+.pull-right[
+
+We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.  
+
+]
+
+
+
+---
+count: false
+
+## &#x1F9EA; A simple experiment
+
+.pull-left[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = 0, yend = distance),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_text(
+    aes(x = id, y = distance, label = distance),
+    vjust = 0,
+    nudge_y = 1,
+    color = "gray50"
+  ) +
+  annotate(
+    geom = "segment", 
+    x = 11, y = 0,
+    xend = 11, yend = 5,
+    size = 0.5,
+    linetype = "dashed",
+    color = "darkred"
+  ) +
+  annotate(
+    geom = "text", 
+    x = 11, y = 6.5,
+    label = "?",
+    size = 10,
+    color = "darkred"
+  )
+
+```
+
+]
+
+.pull-right[
+
+We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.  
+
+__Question:__ how far do you think it will take the next car to stop?
+
+]
+
+
+
+---
+count: false
+
+## &#x1F9EA; A simple experiment
+
+.pull-left[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = 0, yend = distance),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_text(
+    aes(x = id, y = distance, label = distance),
+    vjust = 0,
+    nudge_y = 1,
+    color = "gray50"
+  ) +
+  annotate(
+    geom = "segment", 
+    x = 11, y = 0,
+    xend = 11, yend = 5,
+    size = 0.5,
+    linetype = "dashed",
+    color = "darkred"
+  ) +
+  annotate(
+    geom = "text", 
+    x = 11, y = 6.5,
+    label = "?",
+    size = 10,
+    color = "darkred"
+  )
+
+```
+
+]
+
+.pull-right[
+
+We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.  
+
+__Question:__ what is the __probability__ that it takes the next car more than 10 meters to stop? Less than 10? Between 10 and 15?
+
+]
+
+
+
+---
+count: false
+
+## &#x1F9EA; A simple experiment
+
+.pull-left[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = 0, yend = distance),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_text(
+    aes(x = id, y = distance, label = distance),
+    vjust = 0,
+    nudge_y = 1,
+    color = "gray50"
+  ) +
+  annotate(
+    geom = "segment", 
+    x = 11, y = 0,
+    xend = 11, yend = 5,
+    size = 0.5,
+    linetype = "dashed",
+    color = "darkred"
+  ) +
+  annotate(
+    geom = "text", 
+    x = 11, y = 6.5,
+    label = "?",
+    size = 10,
+    color = "darkred"
+  )
+
+```
+
+]
+
+.pull-right[
+
+We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.  
+
+__Question:__ what is the __probability__ that it takes the next car more than 10 meters to stop? Less than 10? Between 10 and 15?
+
+Our answer to the original question should be: whatever distance is the more probable outcome.
+
+]
+
+
+---
+count: false
+
+## &#x1F9EA; A simple experiment
+
+.pull-left[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = 0, yend = distance),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_text(
+    aes(x = id, y = distance, label = distance),
+    vjust = 0,
+    nudge_y = 1,
+    color = "gray50"
+  ) +
+  annotate(
+    geom = "segment", 
+    x = 11, y = 0,
+    xend = 11, yend = 5,
+    size = 0.5,
+    linetype = "dashed",
+    color = "darkred"
+  ) +
+  annotate(
+    geom = "text", 
+    x = 11, y = 6.5,
+    label = "?",
+    size = 10,
+    color = "darkred"
+  )
+
+```
+
+]
+
+.pull-right[
+
+We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.  
+
+__Question:__ what is the __probability__ that it takes the next car more than 10 meters to stop? Less than 10? Between 10 and 15?
+
+Our answer to the original question should be: whatever distance is the more probable outcome.
+
+But, how do we determine this?
+
+]
+
+
+
+---
+
+## Some terminology
+
+```{r}
+
+figure("random_variable-coins.png")
+
+```
+
+
+
+---
+count: false
+
+## Some terminology
+
+```{r}
+
+figure("random_variable-outcome.png")
+
+```
+
+
+
+---
+count: false
+
+## Some terminology
+
+```{r}
+
+figure("random_variable-space.png")
+
+```
+
+
+
+---
+count: false
+
+## Some terminology
+
+```{r}
+
+figure("random_variable-variable.png")
+
+```
+
+
+
+---
+
+## &#x1F3B0; Random Variables
+
+Two types of random variable:
+
+<!---
+https://github.com/allisonhorst/stats-illustrations/blob/master/other-stats-artwork/continuous_discrete.png?raw=true
+--->
+
+--
+
+1. __Discrete__ random variables often take only _integer_ (non-decimal) values.
+    - Examples: number of heads in 10 tosses of a fair coin, number of victims of the Thanos snap, number of projectile points in a stratigraphic level, number of archaeological sites in a watershed.
+--
+2. __Continuous__ random variables take _real_ (decimal) values.
+    - Examples: cost in property damage of a superhero fight, kilocalories per kilogram, kilocalories per hour, ratio of isotopes
+    - Note: for continuous random variables, the sample space is infinite!
+
+
+---
+
+## &#x1F3B2; Probability
+
+Question: Let $X$ be the number of heads in two tosses of a fair coin. What is the probability that $X=1$? 
+
+--
+
+.pull-left[
+
+```{r, out.width = "80%"}
+
+figure("probability-distribution-01.png")
+
+```
+
+]
+
+
+
+---
+
+## &#x1F4CA; Probability Distribution
+
+Question: Let $X$ be the number of heads in two tosses of a fair coin. What is the probability of each outcome?
+
+.pull-left[
+
+```{r, out.width = "80%"}
+
+figure("probability-distribution-02.png")
+
+```
+
+]
+
+
+
+
+
+---
+count: false
+
+## &#x1F4CA; Probability Distribution
+
+Question: Let $X$ be the number of heads in two tosses of a fair coin. What is the probability of each outcome?
+
+.pull-left[
+
+```{r, out.width = "80%"}
+
+figure("probability-distribution-02.png")
+
+```
+
+]
+
+.pull-right[
+
+Probability Axioms (Kolmogorov 1956):
+
+- __Non-negativity__: all probabilities are greater than or equal to zero.  
+$$P(X=2) \geq 0$$  
+- __Additivity__: the probability of two mutually exclusive events is the sum of their individual probabilities.  
+$$P(X=2) + P(X=1) = 3/4$$
+- __Unity__: all probabilities must sum to one.  
+$$P(X=2) + P(X=1) + P(X=0) = 1$$  
+
+]
+
+
+
+
+
+
+---
+count: false
+
+## &#x1F4CA; Probability Distribution
+
+Question: Let $X$ be the number of heads in two tosses of a fair coin. What is the probability of each outcome?
+
+.pull-left[
+
+```{r, out.width = "80%"}
+
+figure("probability-distribution-02.png")
+
+```
+
+]
+
+.pull-right[
+
+```{r}
+
+ggcoins <- ggplot(
+  tibble(x = 0:2, y = c(0.25, 0.5, 0.25)),
+  aes(x, y)
+) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = NULL, 
+    y = "Probability", 
+    title = "Distribution Over Outcomes"
+  )
+
+ggcoins
+
+```
+
+]
+
+
+
+---
+
+## Probability Distribution as a Model
+
+This probability distribution is actually a probability model. 
+
+.pull-left[
+
+<br>
+
+We can use it to form an expectation about the number of heads that will arise if we flip two coins.
+
+This should clue you into how we will predict the car's stopping distance! 
+
+But, first, let's unpack these probability distributions a little more.
+
+]
+
+.pull-right[
+
+```{r}
+
+ggcoins
+
+```
+
+
+]
+
+
+---
+
+## Probability Distribution as a Model
+
+Has two components:
+
+.pull-left.moon-gray[
+
+__Central-tendency__:
+
+- Called the "first moment."
+- Population mean (\\(\mu\\))
+    - Gives the expected value of an experiment, $E[X] = \mu$.
+- Sample mean (\\(\bar{x}\\))
+    - Estimate of $\mu$ based on a sample from $X$ of size $n$.
+    - Expected to approximate $\mu$ as $n$ increases.
+
+]
+
+.pull-right.moon-gray[
+
+__Dispersion__:
+
+- Called the "second moment." 
+- Population variance (\\(\sigma^2\\)).
+    - The expected value of the squared difference from the mean.
+- Sample variance (\\(s^2\\)).
+    - Estimate of $\sigma^2$ based on a sample from $X$ of size $n$.
+- Standard deviation (\\(\sigma\\) or \\(s\\)) is the square root of the variance.
+
+]
+
+
+
+---
+count: false
+
+## Probability Distribution as a Model
+
+Has two components:
+
+.pull-left[
+
+__Central-tendency__:
+
+- Called the "first moment."
+- Population mean (\\(\mu\\))
+    - Gives the expected value of an experiment, $E[X] = \mu$.
+- Sample mean (\\(\bar{x}\\))
+    - Estimate of $\mu$ based on a sample from $X$ of size $n$.
+    - Expected to approximate $\mu$ as $n$ increases.
+
+]
+
+.pull-right.moon-gray[
+
+__Dispersion__:
+
+- Called the "second moment." 
+- Population variance (\\(\sigma^2\\)).
+    - The expected value of the squared difference from the mean.
+- Sample variance (\\(s^2\\)).
+    - Estimate of $\sigma^2$ based on a sample from $X$ of size $n$.
+- Standard deviation (\\(\sigma\\) or \\(s\\)) is the square root of the variance.
+
+]
+
+
+
+---
+count: false
+
+## Probability Distribution as a Model
+
+Has two components:
+
+.pull-left.moon-gray[
+
+__Central-tendency__:
+
+- Called the "first moment."
+- Population mean (\\(\mu\\))
+    - Gives the expected value of an experiment, $E[X] = \mu$.
+- Sample mean (\\(\bar{x}\\))
+    - Estimate of $\mu$ based on a sample from $X$ of size $n$.
+    - Expected to approximate $\mu$ as $n$ increases.
+
+]
+
+.pull-right[
+
+__Dispersion__:
+
+- Called the "second moment." 
+- Population variance (\\(\sigma^2\\)).
+    - The expected value of the squared difference from the mean.
+- Sample variance (\\(s^2\\)).
+    - Estimate of $\sigma^2$ based on a sample from $X$ of size $n$.
+- Standard deviation (\\(\sigma\\) or \\(s\\)) is the square root of the variance.
+
+]
+
+
+
+---
+class: highlight-last-item
+
+## Probability Distribution as a Function
+
+These can be defined using precise mathematical functions:  
+
+--
+- A probability __mass__ function (PMF) for discrete random variables.
+    - Examples: Bernoulli, Binomial, Negative Binomial, Poisson
+    - Straightforward probability interpretation: \\(P(X=x) = f(x)\\).
+--
+- A probability __density__ function (PDF) for continuous random variables.
+    - Examples: Normal, Chi-squared, Student's t, and F
+    - Harder to interpret probability: 
+        - What is the probability that a car takes 10.317 m to stop? 
+        - What about 10.31742 m?
+    - Better to consider probability above or below a value, \\(P(X < x)\\), or in an interval \\(P(x_1 \leq X \leq x_2)\\).
+    - Requires that the function integrate to one (probability is the area under the curve)
+--
+- A uniform distribution can be discrete or continuous.
+
+
+
+---
+
+## Probability Mass Functions
+
+.pull-left[
+
+<br>
+
+__Bernoulli distribution__: distribution of a binary random variable (known as a "Bernoulli trial") with two possible values, 1 (success) and 0 (failure), with $p$ being the probability of success. E.g., a single coin flip.
+
+$$f(x,p) = p^{x}(1-p)^{1-x}$$
+
+Mean: $p$  
+Variance: $p(1-p)$
+
+]
+
+.pull-right[
+
+```{r}
+
+ggplot(
+  tibble(x = 0:1, y = c(0.5, 0.5)),
+  aes(x, y)
+) +
+  geom_bar(
+    stat = "identity",
+    width = 0.3) +
+  labs(
+    x = NULL, 
+    y = "Probability", 
+    title = "Bernoulli Distribution (p=0.5)"
+  ) +
+  scale_x_continuous(
+    breaks = c(0, 1)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+]
+
+
+---
+
+## Probability Mass Functions
+
+.pull-left[
+
+<br>
+
+__Binomial distribution__: distribution of a random variable whose value is equal to the number of successes in $n$ independent Bernoulli trials. E.g., number of heads in ten coin flips.
+
+$$f(x,p,n) = \binom{n}{x}p^{x}(1-p)^{1-x}$$
+
+Mean: $np$  
+Variance: $np(1-p)$
+
+]
+
+.pull-right[
+
+```{r}
+
+x <- 0:10
+
+ggplot(
+  tibble(x = x, y = dbinom(x, 10, 0.5)),
+  aes(x, y)
+) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = NULL, 
+    y = "Probability", 
+    title = "Binomial Distribution (p=0.5)"
+  ) +
+  scale_x_continuous(
+    breaks = x
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.5),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+]
+
+
+---
+count: false
+
+## Probability Mass Functions
+
+.pull-left[
+
+<br>
+
+__Binomial distribution__: distribution of a random variable whose value is equal to the number of successes in $n$ independent Bernoulli trials. E.g., number of heads in ten coin flips.
+
+$$f(x,p,n) = \binom{n}{x}p^{x}(1-p)^{1-x}$$
+
+Mean: $np$  
+Variance: $np(1-p)$
+
+]
+
+.pull-right[
+
+```{r}
+
+ggplot(
+  tibble(x = x, y = dbinom(x, 10, 0.3)),
+  aes(x, y)
+) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = NULL, 
+    y = "Probability", 
+    title = "Binomial Distribution (p=0.3)"
+  ) +
+  scale_x_continuous(
+    breaks = x
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.5),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+]
+
+
+---
+
+## Probability Mass Functions
+
+.pull-left[
+
+<br>
+
+__Poisson distribution__: distribution of a random variable whose value is equal to the number of events occurring in a fixed interval of time or space. E.g., number of orcs passing through the Black Gates in an hour.
+
+$$f(x,\lambda) = \frac{\lambda^{x}e^{-\lambda}}{x!}$$
+
+Mean: $np$  
+Variance: $np(1-p)$
+
+]
+
+.pull-right[
+
+```{r}
+
+ggplot(
+  tibble(x = x, y = dpois(x, 5)),
+  aes(x, y)
+) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = NULL, 
+    y = "Probability", 
+    title = "Poisson Distribution (\u03BB=5)"
+  ) +
+  scale_x_continuous(
+    breaks = x
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.5),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## Probability Mass Functions
+
+.pull-left[
+
+<br>
+
+__Poisson distribution__: distribution of a random variable whose value is equal to the number of events occurring in a fixed interval of time or space. E.g., number of orcs passing through the Black Gates in an hour.
+
+$$f(x,\lambda) = \frac{\lambda^{x}e^{-\lambda}}{x!}$$
+
+Mean: $np$  
+Variance: $np(1-p)$
+
+]
+
+.pull-right[
+
+```{r}
+
+ggplot(
+  tibble(x = x, y = dpois(x, 2)),
+  aes(x, y)
+) +
+  geom_bar(stat = "identity") +
+  labs(
+    x = NULL, 
+    y = "Probability", 
+    title = "Poisson Distribution (\u03BB=2)"
+  ) +
+  scale_x_continuous(
+    breaks = x
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.5),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+]
+
+
+
+---
+
+## Probability Density Functions
+
+.pull-left[
+
+<br>
+
+__Normal distribution__: distribution of a continuous random variable whose distribution is symmetric from positive to negative infinity. E.g., the height of actors who auditioned for the role of Aragorn.
+
+$$f(x,\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\;exp\left[-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2\right]$$
+
+Mean: $\mu$  
+Variance: $\sigma^2$
+
+]
+
+.pull-right[
+
+```{r}
+
+x <- seq(-5, 10, length = 300)
+
+ggplot(
+  tibble(x = x, y = dnorm(x)),
+  aes(x, y)
+) +
+  geom_polygon() +
+  labs(
+    x = NULL, 
+    y = "Density", 
+    title = "Normal Distribution (\u03BC=0, \u03C3=1)"
+  ) +
+  scale_x_continuous(
+    breaks = seq(-5, 10, by = 2.5)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.4),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+rm(x)
+
+```
+
+]
+
+
+
+---
+count: false
+
+## Probability Density Functions
+
+.pull-left[
+
+<br>
+
+__Normal distribution__: distribution of a continuous random variable whose distribution is symmetric from positive to negative infinity. E.g., the height of actors who auditioned for the role of Aragorn.
+
+$$f(x,\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\;exp\left[-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2\right]$$
+
+Mean: $\mu$  
+Variance: $\sigma^2$
+
+]
+
+.pull-right[
+
+```{r}
+
+x <- seq(-5, 10, length = 300)
+
+ggplot(
+  tibble(x = x, y = dnorm(x, mean = 3, sd = 2)),
+  aes(x, y)
+) +
+  geom_polygon() +
+  labs(
+    x = NULL, 
+    y = "Density", 
+    title = "Normal Distribution (\u03BC=3, \u03C3=2)"
+  ) +
+  scale_x_continuous(
+    breaks = seq(-5, 10, by = 2.5)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.4),
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+rm(x)
+
+```
+
+]
+
+
+
+
+---
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Let's use the Normal distribution to describe the cars data.
+
+- Stopping distance is a normally distributed random variable.
+    - Denoted $Y \sim N(\mu, \sigma)$.
+- Our experiment is a random sample of size $n$ from that distribution.
+    - With $y_1, y_2, ..., y_n$ observations (values).
+- The population _parameters_ (\\(\mu, \sigma\\)) cannot be measured directly, so we estimate them with sample _statistics_ (\\(\bar{y}, s\\)).
+
+]
+
+
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+  )
+
+```
+
+
+]
+
+
+
+---
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+  ) +
+  geom_hline(
+    aes(yintercept = barx),
+    color = "darkred"
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+
+This is our approximate expectation
+
+- $E[y] = \mu \approx \bar{y}$
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+  ) +
+  geom_hline(
+    aes(yintercept = barx),
+    color = "darkred"
+  ) +
+  annotate(
+    "segment",
+    x = 11,
+    y = 0,
+    xend = 11,
+    yend = barx,
+    arrow = arrow(
+      length = unit(0.18, "inches"), 
+      type = "closed"
+    )
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+
+But, there's error, $\epsilon$, in this estimate.
+
+- $\epsilon_i = y_i - \bar{y}$
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = distance, yend = barx),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_hline(
+    aes(yintercept = barx),
+    color = "darkred"
+  )
+
+```
+
+]
+
+
+---
+count: false
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+
+The average squared error is the variance:
+
+- $s^2 = \frac{1}{n-1}\sum \epsilon_{i}^{2}$
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = distance, yend = barx),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_hline(
+    aes(yintercept = barx),
+    color = "darkred"
+  )
+
+```
+
+]
+
+
+---
+count: false
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+- S.D. (\\(s\\)) = `r s` m
+
+This is our uncertainty, how big we think any given error will be.  
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+  ) +
+  geom_hline(
+    aes(yintercept = barx),
+    color = "darkred"
+  ) +
+  annotate(
+    "segment",
+    x = 11,
+    y = barx - s,
+    xend = 11,
+    yend = barx + s,
+    arrow = arrow(
+      length = unit(0.18, "inches"), 
+      ends = "both",
+      type = "closed"
+    )
+  ) +
+  geom_hline(
+    aes(yintercept = barx + s),
+    color = "darkred",
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    aes(yintercept = barx - s),
+    color = "darkred",
+    linetype = "dashed"
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+- S.D. (\\(s\\)) = `r s` m
+
+So, here is our probability model.
+
+- $Y \sim N(\bar{y}, s)$
+
+]
+
+.pull-right[
+
+```{r}
+
+distance_model <- tibble(
+  distance = seq(0, 25, length = 100),
+  norm = dnorm(distance, mean = barx, sd = s)
+) %>% 
+  bind_rows(
+    tibble(distance = 0, norm = 0),
+    .,
+    tibble(distance = 25, norm = 0)
+  )
+
+ggplot() +
+  geom_histogram(
+    data = cars,
+    aes(distance, y = ..density..),
+    bins = 7,
+    color = "white",
+    size = 2
+  ) + 
+  geom_polygon(
+    data = distance_model,
+    aes(distance, norm),
+    color = "#A20000",
+    fill = alpha("#A20000", 0.5)
+  ) +
+  coord_cartesian(xlim = c(0, 25)) +
+  labs(
+    x = "Distance (m)",
+    y = "Density",
+    title = "Stopping Distance Model"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.1),
+    labels = scales::label_number(accuracy = 0.001)
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## &#x1F697; Cars Model
+
+.pull-left[
+
+Sample statistics:
+
+- Mean (\\(\bar{y}\\)) = `r barx` m
+- S.D. (\\(s\\)) = `r s` m
+
+With it, we can say, for example, that the probability that a random draw from this distribution falls within one standard deviation (dashed lines) of the mean (solid line) is 68.3%.
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_distance_model <- ggplot() +
+  geom_polygon(
+    data = distance_model,
+    aes(distance, norm),
+    color = "#A20000",
+    fill = alpha("#A20000", 0.5)
+  ) +
+  annotate(
+    "segment",
+    x = barx,
+    y = 0,
+    xend = barx,
+    yend = dnorm(barx, mean = barx, sd = s),
+    size = 1.5
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.1),
+    labels = scales::label_number(accuracy = 0.001)
+  ) +
+  labs(
+    x = "Distance (m)",
+    y = "Density",
+    title = "Stopping Distance Model"
+  ) +
+  coord_cartesian(xlim = c(0, 25)) +
+  annotate(
+    "segment",
+    x = barx - s,
+    y = 0,
+    xend = barx - s,
+    yend = dnorm(barx - s, mean = barx, sd = s),
+    size = 1.5,
+    linetype = "dashed"
+  ) +
+  annotate(
+    "segment",
+    x = barx + s,
+    y = 0,
+    xend = barx + s,
+    yend = dnorm(barx + s, mean = barx, sd = s),
+    size = 1.5,
+    linetype = "dashed"
+  )
+
+gg_distance_model
+
+```
+
+]
+
+
+---
+
+## Brief Review
+
+.pull-left[
+
+What do these terms mean?
+
+- Mean is the __expected value__: 
+    - $E[distance_i]=mean(distance)$
+    - Known, deterministic, __predictable__
+- Variance (or S.D.) is the __error__ in our expectation:
+    - $\epsilon_i = distance_i - mean(distance)$
+    - Unknown, stochastic, __unpredictable__
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_distance_model
+
+```
+
+]
+
+
+
+
+---
+
+## A Simple Formula
+
+.pull-left[
+
+This gives us a simple formula
+
+$$y_i = E[y] + \epsilon_i$$
+
+where
+
+- $y_i$ = stopping distance for car $i$, __data__
+- $E[y]$ = expectation, __predictable__
+- $\epsilon_i$ = error, __unpredictable__
+
+]
+
+.pull-right[
+
+```{r}
+
+gg_cars + 
+  geom_segment(
+    aes(x = id, xend = id, y = distance, yend = barx),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance),
+    size = 2.5
+    ) +
+  geom_hline(
+    aes(yintercept = barx),
+    color = "darkred"
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## A Simple Formula
+
+.pull-left[
+
+This gives us a simple formula
+
+$$y_i = E[y] + \epsilon_i$$
+
+If we subtract the mean, we have a model of the errors centered on zero:
+
+$$\epsilon_i = 0 + (y_i - E[y])$$
+
+]
+
+.pull-right[
+
+```{r}
+
+ggplot(cars) +
+  labs(
+    x = "Car ID", 
+    y = "Distance (m)", 
+    title = "Error in estimated distance") +
+  scale_x_continuous(
+    breaks = 0:11,
+    limits = c(0, 11.2)
+  ) +
+  geom_vline(xintercept = 0) +
+  # ylim(-11, 11) +
+  theme(
+    panel.border = element_rect(color = "gray75", fill = "transparent")
+  ) +
+  geom_segment(
+    aes(x = id, xend = id, y = distance - barx, yend = 0),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance - barx),
+    size = 2.5
+  ) +
+  geom_hline(
+    aes(yintercept = 0),
+    color = "darkred"
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## A Simple Formula
+
+.pull-left[
+
+This gives us a simple formula
+
+$$y_i = E[y] + \epsilon_i$$
+
+If we subtract the mean, we have a model of the errors centered on zero:
+
+$$\epsilon_i = 0 + (y_i - E[y])$$
+
+Note that the
+- Mean of the errors: 0
+- Variance of the errors: same as before.
+
+This means we can construct a probability model of the errors.
+
+]
+
+.pull-right[
+
+```{r}
+
+ggplot(cars) +
+  labs(
+    x = "Car ID", 
+    y = "Distance (m)", 
+    title = "Error in estimated distance") +
+  scale_x_continuous(
+    breaks = 0:11,
+    limits = c(0, 11.2)
+  ) +
+  geom_vline(xintercept = 0) +
+  # ylim(-11, 11) +
+  theme(
+    panel.border = element_rect(color = "gray75", fill = "transparent")
+  ) +
+  geom_segment(
+    aes(x = id, xend = id, y = distance - barx, yend = 0),
+    linetype = "dashed",
+    color = "gray75",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(x = id, y = distance - barx),
+    size = 2.5
+  ) +
+  geom_hline(
+    aes(yintercept = 0),
+    color = "darkred"
+  )
+
+```
+
+]
+
+
+
+---
+count: false
+
+## A Simple Formula
+
+```{r, fig.width = 850/72, fig.asp = 0.4}
+
+distance_model <- tibble(
+  model = "distance",
+  distance = seq(-20, 30, length = 300),
+  norm = dnorm(distance, mean = barx, sd = s)
+)
+
+error_model <- tibble(
+  model = "error",
+  distance = seq(-20, 30, length = 300),
+  norm = dnorm(distance, mean = 0, sd = s)
+)
+
+models <- bind_rows(distance_model, error_model)
+
+ggplot(models, aes(distance, norm)) +
+  geom_polygon(
+    aes(color = model, fill = model)
+  ) +
+  scale_color_manual(
+    name = NULL,
+    values = c("gray50", "#F15A29")
+    ) +
+  scale_fill_manual(
+    name = NULL,
+    values = alpha(c("gray50", "#F15A29"), 0.5)
+    ) + 
+  annotate(
+    "segment",
+    x = barx,
+    y = 0,
+    xend = barx,
+    yend = dnorm(barx, mean = barx, sd = s),
+    color = "gray50"
+  ) +
+  geom_richtext(
+    aes(x = 30, y = 0.07, label = "Y &#126; N(y, s)"),
+    size = 8,
+    color = "gray50",
+    fill = NA, 
+    label.color = NA,
+    label.padding = grid::unit(rep(0, 4), "pt"), 
+    hjust = 1,
+    vjust = 1
+  ) +
+  geom_richtext(
+    aes(x = -20, y = 0.07, label = "&epsilon; &#126; N(0, s)"),
+    size = 8,
+    color = "#F15A29",
+    fill = NA, 
+    label.color = NA,
+    label.padding = grid::unit(rep(0, 4), "pt"),
+    hjust = 0,
+    vjust = 1
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    y = 0,
+    xend = 0,
+    yend = dnorm(0, mean = 0, sd = s)
+  ) +
+  labs(
+    x = "Distance (m)",
+    y = "Density",
+    title = "Probability Models"
+  ) +
+  coord_cartesian(xlim = c(-20, 30))
+  
+
+```
+
+
+
+
+---
+class: highlight-last-item
+count: false
+
+## A Simple Formula
+
+Now our simple formula is this:
+
+$$y_i = E[y] + \epsilon_i$$ 
+$$\epsilon \sim N(0, \sigma^2) $$
+
+--
+- Again, $E[y] = \mu \approx \bar{y}$. 
+
+--
+- For any future outcome:
+    - The expected value is deterministic
+    - The error is stochastic (random draws from a probability distribution)
+--
+- Must assume that the errors are _iid_!
+    - **I**ndependent = the probability of one error has no effect on the probability of another.
+    - **I**dentically **D**istributed = all the errors are drawn from the same probability distribution.
+--
+- The distribution is now a model of the errors!
+
+
+
+---
+class: highlight-last-item
+
+## A Note About Complexity
+
+Here, again, is our simple formula:
+
+$$y_i = E[y] + \epsilon_i$$ 
+$$\epsilon \sim N(0, \sigma^2) $$
+
+--
+- We can use something besides the mean to define our expectation, $E[y]$.
+    - For instance, we can define it as a linear function of another variable. 
+    - $E[y] = \beta x$
+
+--
+- The goal should be to minimize expected errors in our model (i.e., uncertainty).
+
+--
+- However, we have to weigh the reduced uncertainty against the increase in model complexity. 
+    - We want to know: is the increased complexity worth it?
+    - This question is central to model building and evaluation (to statistical inference).
+
+
+
+---
+
+## &#x1F4C3; This Week's Assignments
+
+- L02 - Summary statistics and statistical graphics
+- H02 - Summarizing and visualizing archaeological data
+
+
+
+---
+
+## &#x1F52D; Looking Ahead
+
+```{r}
+
+schedule <- here("_misc", "course_outline.xlsx") %>% 
+  readxl::read_excel(1) %>% 
+  mutate(
+    date = lubridate::ymd(date),
+    description = glue::glue(
+    "<b>{topic}</b> <span style = 'font-size: 80%; color: #9C9C9C;'>({date})</span><br>
+    <div style = 'font-size: 80%; font-style: italic; color: #9C9C9C;'>{details}</div>"
+  )) %>% 
+  select(description)
+
+```
+
+.pull-left[
+
+```{r}
+
+schedule %>% 
+  slice(2:5) %>% 
+  kbl(escape = FALSE, col.names = NULL) %>% 
+  kable_paper(c("striped", "hover"))
+
+```
+
+]

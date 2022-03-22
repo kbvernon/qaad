@@ -1,0 +1,584 @@
+---
+title: "Lab 05"
+subtitle: "Diagnostic Tests and Diagnostic Plots"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      smooth_scroll: false
+    self_contained: false
+    css: custom_style.css
+    includes:
+      in_header: toggle.html
+    theme: 
+      bootswatch: sandstone
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
+```
+
+
+## Outline {#Outline}
+
+__TL;DR__ wrangling data tables, visualizing distributions with boxplots, linear models, diagnostic tests, and diagnostic plots. 
+
+__Caution!__ Please note that all labs assume that you are working in an RStudio Project directory!
+
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. working with data tables using `dplyr`
+    - extracting variables with `pull()`
+    - choosing variables with `select()`
+    - subsetting observations with `filter()`
+    - sorting observations with `arrange()` 
+    - making pretty tables with `tibble()`
+2. visualizing distributions with boxplots
+3. evaluating a linear model with the ANOVA
+    - interpreting model summaries in R
+
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [dplyr](https://dplyr.tidyverse.org/)
+- [ggplot2](https://ggplot2.tidyverse.org/index.html)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [tibble](https://tibble.tidyverse.org/)
+
+To install these packages, __run the following code in your console__:
+
+```{r, eval = FALSE}
+
+install.packages(
+  c("archdata", "dplyr", "ggplot2", "palmerpenguins", "tibble")
+)
+
+```
+
+__Note:__ You should not `install.packages()` in an Rmd document. Use that function in your R console instead. Then use `library()` as part of the preamble in your Rmd document to check packages out of the library and use them in that R session. This should always go at the start of your document!
+
+```{r}
+
+library(archdata)
+library(dplyr)
+library(ggplot2)
+library(palmerpenguins)
+library(tibble)
+
+```
+
+
+### Data
+
+- `DartPoints`
+    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `OxfordPots`
+    - Includes percentages of late Romano-British Oxford Pottery on 30 sites, along with their distance from Oxford.
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `penguins` 
+    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+    - package: `palmerpenguins`
+    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+
+
+
+## Tidy Tables Review {#Tidy_Tables_Review}
+
+```{r, echo = FALSE, fig.cap = "Elements of a Data Table"}
+
+figure("r-tables.png")
+
+```
+
+In the following sections, we are going to learn how to work with the `dplyr` package, so called because it provides tools like "pliers" for working with tabular data. This is easily one of the most useful packages in the entire R ecosystem. The ability to quickly and cleanly manipulate data to prepare it for analysis is just unmatched by anything else out there. The syntax that `dplyr` uses for its functions is also infinitely easier to read and understand. Before we jump into that, however, let's remind ourselves of the three conventions for tidy data:
+
+1. Each variable must have its own column.
+2. Each observation must have its own row.
+2. Each value must have its own cell.
+
+Here we are going to focus on the functionality `dplyr` offers to `select()` variables and `filter()` observations. As a warm up, though, we'll first have a look at how to extract a single variable as a vector from a table with `pull()`. We'll then talk about a few quirks of the package, like its use of `tibbles` rather than base `data.frames`.
+
+## Select Variables {#Select_Variables}
+
+### Extract variables
+
+The base R way of extracting a single variable is to use `<table>[["<variable>"]]` or `<table>$<variable>`.
+
+```{r}
+
+bill_length <- penguins$bill_length_mm
+bill_depth <- penguins[["bill_depth_mm"]]
+
+```
+
+The `dplyr` way to do this, which is somewhat easier to understand is to use `pull()`, as in _pull the variable from the table_.
+
+```{r}
+
+bill_length <- pull(penguins, bill_length_mm)
+bill_depth <- pull(penguins, bill_depth_mm)
+
+```
+
+
+### Select variables
+
+Note that `pull()` returns a single variable (called a "vector" in R) along with all its values. If you want to select one or more variables but return the result as a  table, use `select()`. For instance, here are the variables in the `penguins` dataset.
+
+```{r}
+
+names(penguins)
+
+```
+
+Now suppose (for reasons) that I want a smaller table that only has the `species` and `bill_length_mm` variables. To get that from the larger table, I simply do this
+
+```{r}
+
+penguins_small <- select(penguins, species, bill_length_mm)
+
+penguins_small
+
+```
+
+### Exercises
+
+1. Remind yourself of what variables the penguins table has with `names()`.
+2. Now, extract a variable of your choice with `pull()`.
+3. Subset the data by choosing only four variables of your choice with `select()`.
+
+
+## Filter Observations {#Filter_Observations}
+
+Subsetting data by filtering observations is a little bit more involved than simply selecting variables, but intuitively, you are simply asking for those observations that satisfy a certain condition. Getting `filter()` to return those observations requires that you pass it an expression containing a comparison operator. The expression is then evaluated by R for its truth or falsity, with observations that evaluate to `TRUE` being returned, observations that evaluate to `FALSE` being ignored. Let's walk through an example, then try to break down what is happening in a little more detail. Suppose we want only those observations of penguins residing on Biscoe Island. Here is how we would go about collecting those observations from our penguins data.frame.
+
+```{r}
+
+biscoe_penguins <- filter(penguins, island == "Biscoe")
+
+head(biscoe_penguins)
+
+```
+
+Here we supplied this key information to `filter()`: 
+
+```
+island == "Biscoe"
+``` 
+
+What does this expression mean exactly? In effect, it is directing `filter()` to scan through our data, specifically the `island` column, and select only those rows where the value is _Biscoe_. The so-called _comparison operator_ here is the double equal sign, `==`. This is importantly different than the single equal sign, `=`, which is used inside a function as part of a `key=value` or `argument=value` pair. R provides several helpful comparison operators:  
+
+* `==` for _equals_ in the sense of a perfect match,  
+* `!=` for _not equals_,  
+* `>` for _greater than_,  
+* `>=` for _greater than or equal to_,  
+* `<` for _less than_, and  
+* `<=` for _less than or equal to_.  
+
+You can use the first two, `==` and `!=`, for comparisons with either character or numeric variables, but the rest apply only to the latter. Let's run through a few more examples:  
+
+_Filter penguins with body mass greater than 3500 grams_.  
+
+```{r}
+
+larger_penguins <- filter(penguins, body_mass_g > 3500)
+
+head(larger_penguins)
+
+```
+
+_Filter penguins with beaks longer than 39 millimeters_.
+
+```{r}
+
+longer_beaks <- filter(penguins, bill_length_mm > 39)
+
+head(longer_beaks)
+
+```
+
+### Multiple conditions
+
+Often enough, we will want to combine a number of these simple conditions into one complex expression. In R, this is done with Boolean operators:  
+
+* `&` for _and_,  
+*  `|` for _or_, and  
+* `!` for _not_.  
+
+To demonstrate the underlying logic of these Boolean operators, consider these shapes and colors. You can think of each of A, B, and C as its own observation or row in a data.frame that includes two variables `color` and `shape`.  
+
+```{r, echo = FALSE, out.width = "40%"}
+
+figure("booleans_example.png")
+
+```
+
+```{r, echo = FALSE, results = "asis"}
+
+Boolean <- c("x", "y", "x & y", "x | y", "x & !y", "!x & y", "!(x & y)", "!(x | y)")
+
+Filter <- c('color == "yellow"', 'shape == "circle"', 
+            'color == "yellow" & shape == "circle"',
+            'color == "yellow" | shape == "circle"',
+            'color == "yellow" & shape != "circle"',
+            'color != "yellow" & shape == "circle"',
+            '!(color == "yellow" & shape == "circle")',
+            '!(color == "yellow" | shape == "circle")')
+Filter <- paste0('`', Filter, '`')
+
+Result <- c("A, B", "B, C", "B", "A, B, C", "A", "C", "A, C", "NULL")
+
+df <- data.frame(Boolean, Filter, Result) %>% 
+  knitr::kable(format = "html") %>% 
+  kableExtra::kable_styling(full_width = FALSE)
+
+gsub("&amp;", "&", df)
+
+```
+
+<br>
+
+And here is an example with our penguins data.frame, where we ask R to return those observations in which (a) penguins reside on Biscoe Island and (b) their bills are longer than 39 millimeters.  
+
+```{r}
+
+biscoe_long_beaks <- filter(penguins, island == "Biscoe" & bill_length_mm > 39)
+
+head(biscoe_long_beaks)
+
+```
+
+Note that `filter()` let's you separate conditions with a comma, which it interprets as conjunction, represented by the `&`.
+
+```{r}
+
+filter(
+  penguins, 
+  island == "Biscoe", 
+  species == "Adelie", 
+  body_mass_g < 3500
+)
+
+```
+
+
+
+### Exercises
+
+1. Try all of the following with `filter()`:
+    - Filter penguins that reside on Torgersen island.
+    - Filter penguins that have a flipper length greater than 185 mm.
+    - Fitler penguins that reside on Torgersen island and have a body mass less than 3500 g. 
+2. Try two more filters with multiple conditions of your choice.
+
+
+## Miscellaneous Dplyr {#Miscellaneous_Dplyr}
+
+### Sort observations
+
+Sometimes it can be useful to sort a table, so you can more easily navigate the information it contains. To do this, `dplyr` provides the `arrange()` function. This sorts observations based on a supplied variable or variables. By default, it sorts observations in ascending order (from A to Z for character and 0 to Infinity for numeric). If you provide multiple variables, it will sort the first variable first, then sort the second variable within that variable, and so on. In effect, it breaks ties in the sorting process.
+
+```{r}
+
+penguins
+
+arrange(penguins, species, island)
+
+```
+
+You can use the `desc()` function to sort descending.
+
+```{r}
+
+arrange(penguins, desc(species))
+
+```
+
+### Pretty tibbles
+
+You may not have noticed before, but the penguins data comes in the form of a `tibble` rather than a default `data.frame`. In the grand scheme of things, the differences between tibbles and data.frames are quite small. However, I want to draw your attention to them briefly to avoid any confusion, especially because `dplyr` will on occasion implicitly convert data.frames to tibbles. The main difference is that tibbles have nicer (some might say prettier) print methods.
+
+Here's the penguins data printed as a `tibble`.
+
+```{r}
+
+penguins
+
+```
+
+And here's the penguins data printed as a `data.frame` (brace yourself).
+
+```{r}
+
+as.data.frame(penguins)
+
+```
+
+There are a few big differences here:
+
+1. By default `tibble()` will only print the first ten rows of data. This saves you from having to use the `head()` function. Notice, too, that it tells you how many rows were not printed at the bottom. With `data.frame()`, the default print will print the maximum number of rows defined in your default options.
+2. `tibble()` will only print columns that fit on your screen. It will then tell you how many columns were not printed.
+2. `tibble()` provides information about the dimensions of your table: the number of rows and columns.
+3. `tibble()` provides information about the type of data each variable is: factor (`fct`), character, numeric (`dbl` for "double" or `int` for "integer").
+
+Whether you choose to use `tibbles` or `data.frames` is largely a stylistic choice that is entirely up to you and your own preferences. You will, however, encounter them quite often in R, so it's worth being familiar with them. You can always convert between them if you want with `as_tibble()` and `as.data.frame()`.
+
+```{r, eval = FALSE}
+
+# turn a tibble into a data.frame
+penguins_df <- as.data.frame(penguins)
+
+# turn a data.frame into a tibble
+penguins_tbl <- as_tibble(penguins_df)
+
+```
+
+You can also create a tibble in the same way that you create a data.frame.
+
+```{r, eval = FALSE}
+
+projectiles <- tibble(
+  type = c("Elko", "Rosegate", "DSN", "Elko", "Clovis"),
+  length = c(2.03, 1.4, 1.9, 2.1, 3.3),
+  width = c(0.8, 0.4, 0.3, 0.7, 0.95),
+  height = c(3.23, 2.4, 1.29, 2.7, 4.15)
+)
+
+```
+
+
+
+### Exercises
+
+1. Sort the penguins data by island with `arrange()`. Then reverse the sorting of islands with `desc()`.
+2. Do the same for year. Use `arrange()` then add `desc()`.
+
+
+## Boxplots {#Boxplots}
+
+In this section we'll learn how to make boxplots, which provide a simple (some might say crude) but nevertheless effective way of representing the distribution of a variable. For one or two variables, it's often better to use a density plot, but if you're comparing the distributions of lots of variables or lots of samples of the same variable across multiple categories, a density plot can get crowded quick. That's when it's useful to turn to boxplots, so we'll focus on that here.
+
+```{r, echo = FALSE, fig.width = 6, fig.asp = 0.6, fig.cap = "Schematic for interpreting boxplots. Adapted from Claus Wilke's figure [here](https://wilkelab.org/SDS375/slides/visualizing-distributions-2.html#10)."}
+
+library(cowplot)
+
+set.seed(3423)
+
+y <- c(rnorm(100), 3.4)
+
+s <- boxplot.stats(y)
+
+df <- tibble(
+  y = c(s$stats, max(y)),
+  x = 1.75,
+  label = c("minimum", "first quartile", "median", "third quartile", "maximum within upper fence", "outlier")
+)
+
+p_points <- ggplot(tibble(y), aes(x = 0, y = y)) + 
+  geom_point(position = position_jitter(width = .4, height = 0, seed = 320)) +
+  annotate("text", label = "data", x = 0, y = 4, hjust = 0.5, vjust = 1, size = 20/.pt) +
+  scale_x_continuous(limits = c(-1.8, .4)) +
+  scale_y_continuous(limits = c(-2.55, 4)) +
+  coord_cartesian(clip = "off") +
+  theme_nothing()
+
+p_boxplot <- ggplot(tibble(y), aes(x = 1, y = y)) + 
+  geom_boxplot(fill = "gray90", outlier.size = 2) +
+  annotate("text", label = "boxplot", x = 1, y = 4, hjust = 0.5, vjust = 1, size = 20/.pt) +
+  geom_text(
+    data = df, aes(x, y, label = label), hjust = 0,
+    size = 16/.pt
+  ) +
+  scale_x_continuous(limits = c(0, 3.5)) +
+  scale_y_continuous(limits = c(-2.55, 4)) +
+  coord_cartesian(clip = "off") +
+  theme_nothing()
+
+plot_grid(p_points, p_boxplot, rel_widths = c(.65, 1), nrow = 1)
+
+```
+
+As you can see, the boxplot shows the distribution of a variable using a five-number summary, which includes all of the following:
+
+- Minimum: the lowest or smallest data point (excluding outliers). 
+- Maximum: the highest or largest data point (excluding outliers).
+- Median: the middle value that separates the data in half (also called the second quartile.
+- First quartile: the middle value of the lower half of the data, meaning 75% of the data fall above it and %25 below it (also called the lower quartile)
+- Third quartile: the middle value of the upper half of the data, meaning 25% of the data fall above it and 75% below it (also called the upper quartile)
+
+By extension, this includes the
+
+- Interquartile Range: the distance between the first and third quartile, which includes 50% of the data.
+
+Notice that the minimum and maximum values are connected the first and third quartiles by lines commonly referred to as "whiskers."
+
+### Making a boxplot with ggplot
+
+To make a boxplot with ggplot, we need our table of data (as always), which we pass to the `ggplot()` function. We then specify the boxplot geometry with `geom_boxplot()`.
+
+```{r, echo = FALSE}
+
+ggplot2::theme_set(ggplot2::theme_gray())
+
+```
+
+```{r}
+
+ggplot(penguins, aes(y = bill_length_mm)) +
+  geom_boxplot(fill = "skyblue")
+
+```
+
+Notice that we specified that the distribution of bill length should range over the y-axis. This makes the boxplots display vertically in the graph. We can change them to horizontal by having the variables distribution range over the x-axis.
+
+```{r}
+
+ggplot(penguins, aes(x = bill_length_mm)) +
+  geom_boxplot(fill = "skyblue")
+
+```
+
+A horizontal box plot is especially useful for comparing multiple samples across categories of another variable. To add those, we simply map the categorical variable (called a factor in R) to the y-axis like so.
+
+```{r}
+
+ggplot(penguins, aes(x = bill_length_mm, y = species)) +
+  geom_boxplot(fill = "skyblue")
+
+```
+
+As always, we can update the axis labels and add a title. In this case, we'll drop the y-axis label because it should be obvious from the values there that these are different species. While we're at it, let's also change the theme settings to minimal and remove the horizontal gridlines.
+
+```{r}
+
+ggplot(penguins, aes(x = bill_length_mm, y = species)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(
+    x = "Bill Length (mm)",
+    y = NULL,
+    title = "Palmer Penguins"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+  )
+
+```
+
+### Exercises
+
+1. Make a boxplot showing the distribution of penguin body mass by island. Do all of the following:
+    - Position the boxes horizontally.
+    - Change the fill color to a color of your choice.
+    - Update the labels and add a title.
+    - Change the theme to one of your choice.
+    - Remove the horizontal grid lines.
+
+
+## ANOVA {#ANOVA}
+
+A really powerful way to evaluate a linear model is to submit it to an ANOVA test. If you recall, an ANOVA for comparing the distribution of a variable across groups compares the ratio of the between-group variance to the within-group variance. This is known as an F-statistic. It gives us a sense of how much variance is coming from the groups themselves versus how much is coming from the individual observations within each group. If more of the variance is coming from the groups and not the individual observations, that indicates that at least one of the groups is  not like the others. Crucially, the F-statistic can be compared to an F-distribution to determine whether the statistic is likely under the null hypothesis that the groups are not different. 
+
+An ANOVA applied to a statistical model works in much the same way. The only catch is that we are not comparing the variance between groups but between models. Rather, we are comparing the total variance captured by the model to the remaining or residual variance. The total variance in this case is defined by the mean or intercept-only model (sometimes referred to as the null model). So, an ANOVA applied to a bivariate or multiple linear regression model can be thought of as answering the following  
+
+__Question:__ does the model capture a sufficient amount of the variance to make its increased complexity worthwhile?  
+
+Again, taking the ratio of the variance explained by the model to the residual variance provides an estimate of the F-statistic, which can be compared to the F-distribution to determine how likely it is under the null hypothesis that the more complex model does not explain more variance than the null model.
+
+To conduct this test in R, it's quite simple. Simply supply a fitted linear model to the `aov()` function. First, however, make sure to visualize your data! 
+
+```{r}
+
+ggplot(penguins, aes(body_mass_g, bill_length_mm)) +
+  geom_point(size = 2) +
+  theme_minimal() +
+  labs(
+    x = "Body Mass (g)",
+    y = "Bill Length (mm)"
+  )
+
+```
+
+Does it look like there is a relationship? Let's test this to find out! Then we'll conduct an ANOVA. Note that summarizing the ANOVA with `summary()` prints an ANOVA table.
+
+```{r}
+
+penguins_model <- lm(bill_length_mm ~ body_mass_g, data = penguins)
+
+summary(aov(penguins_model))
+
+```
+
+As always, the Mean Squared Error (`Mean Sq`) is calculated by dividing the Sum of Squares (`Sum Sq`) by the degrees of freedom (`Df`), the latter being a function of the number of independent variables or predictors in the model and the number of observations. The F-statistic is then calculated by dividing the Model Sum of Squares (in this case `body_mass_g`) by the Residual Sum of Squares (`Residuals`), in this case $F = 3600/19 = 186.4$. By comparing this statistic to an F-distribution with those degrees of freedom, we get a very small p-value, much less than the standard critical value of 0.05. We can thus reject the null hypothesis and conclude that the variance explained by this model is indeed worth the price of increased complexity.  
+
+### Model Summary
+
+Often it is unnecessary to explicitly conduct an ANOVA test in R as the `summary()` function applied to a model will typically perform that test and print the results by default.
+
+```{r}
+
+summary(penguins_model)
+
+```
+
+It's the last line of this particular summary, where it reports the F-statistic, the degrees of freedom, and the p-value associated with the comparison to the F-distribution.
+
+Note that the `summary()` function also shows the R-squared value, which is the ratio of the Model Sum of Squares to the Total Sum of Squares (defined by the null model). This provides a measure of the proportion of the total variance explained by the model. You will also see here the so-called _Adjusted R-Squared_. This is simply the _R-Squared_ statistic weighted by the complexity of the model, which is important because _R-Squared_ tends to increase with increases in model complexity, meaning each time you add an independent variable to a model it's going to capture some amount of the total variance in the dependent variable. 
+
+
+### Exercises
+
+1. Build a model of penguin flipper length by body mass.
+    - Make sure to visualize your data first! Make a scatter plot!
+2. Conduct an ANOVA on this model with `aov()`.
+    - Be sure to state your null and alternative hypotheses.
+    - Specify your critical value, too.
+3. Summarize the ANOVA with `summary()`.
+    - Does the model provide a significant improvement over the null model?
+4. Run `summary()` on your model.
+    - What is the R-Squared value? 
+    - Does body mass explain much of the variance in flipper length?
+    - How would you interpret this result? What is the relationship between flipper length and body mass?
+
+
+    
+## Homework {#Homework}
+
+1. Load the following datasets from the `archdata` package using `data()`.
+    - `DartPoints`
+    - `OxfordPots`
+2. Let's practice working with `dplyr`.
+    - From each dataset, use `pull()` to remove one variable and assign it to an object with an informative name.
+    - Use `filter()` on the `DartPoints` table to return a table with only `Ensor` points. Hint: use `Name == ...`.
+    - Use `filter()` on the `DartPoints` table to return a table with only `Ensor` points that are less than 43 millimeters in `Length`. Hint: separate the conditions with commas.
+    - Use `select()` on the `DartPoints` table to return a table with only the `Name`, `Length`, and `Width` variables.
+    - Use `arrange()` on the `OxfordPots` table to sort the table by distance from Oxford. Hint: use the `OxfordDst` variable.
+2. Using the `DartPoints` dataset, make a boxplot of dart `Length` to visualize its distribution. Make sure to do all of the following:
+    - Map the `Length` to the `x` aesthetic and the dart `Name` (or type) to the `y` aesthetic.
+    - Update the axis labels and plot title using `labs()`.
+    - Choose a suitable theme, like `theme_minimal()`.
+    - Remove horizontal grid lines.
+2. Using the `DartPoints` dataset, build a linear model showing the relationship (if any) between the length and width of dart points. Be sure to do all of the following:
+    - Conduct an ANOVA of this with `aov()`.
+    - Use `summary()` to print the ANOVA table.
+    - Use `summary()` to report the model. 
+    - What is the F-statistic? The p-value?
+    - What about the R-Squared value? How much of the variance does the model explain?
+    - What does this mean about the model relative to the null or intercept-only model?
+2. Using the `OxfordPots` dataset, build a linear model showing the relationship (if any) between the percentage of Oxford Pots found on an archaeological site and the distance of that site from the city of Oxford. Be sure to do all of the following:
+    - Conduct an ANOVA of this with `aov()`.
+    - Use `summary()` to print the ANOVA table.
+    - Use `summary()` to report the model. 
+    - What is the F-statistic? The p-value?
+    - What about the R-Squared value? How much of the variance does the model explain?
+    - What does this mean about the model relative to the null or intercept-only model?
+    

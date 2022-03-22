@@ -19,8 +19,6 @@ write_csv(
   file = here("datasets", "advertising.csv")
 )
 
-
-
 # Kid's IQ ----------------------------------------------------------------
 
 # https://cran.r-project.org/web/packages/rstanarm/rstanarm.pdf
@@ -38,3 +36,16 @@ write_csv(
   kidiq,
   file = here("datasets", "kidiq.csv")
 )
+
+# Snodgrass ---------------------------------------------------------------
+
+library(archdata)
+
+data("Snodgrass")  
+
+Snodgrass %>% 
+  as_tibble() %>% 
+  rename_with(tolower) %>% 
+  mutate(inside = ifelse(inside == "Inside", 1L, 0L)) %>% 
+  write_csv(here("datasets", "snodgrass.csv"))
+  

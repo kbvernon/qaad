@@ -1,0 +1,768 @@
+---
+title: "Lab 02"
+subtitle: "Statistical Graphics"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      smooth_scroll: false
+    self_contained: false
+    css: custom_style.css
+    includes:
+      in_header: toggle.html
+    theme: 
+      bootswatch: sandstone
+---
+
+```{r, include = FALSE, code=xfun::read_utf8(here::here("exercises", "before_chunk.R"))}
+```
+
+## Outline {#Outline}
+
+__tl;dr__ summary statistics and statistical graphics. 
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. loading (or "attaching") R packages with `library()`
+2. generating summary statistics for your data
+2. visualizing data with the grammar of graphics (gg)
+    - aesthetic mappings
+    - geometric objects
+    - facets
+    - scales
+    - themes
+
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [skimr](https://docs.ropensci.org/skimr/)
+- [ggplot2](https://ggplot2.tidyverse.org/index.html)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+To install these packages, run the following code in your console:
+
+```{r, eval = FALSE}
+
+install.packages(
+  c("archdata", "palmerpenguins", "skimr", "ggplot2", "viridis")
+)
+
+```
+
+```{r, echo = FALSE}
+
+library(khroma)
+library(palmerpenguins)
+library(skimr)
+
+```
+
+
+### Data
+
+- `penguins` 
+    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+    - package: `palmerpenguins`
+    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+- `DartPoints`
+    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+
+
+## The Library {#The_Library}
+
+R is an extensible programming language, meaning you can write R code to extend the functionality of base R. To share that code, R users will often bundle it into a __package__, a collection of functions, data, and documentation. You can think of packages like apps, but specifically for R. To make the functionality a package offers available in R, you have to load them in with the `library()` function (the technical term is _attach_). 
+
+You will occasionally encounter `library()` calls littered throughout an R script or R Markdown document. DO NOT DO THIS. You should always, always, always load all the packages you use at the beginning of a document. That way, people who read your code know exactly what packages you are using all at once and right away. To make this really, really explicit, I prefer to set this off with its own section that I call the "R Preamble." In an R script, it looks like this:
+
+```{r, eval = FALSE}
+
+# R PREAMBLE --------------------------------------------------------------
+
+library(archdata)
+library(ggplot2)
+library(palmerpenguins)
+library(skimr)
+library(viridis)
+
+```
+
+And in an R Markdown document, it looks like this:
+
+````md
+---
+title: "Week 02"
+author: "Kenneth Blake Vernon"
+date: "1/18/2022"
+output: html_document
+---
+
+```{r setup, include = FALSE}`r ''`
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+```
+
+## R Preamble
+
+```{r packages}`r ''`
+
+library(archdata)
+library(ggplot2)
+library(palmerpenguins)
+library(skimr)
+library(viridis)
+
+```
+
+***
+
+## Lab Exercises
+
+
+***
+
+## Homework Exercises
+
+1. 
+
+````
+
+Note that in an R script, the hashtag `#` tells R that the text that follows on the same line is not R code, but rather a comment. In an R Markdown document, it is markdown syntax that signals a section header. Another important difference is that you have to put the `library()` calls in a code chunk in R Markdown to signal that it is R code. In an R script, however, everything is assumed to be R code.  
+
+### Exercises
+
+1. Open a new R Markdown document for this lab and copy the template above into that document, replacing the author with your name.
+2. Run each `library()` call, either by highlighting them and hitting Ctrl + Enter (Cmd + Enter) or by clicking the green arrow in the top right of the code chunk.
+
+
+
+## Summary Statistics {#Summary_Statistics}
+
+```{r, echo = FALSE, out.width = "70%", fig.cap = "Artwork by @allison_horst"}
+
+knitr::include_graphics("https://allisonhorst.github.io/palmerpenguins/reference/figures/culmen_depth.png")
+
+```
+
+Let's use R to describe some properties of a sample of penguins from Palmer Station in Antarctica. These data became available in R when you loaded the `palmerpenguins` package. They aren't currently visible in your environment (for complicated reasons), but trust me, they're there. The name of the dataset is `penguins`, so you can call it that way.
+
+```{r}
+
+head(penguins, n = 5)
+
+```
+
+
+### Central tendency
+
+The central tendency is, as its name suggests, a value around which other values tend to cluster. There are two primary measures of central tendency: the mean and the median. As you may recall, the mean or average is simply the sum of a finite set of values, $x_i$, divided by the number of values, $n$.
+
+$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$
+This is the sample mean, which is an estimate of the central tendency of a population, $\mu$. In R, you can calculate the mean by hand if you like, but it's probably easier to use the built-in R function, `mean()`. Let's use this to calculate the mean bill length of penguins.
+
+```{r}
+
+mean(penguins$bill_length_mm)
+
+```
+
+Whoops! Need to set `na.rm = TRUE` to ignore missing values.
+
+```{r}
+
+mean(penguins$bill_length_mm, na.rm = TRUE)
+
+```
+
+An important limitation of the mean is its sensitivity to outliers, like rich people. If you calculate the mean household income in the United States, for example, the incomes of obscenely wealthy individuals like Jeff Bezos will pull that measure up, thus painting a much rosier picture of the US than the reality the rest of us live in. To address this, you should use the median as it is the "middle" number or value that evenly divides the sample in half. 
+
+```{r}
+
+median(penguins$bill_length_mm, na.rm = TRUE)
+
+```
+
+
+### Dispersion
+
+Dispersion describes the spread of data around its central tendency. Are the values tightly clustered around the central tendency or highly dispersed? Is there, in other words, a lot of variability? This is what dispersion seeks to characterize. As with the central tendency, it has two primary measures: variance and standard deviation. The variance of a sample is the mean squared error.
+
+$$s^{2} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^{2}$$
+This is an estimate of the population variance, $\sigma^2$. To calculate the variance of a sample with R, use `var()`. 
+
+```{r}
+
+var(penguins$body_mass_g, na.rm = TRUE)
+
+```
+
+Whoa! That's a really big number. Do penguins get that big? The answer, of course, is No. The number is large because variance is _squared_ error, so this is in units of squared-grams, $g^2$, not grams, $g$. That makes it a really weird measure to think about. That's why it is common to take the square root of the variance, to get the measure back into units of the data. This value is known as the standard deviation, $s$. You can calculate it with the `sd()` function.
+
+```{r}
+
+sd(penguins$body_mass_g, na.rm = TRUE)
+
+```
+
+That's about 1.8 pounds (if you prefer Imperial units).
+
+
+### Table summaries
+
+Base R has a really nice `summary()` function that you can apply to a table like so:
+
+```{r}
+
+summary(penguins)
+
+```
+
+As you can see, this prints out summary statistics for the variables in your data. However, the printout is not easy to read and it provides a somewhat limited set of summary statistics. So, as an alternative, I would recommend the `skim()` function from the `skimr` package. 
+
+```{r, render = normal_print}
+
+skim(penguins)
+
+```
+
+As you can see, there are three major sections of this printout: (i) Data Summary, (ii) Factor variables, and (iii) Numeric variables. The Data Summary gives you an overview of your table, with counts of the number of rows and columns, as well as counts of the different types of variables (factor, numeric, etc). The section on factor variables gives you counts for each level of the factor (for example, counts of the different species of penguins), as well as information about missing data. Finally, the section on numeric variables gives you information on missing data, as well as measures of dispersion and central tendency, including the mean, median (`p50`), and standard deviation (`sd`), the range or min and max values (`p0` and `p100`), and the inner quartiles (`p25` and `p75`).  
+
+
+### Exercises
+
+1. Have a look at the `penguins` data again. Use `head()` to preview the first 15 rows.
+1. With the `penguins` data, calculate all of the following:
+    - median body mass
+    - mean bill depth
+    - variance in bill depth
+    - standard deviation in bill length
+
+
+## The Grammar of Graphics {#The_Grammar_of_Graphics}
+
+It's easy to imagine how you would go about with pen and paper drawing a bar chart of, say, the number of penguins in each species in the `penguins` dataset. But, what if you had to dictate the steps to make that graph to another person, one you can't see or physically interact with? All you can do is use words to communicate the graphic you want. How would you do it? Regardless of how you answer that question, you should see right away that one thing is essential. You and your illustrator must share a coherent vocabulary for describing graphics. That way you can unambiguously communicate your intent. That's essentially what the grammar of graphics is, a language with a set of rules (a grammar) for specifying each component of a graphic. 
+
+In R, the `ggplot2` package provides an elegant implementation of the grammar of graphics, and that's what we'll be using here. Basically, R is your illustrator, and `ggplot2` is the language you are going to speak to R to make your graphics. So, how do we do that? Well, let's start with the basics. Suppose we want to know if there's some kind of relationship (an allometric relationship) among the Palmer Station penguins between their body mass and bill length. Here's how we would visualize that.
+
+```{r, echo = FALSE}
+
+ggplot2::theme_set(ggplot2::theme_gray())
+
+```
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  )
+
+```
+
+Here, we have created what is known as a __scatterplot__, a representation of the raw data as points on a Cartesian grid. There are several things to note about the code used to generate this plot. 
+
+1. First, it begins with a call to the `ggplot()` function. This takes a `data` argument. In this case, we say that we want to make a plot to visualize the penguins data. 
+2. The next function call is `geom_point()`. This is a way of specifying the geometry we want to plot. Here we chose points, but we could have used another choice (lines, for example, or polygons). 
+3. Note that the `geom_point()` call takes a `mapping` argument. You use this to specify how variables in your data are mapped to properties of the graphic. Here, we chose to map the `body_mass_g` variable to the x-coordinates and the `bill_length_mm` variable to the y-coordinates. Importantly, we use the `aes()` function to supply an aesthetic to the mapping parameter. This is always the case. 
+4. The final thing to point out here is that we combined or connected these arguments using the plus-sign, `+`. You should read this literally as _addition_, as in "make this ggplot of the penguins data and add a point geometry to it." Be aware that the use of the plus-sign in this way is unique to the `ggplot2` package and won't work with other graphical tools in R.
+
+We can summarize these ideas with a simple template. All that is required to make a graph in R is to replace the elements in the bracketed sections with a dataset, a geometry function, and an aesthetic mapping.
+
+```{r, eval = FALSE}
+
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+
+```
+
+One of the great things about ggplot, something that makes it stand out compared to alternative graphics engines in R, is that you can assign plots to a variable and call it in different places, or modify it as needed.
+
+```{r}
+
+penguins_plot <- ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  )
+
+penguins_plot
+
+```
+
+
+### Exercises
+
+1. Recreate the scatterplot above, but switch the axes. Put bill length on the x-axis and body mass on the y-axis. 
+2. Fill in the template above to create a scatterplot of bill length (on the y-axis) by bill depth (on the x-axis).
+
+
+## Aesthetics {#Aesthetics}
+
+In the plot above, we only specified the position of the points (the x- and y-coordinates) in the aesthetic mapping, but there are many aesthetics (see the figure below), and we can map the same or other variables to those.
+
+```{r, echo = FALSE, out.width = "60%", fig.cap = "Commonly used aesthetics. Figure from [Claus O. Wilke. Fundamentals of Data Visualization. O'Reilly, 2019.](https://clauswilke.com/dataviz)"}
+
+knitr::include_graphics("https://clauswilke.com/dataviz/aesthetic_mapping_files/figure-html/common-aesthetics-1.png")
+
+```
+
+Consider, for example, the fact that there are three penguin species in our dataset: Adelie, Gentoo, and Chinstrap. Do we think the relationship between body mass and bill length holds for all of them? Let's add penguin species to our aesthetic mapping (specifically to the `color` parameter) and see what happens.
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  )
+
+```
+
+Notice that ggplot2 automatically assigns a unique color to each species and adds a legend to the right that explains each color. In this way, the color doesn't just change the look of the figure. It conveys information about the data. Rather than mapping a variable in the data to a specific aesthetic, though, we can also define an aesthetic manually for the geometry as a whole. In this case, the aesthetics do not convey information about the data. They merely change the look of the figure. The key to doing this is to move the specification outside the `aes()`, but still inside the `geom_point()` function.
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm),
+    shape = 21,
+    size = 4,
+    color = "darkred",
+    fill = "darkgoldenrod1"
+  )
+
+```
+
+Notice that we specified the shape with a number. R has 25 built-in shapes that you can specify with a number, as shown in the figure below. Some important differences in these shapes concern the border and fill colors. The hollow shapes (0-14) have a border that you specify with with `color`, the solid shapes (15-20) have a border and fill, both specified with `color`, and the filled shapes (21-24) have separate border and fill colors, specified with `color` and `fill` respectively.
+
+```{r, echo = FALSE, out.width = "70%", fig.asp = 1/3}
+
+# stole this code from here: 
+# https://github.com/hadley/r4ds/blob/785760bfc72b6fac29be88bcc19161d04b0573a5/data-visualize.Rmd#L232
+# slightly modified it to make it centered and put the numbers in the right order
+
+shapes <- tibble(
+  shape = 0:24,
+  x = (0:24 %/% 5) / 2,
+  y = (-(0:24 %% 5)) / 4
+)
+
+ggplot(shapes, aes(x, y)) + 
+  geom_point(aes(shape = shape), size = 5, fill = "red") +
+  geom_text(aes(label = shape), hjust = 0, nudge_x = 0.15) +
+  scale_shape_identity() +
+  expand_limits(x = c(-1.1, 3.1)) +
+  # scale_x_continuous(NULL, breaks = NULL) + 
+  scale_y_continuous(NULL, breaks = NULL, limits = c(-1.2, 0.2)) + 
+  theme_void() +
+  theme(aspect.ratio = 1/2.5)
+
+```
+
+
+### Exercises
+
+1. Change the code below to map the `species` variable to the x-axis (in addition to the color).
+
+```{r, eval = FALSE}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  )
+
+```
+
+2. What does this do to the position of the points?
+
+3. Change the code below to map the `species` variable to the shape aesthetic (in addition to the color).
+
+```{r, eval = FALSE}
+
+# hint: use shape = ...
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  )
+
+```
+
+4. Change the code below to map the `species` variable to the size aesthetic (replacing color).
+
+```{r, eval = FALSE}
+
+# hint: use size = ...
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  )
+
+```
+
+5. For the following code, change the color, size, and shape aesthetics for the entire geometry (do not map them to the data).
+
+```{r, eval = FALSE}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm),
+    color = , # <------- insert value here
+    size = ,  # <------- 
+    shape =   # <------- 
+  )
+
+```
+
+
+## Geometries {#Geometries}
+
+Have a look at these two plots.  
+
+```{r, echo = FALSE, out.width = "50%", fig.align = "default"}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  )
+
+ggplot(data = penguins) + 
+  geom_smooth(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  )
+
+```
+
+Both represent the same data, the same x and y variables, but they do so in very different ways. That difference concerns their different __geometries__. These are geometrical objects used to represent the data. To change the geometry, simply change the `geom_*()` function. For example, to create the plots above, use the `geom_point()` and `geom_smooth()` functions. 
+
+```{r, eval = FALSE}
+
+# left
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  )
+
+# right
+ggplot(data = penguins) + 
+  geom_smooth(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  )
+
+```
+
+While every geometry function takes a `mapping` argument, not every aesthetic works (or is needed) for every geometry. For example, there's no `shape` aesthetic for lines, but there is a `linetype`. Conversely, points have a `shape`, but not a `linetype`.
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_smooth(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, linetype = species),
+  )
+
+```
+
+One really important thing to note here is that you can add multiple geometries to the same plot to represent the same data. Simply add them together with `+`. 
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_smooth(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, linetype = species),
+  ) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  )
+
+```
+
+That's a hideous figure, though it should get the point across. While layering in this way is a really powerful tool for visualizing data, it does have one important drawback. Namely, it violates the DRY principle (Don't Repeat Yourself), as it specifies the x and y variables twice. This makes it harder to make changes, forcing you to edit the same aesthetic parameters in multiple locations. To avoid this, `ggplot2` allows you to specify a common set of aesthetic mappings in the `ggplot()` function itself. These will then apply globally to all the geometries in the figure.
+
+```{r, eval = FALSE}
+
+ggplot(
+  data = penguins,
+  mapping = aes(x = body_mass_g, y = bill_length_mm)
+) +
+  geom_smooth(mapping = aes(linetype = species)) +
+  geom_point(mapping = aes(color = species))
+
+```
+
+Notice that you can still specify specific aesthetic mappings in each geometry function. These will apply only _locally_ to that specific geometry rather than _globally_ to all geometries in the plot. In the same way, you can specify different `data` for each geometry.
+
+```{r}
+
+ggplot(
+  data = penguins,
+  mapping = aes(x = body_mass_g, y = bill_length_mm)
+) +
+  geom_smooth(data = filter(penguins, species == "Adelie")) +
+  geom_point(mapping = aes(color = species))
+
+```
+
+Some of the more important geometries you are likely to use include:
+
+- `geom_point()`
+- `geom_line()`
+- `geom_segment()`
+- `geom_polygon()`
+- `geom_boxplot()`
+- `geom_histogram()`
+- `geom_density()`
+
+We'll actually cover those last three in the section on plotting distributions. For a complete list of available geometries, see the [layers section](https://ggplot2.tidyverse.org/reference/index.html#section-layers) of the ggplot2 website reference page.
+
+
+## Facets {#Facets}
+
+Sometimes mapping variables to aesthetics can generate a lot of noise and clutter, making it hard to read or interpret a figure. One way to handle this is to split your plot into multiple plots or __facets__ based on levels of a categorical variable like `species`. To do this for one categorical variable, you use the `facet_wrap()` function.
+
+```{r}
+
+ggplot(data = penguins) +
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  ) +
+  facet_wrap(~ species)
+
+```
+
+The tilde, `~`, can be read as "by", as in "split the plot _by species_." If you want to split the plot by two categorical variables, like `species` and `sex`, use the `facet_grid()` function.
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  ) +
+  facet_grid(sex ~ species)
+
+```
+
+Evidently, there are some penguins for whom the sex is unknown. To remove these penguins from the dataset, you can use the `na.omit()` function. 
+
+```{r}
+
+ggplot(data = na.omit(penguins)) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  ) +
+  facet_grid(sex ~ species)
+
+```
+
+
+### Exercises
+
+1. use `facet_wrap()` to split the following scatterplot of the penguins data by sex.
+
+```{r, eval = FALSE}
+
+ggplot(data = na.omit(penguins)) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  ) + 
+  facet_wrap() # <------- insert value here
+
+```
+
+2. Now, map the `species` to the color aesthetic for the point geometry. 
+
+3. Use `facet_grid()` to split the following scatterplot of the penguins data by species and island.
+
+```{r, eval = FALSE}
+
+ggplot(data = na.omit(penguins)) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  ) + 
+  facet_grid() # <------- insert value here
+
+```
+
+4. What does this tell you about how species are distributed across islands?
+
+
+## Scales {#Scales}
+
+Scales provide the basic structure that determines how data values get mapped to visual properties in a graph. The most obvious example is the axes because these determine where things will be located in the graph, but color scales are also important if you want your figure to provide additional information about your data. Here, we will briefly cover two aspects of scales that you will often want to change: axis labels and color palettes, in particular palettes that are colorblind safe.
+
+### Labels
+
+By default, `ggplot2` uses the names of the variables in the data to label the axes. This, however, can lead to poor graphics as naming conventions in R are not the same as those you might want to use to visualize your data. Fortunately, `ggplot2` provides tools for renaming the axis and plot titles. The one you are likely to use most often is probably the `labs()` function. Here is a standard usage:
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  )
+
+```
+
+
+### Color Palettes
+
+When you map a variable to an aesthetic property, `ggplot2` will supply a default color palette. This is fine if you are just wanting to explore the data yourself, but when it comes to publication-ready graphics, it won't do. That's because the default `ggplot2` color palette is not colorblind safe. To address this shortcoming, you can specify colorblind safe color palettes using the `scale_color_viridis()` function from the `viridis` package. It works like this:
+
+```{r, eval = FALSE}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  ) +
+  scale_color_viridis(
+    option = "viridis", 
+    discrete = TRUE
+  )
+
+```
+
+```{r, echo = FALSE, out.width = "50%", fig.align = "default"}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  )
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  ) +
+  scale_color_viridis(
+    option = "viridis", 
+    discrete = TRUE
+  )
+
+```
+
+For comparison, I'm showing the viridis scale next to the default ggplot2 scale, so you can see the difference. Two things to note about `scale_color_viridis()`. First, you choose a specific colorblind safe palette with the `option` parameter. In this case, I chose `viridis`, but there are others, including `magma`, `cividis`, and `inferno`, to name a few. Second, if the variable is continuous rather than discrete, you will have to set `discrete = FALSE` in the function, otherwise it will throw an error.
+
+
+
+### Exercises
+
+1. Using the `penguins` dataset, plot body mass (y variable) by bill length (x variable) and change the axis labels to reflect this.
+
+2. Using the `penguins` dataset, plot bill length (y variable) by bill depth (x variable) and change the axis labels to reflect this.
+
+3. Using the code below, try out these different colorblind safe palettes:
+    - magma
+    - cividis
+    - inferno
+
+```{r, eval = FALSE}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  ) +
+  scale_color_viridis(
+    option = , # <------- insert value here
+    discrete = TRUE
+  )
+
+```
+
+
+
+## Themes {#Themes}
+
+To control the display of non-data elements in a figure, you can specify a theme. This is done with the `theme()` function. Using this can get pretty complicated, pretty quick, so rather than elaborate on it in detail, I want to draw your attention to pre-defined themes that you can use to modify your plots in a consistent way.
+
+Here is an example of the black and white theme, which removes filled background grid squares, leaving only the grid lines.
+
+```{r}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  ) +
+  theme_bw()
+
+```
+
+
+### Exercises
+
+1. Complete the code below, trying out each separate theme:
+    - `theme_minimal()`
+    - `theme_classic()`
+    - `theme_void()`
+
+```{r, eval = FALSE}
+
+ggplot(data = penguins) + 
+  geom_point(
+    mapping = aes(x = body_mass_g, y = bill_length_mm, color = species)
+  ) +
+  labs(
+    x = "Body mass (g)",
+    y = "Bill length (mm)",
+    title = "Palmer Penguins"
+  ) +
+  theme_    # <------- insert value here
+
+```
+
+
+## Homework {#Homework}
+
+1. __Load data.__ For this homework exercise, we'll work with the `DartPoints` dataset from the `archdata` package. When you ran `library(archdata)`, this dataset should have been attached to your current R session, so don't worry about loading it into R. It's already there!
+2. __Summary statistics.__ Let's summarize these data now.
+    - Use `head()` to print out the first 10 rows of the table.
+    - Use `mean()` and `median()` on the `Length`, `Width`, `Thickness`, and `Weight` variables. (Hint: use `DartPoints$<VARIABLE>` as in `DartPoints$Length`.)
+    - Use `var()` and `sd()` on the same.
+    - Now use `skim()` to summarize the `DartPoints` data.
+3. **Graphics.** And now to visualize them.
+    - Use `ggplot()` to make a scatterplot showing dart point length as a function of weight. (Hint: use `geom_point()`.)
+    - Is there a trend?
+    - Map the dart point `Name` (this is the dart point type) to the `color` aesthetic. (Hint: this should go inside the `aes()` mapping!)
+    - Do you see any meaningful differences between dart point types?
+    - Change the `size` of all points to 2.5. (Hint: this should go outside the `aes()` mapping but inside `geom_point()`!)
+    - Use `scale_color_viridis()` to make the color scale colorblind safe. Feel free to use whichever palette you prefer. (Hint: dart point type is a categorical variable, so you need to set `discrete = TRUE`!)
+    - Try out `facet_wrap()` on the dart point `Name` variable.
+    - Does this make it easier or harder to see differences between types?
+    
