@@ -70,3 +70,24 @@ write_csv(
   tibble(sites, elevation),
   here("datasets", "site_counts.csv")
 )
+
+
+# Grave goods by distance from great house --------------------------------
+
+n <- 100
+
+set.seed(123)
+
+distance <- runif(n, min = 0.01, max = 4)
+
+b0 <- log(7)
+b1 <- log(0.43)
+
+lambda <- exp(b0 + b1 * distance) 
+
+goods <- rpois(n, lambda)
+
+write_csv(
+  tibble(goods, distance),
+  here("datasets", "grave_goods.csv")
+)
