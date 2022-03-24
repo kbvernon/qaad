@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 10</title>
+
+<script src="10-Generalized_Linear_Models-2_files/header-attrs/header-attrs.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/jquery/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<link href="10-Generalized_Linear_Models-2_files/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<script src="10-Generalized_Linear_Models-2_files/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/bs3compat/transition.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/bs3compat/tabs.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/bs3compat/bs3compat.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/jqueryui/jquery-ui.min.js"></script>
+<link href="10-Generalized_Linear_Models-2_files/tocify/jquery.tocify.css" rel="stylesheet" />
+<script src="10-Generalized_Linear_Models-2_files/tocify/jquery.tocify.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/navigation/tabsets.js"></script>
+<link href="10-Generalized_Linear_Models-2_files/highlightjs/default.css" rel="stylesheet" />
+<script src="10-Generalized_Linear_Models-2_files/highlightjs/highlight.js"></script>
+<script src="10-Generalized_Linear_Models-2_files/clipboard/clipboard.min.js"></script>
+<link href="10-Generalized_Linear_Models-2_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+<script src="10-Generalized_Linear_Models-2_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+<script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
+<link href="10-Generalized_Linear_Models-2_files/font-awesome/css/all.css" rel="stylesheet" />
+<link href="10-Generalized_Linear_Models-2_files/font-awesome/css/v4-shims.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    
+    const ttl = $('.title.toc-ignore').text();
+    const subttl = $('.subtitle').text();
+    
+    $('.title.toc-ignore').remove();
+    $('.subtitle').remove();
+    
+    $('<h1 class = "title toc-ignore">' + ttl + '</h1><h3 class = "subtitle">' + subttl + '</h3>')
+      .appendTo('.tocify');
+    
+    $('.section.level2:first').show();
+      
+  });
+  
+  $(window).on('load', function() {
+  
+    $('.tocify-item.list-group-item').click(function(event){
+        
+      $('.section.level2').hide();
+      
+      var id = $(this).data('unique');
+      
+      $('#'+id).show(100, function(){
+        $('html').scrollTop(0);
+      });
+      
+    });
+  
+  });
+
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 10</h1>
+<h3 class="subtitle">Generalized Linear Models</h3>
+
+</div>
+
+
+<div id="Outline" class="section level2">
+<h2>Outline</h2>
+<p><strong>TL;DR</strong> Creating and evaluating generalized linear
+models.</p>
+<p><strong>Caution!</strong> Please note that all labs assume that you
+are working in an RStudio Project directory!</p>
+<div id="objectives" class="section level3">
+<h3>Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol style="list-style-type: decimal">
+<li>Fitting a GLM with a
+<ul>
+<li>Gaussian distribution</li>
+<li>Binomial distribution</li>
+<li>Poisson distribution</li>
+</ul></li>
+<li>Evaluating models with a Likelihood Ratio Test</li>
+</ol>
+</div>
+<div id="r-packages" class="section level3">
+<h3>R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a
+href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
+<li><a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a></li>
+<li><a href="https://here.r-lib.org/">here</a></li>
+</ul>
+<p>To install these packages, <strong>run the following code in your
+console</strong>:</p>
+<pre class="r"><code>install.packages(
+  c(&quot;archdata&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;here&quot;)
+)</code></pre>
+<p><strong>Note:</strong> You should not <code>install.packages()</code>
+in an Rmd document. Use that function in your R console instead. Then
+use <code>library()</code> as part of the preamble in your Rmd document
+to check packages out of the library and use them in that R session.
+This should always go at the start of your document!</p>
+<pre class="r"><code>library(archdata)
+library(dplyr)
+library(ggplot2)</code></pre>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<ul>
+<li><code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during
+surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code></li>
+<li>reference: <a
+href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
+class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>grave_goods</code>
+<ul>
+<li>A hypothetical dataset including counts of grave goods and measures
+of distance (in meters) from a great house in the American
+Southwest.</li>
+<li>package: NA</li>
+<li>reference: <a
+href="https://github.com/kbvernon/qaad/tree/master/datasets"
+class="uri">https://github.com/kbvernon/qaad/tree/master/datasets</a></li>
+</ul></li>
+<li><code>Handaxes</code>
+<ul>
+<li>Includes measurements of length, width, and thickness for handaxes
+from the Furze Platt site in England.</li>
+<li>package: <code>archdata</code></li>
+<li>reference: <a
+href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
+class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>Snodgrass</code>
+<ul>
+<li>Includes measurements of size, location, and contents of 91 pit
+houses at the Snodgrass site in Butler County, Missouri.</li>
+<li>reference: <a
+href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
+class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>site_counts</code>
+<ul>
+<li>A hypothetical dataset including site counts per kilometer and
+estimates of elevation (in meters) on an east-west transect through the
+state of Utah.</li>
+<li>package: NA</li>
+<li>reference: <a
+href="https://github.com/kbvernon/qaad/tree/master/datasets"
+class="uri">https://github.com/kbvernon/qaad/tree/master/datasets</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="Gaussian" class="section level2">
+<h2>Gaussian</h2>
+<p>In this section and the following, I will walk you through how to
+make the Generalized Linear Models (or GLMs) introduced in the lecture
+with R. Then, in the exercises for each section, we’ll work through an
+additional example for each. We’ll start by fitting a model with a
+normal or Gaussian family distribution. The question we hope to answer
+is this:</p>
+<p><strong>Question</strong> Does the length of an archaic dart point
+vary as a function of its weight.</p>
+<p>To answer that question, we will use the <code>DartPoints</code> data
+collected from a site in Fort Hood, Texas.</p>
+<p>First, we will load the data into R. For practice, we’ll also write
+it to disk and read it back in, in each case using the
+<code>here()</code> function to specify relative file paths in our
+project folder. Note that I am going to change the name of the object to
+<code>darts</code>. While it’s current name is fine, I find that keeping
+names short - but descriptive! - and in lowercase format - as far as
+that is possible anyway - saves you some typing effort and reduces the
+potential for errors in your R code. While we’re at it, we’ll set all
+the variable names in the table to lower case using the base R function
+<code>tolower()</code> and the <code>dplyr</code> function
+<code>rename_with()</code>. Then, to make it clearer that the
+<code>name</code> variable is actually a dart <code>type</code>, we’ll
+rename it using the <code>dplyr</code> verb <code>rename()</code>. Note
+that <code>rename()</code> uses the <code>"new_name" = old_name</code>
+syntax. I’ll also convert it to a <code>tibble</code> with
+<code>as_tibble()</code> to make it print pretty.</p>
+<pre class="r"><code>data(&quot;DartPoints&quot;)
+
+write.csv(
+  DartPoints,
+  filename = here(&quot;data&quot;, &quot;darts.csv&quot;),
+  row.names = FALSE # &lt;--- prevent R from adding a column of row names
+)
+
+remove(DartPoints)
+
+darts &lt;- here(&quot;darts&quot;, &quot;darts.csv&quot;) %&gt;% 
+  read.csv() %&gt;% 
+  as_tibble() %&gt;% 
+  rename_with(tolower) %&gt;% 
+  rename(&quot;type&quot; = name)
+
+darts</code></pre>
+<pre><code>## # A tibble: 91 x 17
+##    type  catalog tarl     quad  length width thickness b.width j.width h.length
+##    &lt;fct&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+##  1 Darl  41-0322 41CV0536 26/59   42.8  15.8       5.8    11.3    10.6     11.6
+##  2 Darl  35-2946 41CV0235 21/63   40.5  17.4       5.8    NA      13.7     12.9
+##  3 Darl  35-2921 41CV0132 20/63   37.5  16.3       6.1    12.1    11.3      8.2
+##  4 Darl  36-3487 41CV0594 10/54   40.3  16.1       6.3    13.5    11.7      8.3
+##  5 Darl  36-3321 41CV1023 12/58   30.6  17.1       4      12.6    11.2      8.9
+##  6 Darl  35-2959 41CV0235 21/63   41.8  16.8       4.1    12.7    11.5     11  
+##  7 Darl  35-2866 41CV0855 25/65   40.3  20.7       5.9    11.7    11.4      7.6
+##  8 Darl  41-0323 41CV0536 26/59   48.5  18.7       6.9    14.7    13.4      9.2
+##  9 Darl  35-2325 41CV0795 20/48   47.7  17.5       7.2    14.3    11.8      8.9
+## 10 Darl  40-0847 41CV1287 05/48   33.6  15.8       5.1    NA      12.5     11.5
+## # ... with 81 more rows, and 7 more variables: weight &lt;dbl&gt;, blade.sh &lt;fct&gt;,
+## #   base.sh &lt;fct&gt;, should.sh &lt;fct&gt;, should.or &lt;fct&gt;, haft.sh &lt;fct&gt;,
+## #   haft.or &lt;fct&gt;</code></pre>
+<p>Now, of course, we’ll want to visualize our data, in particular the
+relationship between dart length and weight. These are quantitative
+measures, so let’s make a scatter plot.</p>
+<pre class="r"><code>ggplot(
+  darts, 
+  aes(weight, length)
+) +
+  geom_point(
+    size = 3,
+    alpha = 0.6 # increase transparency to address the over-plotting of points
+  ) +
+  labs(
+    x = &quot;Weight (g)&quot;,
+    y = &quot;Length (mm)&quot;
+  )</code></pre>
+<p><img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now, let’s fit a GLM! To do that, we’ll use the <code>glm()</code>
+function. The syntax for specifying a model with this function should be
+familiar to you. It’s just like fitting a linear model with
+<code>lm()</code>, albeit with one important exception. You have to
+specify an exponential distribution and a link function. To do that, we
+use the <code>family</code> argument to <code>glm()</code>, providing it
+with a family function that itself takes a <code>link</code> argument.
+It looks like this:</p>
+<pre class="r"><code>glm_darts &lt;- glm(
+  length ~ weight,
+  family = gaussian(link = &quot;identity&quot;),
+  data = darts
+)</code></pre>
+<p>Note that the identity link function is the default for the
+<code>gaussian()</code> function, so you don’t actually have to specify
+it. The parentheses are not strictly necessary either (for reasons
+beyond the scope of this class), so we could instead call the
+<code>glm()</code> function this way:</p>
+<pre class="r"><code>glm_darts &lt;- glm(
+  length ~ weight,
+  family = gaussian,
+  data = darts
+)</code></pre>
+<p>That said, in all the examples that follow, I am going to use the
+first formulation to make it as explicit as possible that you are
+always, always, always including a distribution and link function when
+fitting a GLM.</p>
+<p>So, now we have our model. Let’s look at a summary.</p>
+<pre class="r"><code>summary(glm_darts)
+## 
+## Call:
+## glm(formula = length ~ weight, family = gaussian(link = &quot;identity&quot;), 
+##     data = darts)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -10.540   -3.865   -0.598    2.249   30.255  
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   28.971      1.328    21.8   &lt;2e-16 ***
+## weight         2.664      0.152    17.5   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 37)
+## 
+##     Null deviance: 14599.0  on 90  degrees of freedom
+## Residual deviance:  3294.7  on 89  degrees of freedom
+## AIC: 590.9
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p>There are four things to note with this summary.</p>
+<ol style="list-style-type: decimal">
+<li>The <strong>dispersion parameter</strong> is 37. For a GLM fit with
+a Gaussian distribution, this is equivalent to the square of the
+residual standard error in a linear model, ie, the mean squared
+error.<br />
+</li>
+<li>The <strong>null deviance</strong> is 14599. This is the product of
+-2 and the difference in the log-Likelihood of an intercept-only model
+and a saturated model (a model with a parameter for each observation,
+ie, a perfect fit).<br />
+</li>
+<li>The <strong>residual deviance</strong> is 3294.7. This is the
+product of -2 and the difference in log-Likelihood of the fitted model
+and a saturated model.<br />
+</li>
+<li>The <strong>AIC</strong> (or Akaike Information Criterion) is
+590.866. This is calculated using the formula:</li>
+</ol>
+<p><span class="math display">\[AIC = -2\,log\,\mathcal{L} +
+2p\]</span></p>
+<p>where <span class="math inline">\(log\,\mathcal{L}\)</span> is the
+log-Likelihood and <span class="math inline">\(p\)</span> is the number
+of parameters in the model (+1 for the estimate of the error variance).
+In this case, the model has an intercept, one covariate,
+<code>weight</code>, and the error variance, so <span
+class="math inline">\(p = 3\)</span>.</p>
+<p>These are all ways of evaluating the model’s goodness-of-fit, but as
+always, we would like to know if the increased complexity is worth it.
+There are two ways we can try to answer this question. The first is
+simply to compare the AIC score of the model we have just proposed to an
+intercept-only model, as the AIC incorporates a penalty for complexity.
+As this compares 2 times the negative log-Likelihood (ie the deviance),
+a smaller score is always better, so we want the AIC of our proposed
+model to be less than the AIC of the null model. To extract the AIC
+estimate from a model, we use <code>AIC()</code>.</p>
+<pre class="r"><code>glm_null &lt;- glm(
+  length ~ 1,
+  family = gaussian(link = &quot;identity&quot;),
+  data = darts
+)
+
+# is the AIC of the proposed model less than the AIC of the null model?
+AIC(glm_darts) &lt; AIC(glm_null)
+## [1] TRUE</code></pre>
+<p>That’s a bingo! But, let’s take this idea a bit further and try some
+inference with it. In particular, let’s use an ANOVA (specifically, a
+Likelihood Ratio Test or LRT) to compare the ratio of the likelihoods of
+these models to a <span class="math inline">\(\chi^2\)</span>
+distribution. This will tell us if they are significantly different. To
+do that in R, we use the <code>anova()</code> function, setting its
+<code>test</code> argument to <code>"LRT"</code>.</p>
+<pre class="r"><code>anova(glm_null, glm_darts, test = &quot;LRT&quot;)
+## Analysis of Deviance Table
+## 
+## Model 1: length ~ 1
+## Model 2: length ~ weight
+##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)    
+## 1        90      14599                         
+## 2        89       3295  1    11304   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Because the p-value here is significantly less than the critical
+value <span class="math inline">\(\alpha = 0.05\)</span>, we can reject
+the null hypothesis that there is <em>no</em> significant difference in
+the log-Likelihood of these models. So, our model of dart length as a
+function of dart weight does indeed fit the data (re: explain the data)
+better than an interept-only null model.</p>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<p>For these exercises, we’ll use the <code>Handaxes</code> dataset from
+the <code>archdata</code> package. We are going to see if we can predict
+handaxe length as a function of thickness.</p>
+<ol style="list-style-type: decimal">
+<li>First, load the <code>Handaxes</code> table with
+<code>data("Handaxes")</code>.</li>
+<li>Now, let’s do some data wrangling with this table. Bonus points if
+you can put this all through one pipe. And make sure to assign it back
+to your table, so that it saves the changes!
+<ul>
+<li>Change all the names to lowercase with
+<code>rename_with(tolower)</code>.</li>
+<li>Use <code>select()</code> to grab the catalog number
+(<code>catalog</code>), length (<code>l</code>), breadth
+(<code>b</code>), and thickness (<code>t</code>) variables.</li>
+<li>Use <code>rename()</code> to rename <code>l</code>, <code>b</code>,
+and <code>t</code> to <code>length</code>, <code>width</code>, and
+<code>thickness</code>, respectively. This will make it clearer what
+these variables are. Hint: use the <code>"new_name" = old_name</code>
+syntax, for example, <code>"length" = l</code>.</li>
+</ul></li>
+<li>Practice writing the data to disk and reading it back in using
+<code>write.csv()</code> and <code>read.csv()</code>. Make sure when you
+write to disk that you use <code>rownames = FALSE</code>, and be sure to
+use <code>here()</code> to set the file path. While you do it, replace
+<code>Handaxes</code> with <code>handaxes</code>, and
+<code>remove(Handaxes)</code>.</li>
+<li>Make a scatter plot of the data.<br />
+</li>
+<li>Build a GLM of handaxe length as a function of thickness using a
+Gaussian distribution and the identity link.</li>
+<li>Build an intercept-only GLM of handaxe length using the same
+distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC
+of the intercept-only model?</li>
+</ul></li>
+<li>Now compare these models using a Likelihood Ratio Test with
+<code>anova()</code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Binomial" class="section level2">
+<h2>Binomial</h2>
+<p>We’re going to do the exact same thing we just did with a Gaussian
+GLM, but we’re going to do it with a binary response variable. That
+means logistic regression, which requires that we specify a binomial
+distribution with a logit link. Here, we’ll be using the
+<code>Snodgrass</code> data to answer the following</p>
+<p><strong>Question</strong> Does the size of a house structure
+(measured in square feet) make it more or less likely that the structure
+is found inside the inner walls of the site?</p>
+<p>So, first, we’ll load in the data. Again, we’ll write it to disk and
+read it back in, changing the name to <code>snodgrass</code> and
+removing <code>Snodgrass</code> from our environment. When we read it
+back, we’ll also convert it to a <code>tibble</code> and convert all the
+variable names to lowercase. Note that <code>Snodgrass</code> has a
+number of additional variables. We don’t actually need those for this
+exercise, so we’ll subset the table using <code>select()</code> to grab
+only the variables of interest, namely the response variable
+<code>inside</code> and our predictor <code>area</code>. In its current
+form, the response variable <code>inside</code> is a character variable
+consisting of two values <code>"Inside"</code> and
+<code>"Outside"</code>. We’ll want to convert this to a binary numeric
+variable with a value <code>1</code> if <code>"Inside"</code> and a
+value <code>0</code> if <code>"Outside"</code>. We’ll use
+<code>mutate()</code> and a really nice programming function called
+<code>ifelse()</code> to do that.</p>
+<pre class="r"><code>data(&quot;Snodgrass&quot;)
+
+write.csv(
+  Snodgrass,
+  filename = here(&quot;data&quot;, &quot;snodgrass.csv&quot;),
+  row.names = FALSE # &lt;--- prevent R from adding a column of row names
+)
+
+remove(Snodgrass)
+
+snodgrass &lt;- here(&quot;darts&quot;, &quot;snodgrass.csv&quot;) %&gt;% 
+  read.csv() %&gt;% 
+  as_tibble() %&gt;% 
+  rename_with(tolower) %&gt;% 
+  select(inside, area) %&gt;% 
+  mutate(
+    inside = ifelse(inside == &quot;Inside&quot;, 1, 0) # read as &quot;if Inside, set to 1, else 0&quot;
+  )
+
+snodgrass</code></pre>
+<pre><code>## # A tibble: 91 x 2
+##    inside  area
+##     &lt;dbl&gt; &lt;dbl&gt;
+##  1      0  144 
+##  2      0  256 
+##  3      1  306 
+##  4      1  452.
+##  5      1  410 
+##  6      1  264 
+##  7      1  342 
+##  8      1  399 
+##  9      0   60 
+## 10      0  217 
+## # ... with 81 more rows</code></pre>
+<p>As before, we’ll plot these data using a scatterplot.</p>
+<pre class="r"><code>ggplot(snodgrass, aes(area, inside)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = &quot;Area (sq ft)&quot;,
+    y = &quot;Inside inner wall&quot;
+  )</code></pre>
+<p><img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Notice anything suspicious? Well, let’s confirm (or deny) that
+suspicion with a GLM! Again, we’ll specify an exponential distribution
+and a link function using the <code>family</code> argument to
+<code>glm()</code>, providing it with a family function that itself
+takes a <code>link</code> argument. It looks like this:</p>
+<pre class="r"><code>glm_snodgrass &lt;- glm(
+  inside ~ area,
+  family = binomial(link = &quot;logit&quot;),
+  data = snodgrass
+)</code></pre>
+<p>Now that we have our model, let’s look at a summary.</p>
+<pre class="r"><code>summary(glm_snodgrass)
+## 
+## Call:
+## glm(formula = inside ~ area, family = binomial(link = &quot;logit&quot;), 
+##     data = snodgrass)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -2.110  -0.481  -0.184   0.288   2.571  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -8.66307    1.81844   -4.76  1.9e-06 ***
+## area         0.03476    0.00751    4.63  3.7e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 123.669  on 90  degrees of freedom
+## Residual deviance:  57.728  on 89  degrees of freedom
+## AIC: 61.73
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p>Looks like our intercept and slope estimates are significant. How
+about the deviance? Let’s compare the AIC of this model to the AIC of an
+intercept-only model. use LRT to see if this model is significantly
+better than an intercept-only model.</p>
+<pre class="r"><code>glm_null &lt;- glm(
+  inside ~ 1,
+  family = binomial(link = &quot;logit&quot;),
+  data = snodgrass
+)
+
+AIC(glm_snodgrass) &lt; AIC(glm_null)
+## [1] TRUE
+anova(glm_null, glm_snodgrass, test = &quot;LRT&quot;)
+## Analysis of Deviance Table
+## 
+## Model 1: inside ~ 1
+## Model 2: inside ~ area
+##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)    
+## 1        90      123.7                         
+## 2        89       57.7  1     65.9  4.6e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>A bingo two-times!</p>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
+<p>For these exercises, we’ll use the <code>DartPoints</code> dataset
+from the <code>archdata</code> package. We are going to use length to
+see if we can discriminate Pedernales dart points from the other dart
+points.</p>
+<ol style="list-style-type: decimal">
+<li>First, load the <code>DartPoints</code> table with
+<code>data("DartPoints")</code>.</li>
+<li>Now, let’s do some data wrangling with this table. Make sure to
+assign it back to your table, so that it saves the changes!And bonus
+points if you can put this all through one pipe!
+<ul>
+<li>Change all the names to lowercase with
+<code>rename_with(tolower)</code>.</li>
+<li>Use <code>select()</code> to grab the name (<code>name</code>) and
+length (<code>length</code>) variables.</li>
+<li>Use <code>rename()</code> to rename <code>name</code> to
+<code>type</code>. Hint: use the <code>"new_name" = old_name</code>
+syntax, for example, <code>"length" = l</code>.</li>
+<li><strong>THIS IS IMPORTANT!!!</strong> Use <code>mutate()</code> and
+<code>ifelse()</code> to add a column <code>pedernales</code> that is
+<code>1</code> if the type is <code>Pedernales</code> and 0 otherwise.
+Hint: fill in the ellipsis in
+<code>mutate(pedernales = ifelse(type == ...))</code>.</li>
+</ul></li>
+<li>Practice writing the data to disk and reading it back in using
+<code>write.csv()</code> and <code>read.csv()</code>. Make sure when you
+write to disk that you use <code>rownames = FALSE</code>, and be sure to
+use <code>here()</code> to set the file path. While you do it, replace
+<code>DartPoints</code> with <code>darts</code>, and
+<code>remove(DartPoints)</code>.</li>
+<li>Make a scatter plot of the data.<br />
+</li>
+<li>Build a GLM of the Pedernales type as a function of dart length
+using a Binomial distribution and the logit link.</li>
+<li>Build an intercept-only GLM of the Pedernales type using the same
+distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC
+of the intercept-only model?</li>
+</ul></li>
+<li>Now compare these models using a Likelihood Ratio Test with
+<code>anova()</code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Poisson" class="section level2">
+<h2>Poisson</h2>
+<p>Once more into the breach! Only this time, we’re going to do it with
+a response variable consisting of counts. That means poisson regression,
+which requires that we specify a poisson distribution with a log link.
+Here, we’ll be using the <code>grave_goods</code> data to answer the
+following</p>
+<p><strong>Question</strong> Does distance from a great house (measured
+in kilometers) drive variation in the number of grave goods at
+archaeological sites?</p>
+<p>So, first, we’ll load in the data. This time, we’ll have to download
+the data, then load it into R.</p>
+<pre class="r"><code>download.file(
+  &quot;https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/grave_goods.csv&quot;,
+  destfile = here(&quot;data&quot;, &quot;grave_goods.csv&quot;)
+)
+
+grave_goods &lt;- here(&quot;data&quot;, &quot;grave_goods.csv&quot;) %&gt;% 
+  read.csv() %&gt;% 
+  as_tibble()
+
+grave_goods</code></pre>
+<pre><code>## # A tibble: 100 x 2
+##    goods distance
+##    &lt;dbl&gt;    &lt;dbl&gt;
+##  1     3    1.16 
+##  2     0    3.16 
+##  3     2    1.64 
+##  4     2    3.53 
+##  5     0    3.76 
+##  6     9    0.192
+##  7     3    2.12 
+##  8     0    3.57 
+##  9     1    2.21 
+## 10     0    1.83 
+## # ... with 90 more rows</code></pre>
+<p>As before, we’ll plot these data using a scatterplot. Note that I use
+<code>scale_y_continuous()</code> to change the breaks and labels on the
+y-axis to remove any decimal values. That’s just to emphasize that this
+is count data.</p>
+<pre class="r"><code>ggplot(grave_goods, aes(distance, goods)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 10, by = 2),
+    labels = seq(0, 10, by = 2)
+  ) +
+  labs(
+    x = &quot;Distance from great house (km)&quot;,
+    y = &quot;Number of grave goods&quot;
+  )</code></pre>
+<p><img src="10-Generalized_Linear_Models-2_files/figure-html/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Looks like there could be a trend, maybe… Let’s use a GLM to find
+out! Again, we’ll specify an exponential distribution and a link
+function using the <code>family</code> argument to <code>glm()</code>,
+providing it with a family function that itself takes a
+<code>link</code> argument. It looks like this:</p>
+<pre class="r"><code>glm_goods &lt;- glm(
+  goods ~ distance,
+  family = poisson(link = &quot;log&quot;),
+  data = grave_goods
+)</code></pre>
+<p>Now that we have our model, let’s look at a summary.</p>
+<pre class="r"><code>summary(glm_goods)
+## 
+## Call:
+## glm(formula = goods ~ distance, family = poisson(link = &quot;log&quot;), 
+##     data = grave_goods)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -1.837  -0.858  -0.432   0.500   2.299  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   2.1100     0.1092    19.3   &lt;2e-16 ***
+## distance     -0.9551     0.0835   -11.4   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 263.933  on 99  degrees of freedom
+## Residual deviance:  88.369  on 98  degrees of freedom
+## AIC: 280.4
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>Looks like our intercept and slope estimates are significant. How
+about the deviance? Let’s compare the AIC of this model to the AIC of an
+intercept-only model. use LRT to see if this model is significantly
+better than an intercept-only model.</p>
+<pre class="r"><code>glm_null &lt;- glm(
+  goods ~ 1,
+  family = poisson(link = &quot;log&quot;),
+  data = grave_goods
+)
+
+AIC(glm_goods) &lt; AIC(glm_null)
+## [1] TRUE
+anova(glm_null, glm_goods, test = &quot;LRT&quot;)
+## Analysis of Deviance Table
+## 
+## Model 1: goods ~ 1
+## Model 2: goods ~ distance
+##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)    
+## 1        99      263.9                         
+## 2        98       88.4  1      176   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>A bingo three-times!</p>
+<div id="exercises-2" class="section level3">
+<h3>Exercises</h3>
+<p>For these exercises, we’ll use the <code>site_counts</code> dataset.
+We are going to use elevation to predict site counts per kilometer on an
+east-west transect through Utah.</p>
+<ol style="list-style-type: decimal">
+<li>First, download the <code>site_counts</code> data with</li>
+</ol>
+<pre class="r"><code>download.file(
+  &quot;https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/site_counts.csv&quot;,
+  destfile = here(&quot;data&quot;, &quot;site_counts.csv&quot;)
+)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Make a scatter plot of the data.<br />
+</li>
+<li>Build a GLM of site counts per kilometer as a function of elevation
+using a Poisson distribution and a log link.</li>
+<li>Build an intercept-only GLM of site counts using the same
+distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC
+of the intercept-only model?</li>
+</ul></li>
+<li>Now compare these models using a Likelihood Ratio Test with
+<code>anova()</code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Homework" class="section level2">
+<h2>Homework</h2>
+<p>No homework this week!</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
