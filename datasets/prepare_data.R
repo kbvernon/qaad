@@ -78,10 +78,11 @@ n <- 100
 
 set.seed(123)
 
-distance <- runif(n, min = 0.01, max = 4)
+distance <- runif(n, min = 0.01, max = 8)
+distance <- round(distance, digits = 3)
 
 b0 <- log(7)
-b1 <- log(0.43)
+b1 <- log(0.73)
 
 lambda <- exp(b0 + b1 * distance) 
 
