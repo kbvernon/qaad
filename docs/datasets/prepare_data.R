@@ -49,8 +49,6 @@ Snodgrass %>%
   mutate(inside = ifelse(inside == "Inside", 1L, 0L)) %>% 
   write_csv(here("datasets", "snodgrass.csv"))
 
-
-
 # Site counts by elevation ------------------------------------------------
 
 n <- 100
@@ -71,7 +69,6 @@ write_csv(
   here("datasets", "site_counts.csv")
 )
 
-
 # Grave goods by distance from great house --------------------------------
 
 n <- 100
@@ -91,4 +88,35 @@ goods <- rpois(n, lambda)
 write_csv(
   tibble(goods, distance),
   here("datasets", "grave_goods.csv")
+)
+
+# Site counts per unit area by elevation ----------------------------------
+
+n <- 100
+
+set.seed(123)
+
+elevation <- rnorm(n, mean = 1.5, sd = 0.3)
+
+b0 <- log(2)
+b1 <- log(3.1)
+
+area <- abs(rnorm(n, mean = 4, sd = 1.6))
+
+ba <- 1.4
+
+lambda <- exp(b0 + b1 * elevation + ba * log(area)) 
+
+sites <- rpois(n, lambda)
+
+surveys <- tibble(
+  block = 1:n,
+  sites = sites,
+  area = area,
+  elevation = elevation
+)
+
+write_csv(
+  surveys,
+  here("datasets", "surveys.csv")
 )

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Quantitative Analysis of Archaeological Data</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="custom_style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Quantitative Analysis of Archaeological Data
+## Lecture 11: Generalized Linear Models 3
+### Last updated: 2022-03-29
+
+---
+
+
+
+
+
+
+## Outline
+
+1. Binomial GLM
+2. Prediction
+2. Rate model
+2. Offset
+3. Dispersion
+
+---
+
+## Binomial GLM
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-3-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[Data from the Snodgrass site in Butler County, MS]
+
+]
+
+.pull-right[
+
+Location inside or outside of the inner wall at the Snodgrass site is a binomially distributed variable and has expectation `\(E(Y) = p\)` where
+
+`$$p = \frac{1}{1 + exp(-\beta X)}$$`
+This defines a [logistic curve](https://en.wikipedia.org/wiki/Logistic_function) or sigmoid, with `\(p\)` being the probability of success. This constrains the estimate `\(E(Y)\)` to be in the range 0 to 1.
+
+]
+
+---
+
+## Binomial GLM
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-4-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[Data from the Snodgrass site in Butler County, MS]
+
+]
+
+.pull-right[
+
+Taking the log of `\(p\)` gives us
+
+`$$log\left(\frac{p}{1 - p}\right) = \beta X$$`
+
+This is known as the "logit" or [log odds](https://en.wikipedia.org/wiki/Logit). 
+
+__Question__ What is the probability that we observe these data (these admissions) given a model with parameters `\(\beta\)`? 
+
+]
+
+---
+
+## Binomial GLM
+
+
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-6-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[Data from the Snodgrass site in Butler County, MS]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = -8.663\)`  
+`\(\beta_1 = 0.035\)`   
+
+For these, the log Likelihood is
+
+`\(\mathcal{l} = -28.864\)`  
+
+]
+
+---
+
+## Binomial GLM
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-7-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[Data from the Snodgrass site in Butler County, MS]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = -8.663\)`  
+`\(\beta_1 = 0.035\)`   
+
+Note that these coefficient estimates are log-odds! To get the odds, we take the exponent.   
+
+`\(\beta_0 = exp(-8.663) = 1.729\times 10^{-4}\)`  
+`\(\beta_1 = exp(0.035) = 1.035\)`  
+
+For a one unit increase in area, the odds of being in the inside wall increase by 1.035.
+
+]
+
+---
+
+## Prediction
+
+
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-9-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[Data from the Snodgrass site in Butler County, MS]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = -8.663\)`  
+`\(\beta_1 = 0.035\)`   
+
+To get the probability, we can use the mean function (also known as the inverse link):
+
+`$$p = \frac{1}{1+exp(-\beta X)}$$`
+
+For a house structure with an area of 300 square feet, the estimated probability that it occurs inside the inner wall is 0.854.
+
+]
+
+---
+
+## Prediction
+
+
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-11-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[Data from the Snodgrass site in Butler County, MS]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = -8.663\)`  
+`\(\beta_1 = 0.035\)`   
+
+Must also apply the inverse link to the standard error of the coefficients!
+
+`$$p = \frac{1}{1+exp(-\beta X)}$$`
+
+Otherwise, you will get a confidence ribbon that ranges outside the possible range of the data.
+
+]
+
+---
+
+## Rate model
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-12-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Site counts is a Poisson distributed variable and has expectation `\(E(Y) = \lambda\)` where
+
+`$$\lambda = exp(\beta X)$$`
+
+By taking the exponent, this constrains the expected count to be greater than zero.
+
+]
+
+---
+
+## Rate model
+
+Suppose, however, that we find out that our counts come from these survey blocks.
+
+&lt;img src="images/survey-polygons.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.right[Need to account for area in our sampling strategy!]
+
+
+---
+
+## Rate model
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-14-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+In a regular poisson model, we take the log of lambda (the count).
+
+`$$log(\lambda) = \beta X$$`
+
+Now we take the log of the density (or rate!).
+
+`$$log(\lambda_i/area_i) = \beta X$$`
+`$$log(\lambda_i) - log(area_i) = \beta X$$`
+`$$log(\lambda_i) = \beta X + log(area_i)$$`
+
+Still linear!  
+Still modeling counts!  
+But now we add the log of the area of each survey block as a constant offset. 
+
+]
+
+---
+
+## Rate model
+
+
+
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-16-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = 1.39\)`  
+`\(\beta_1 = 1.054\)`   
+
+For these, the log Likelihood is
+
+`\(\mathcal{l} = -444.043\)`  
+
+]
+
+---
+
+## Rate model
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-17-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+.gray.right[_Hypothetical dataset for demonstration._]
+
+]
+
+.pull-right[
+
+Estimated coefficients: 
+
+`\(\beta_0 = 1.39\)`  
+`\(\beta_1 = 1.054\)`   
+
+Note that these coefficient estimates are on the log scale! To get back to counts, need to take the exponent.   
+
+`\(\beta_0 = exp(1.39) = 4.015\)`  
+`\(\beta_1 = exp(1.054) = 2.868\)`  
+
+For a one unit increase in elevation, the count of surveys increases by 2.868.
+
+]
+
+---
+
+## Over-dispersion
+
+- For exponential family of distributions, variance is a function of the mean:
+
+`$$Var(\epsilon) = \phi \mu$$`
+
+.ml4[
+where `\(\phi\)` is a scaling parameter, assumed to be equal to 1, meaning the variance is assumed to be equal to the mean.
+]
+
+- When `\(\phi &gt; 1\)`, this is called _over-dispersion_. When `\(\phi &lt; 1\)`, it's under-dispersion.
+
+
+
+---
+
+## Over-dispersion
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-18-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+One way to check for over (or under) dispersion is by visual inspection, plotting the variance relative to the estimates, i.e., the conditional mean.
+
+Note that the dark red line represents the expectation that `\(Var(\epsilon) = \mu\)`, so it has a slope of 1 and intercept at 0. 
+
+The cloud of points above the line indicates over-dispersion.
+
+]
+
+
+---
+
+## Overdispersion
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-19-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+A simple rule of thumb is to compare a model's residual deviance to its degrees of freedom. The ratio of these should be 1. Values greater than one indicate over-dispersion.
+
+
+
+For our site count model, that's
+
+`\(D = 288.144\)`  
+`\(df = 98\)`  
+
+`\(D/df = 2.94\)`
+
+Again, this is greater than one, indicating over-dispersion.
+
+]
+
+---
+
+## Over-dispersion
+
+.pull-left[
+
+&lt;img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-21-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+We can also test for this idea using a simple linear model where
+
+`$$Var(\epsilon) = \mu + \alpha \mu$$`
+
+If variance is equal to the mean, then `\(\alpha = 0\)`. 
+
+&lt;br&gt;
+
+&lt;table class=" lightable-paper lightable-striped" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; '&gt;
+&lt;caption&gt;H-test for Overdispersion&lt;br&gt;Alternative: α &amp;gt; 0&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; null &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+
+---
+
+## Over-dispersion
+
+
+
+
+Two strategies for addressing this:
+
+1. Use a quasi-Poisson model
+2. Use a negative binomial model (also for counts/rates)
+
+A drawback of the quasi-Poisson is that it does not use MLE to estimate coefficients, so many of the statistics, like the AIC, that we would want to use in inference are not available.
+
+---
+
+## &amp;#x1F52D; Looking Ahead
+
+
+
+.pull-left[
+
+&lt;table class=" lightable-paper lightable-striped lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Linear Models 3&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-03-29)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Poisson GLMS. Prediction, Overdispersion, Offsets&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Linear Models 4&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-05)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Linear Mixed-Effects, Generalized Linear Mixed-Effects&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Additive Models&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-12)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;LOESS Regression, Splines, Piecewise Regression&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Cluster Analysis&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-19)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Distance Measures, k-means, Hierarchical Clustering, Validation&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "magula",
+"highlightLines": true,
+"countIncrementalSlides": true,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

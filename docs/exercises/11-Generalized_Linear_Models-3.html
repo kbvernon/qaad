@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Lab 11</title>
+
+<script src="11-Generalized_Linear_Models-3_files/header-attrs/header-attrs.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/jquery/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<link href="11-Generalized_Linear_Models-3_files/bootstrap/bootstrap.min.css" rel="stylesheet" />
+<script src="11-Generalized_Linear_Models-3_files/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/bs3compat/transition.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/bs3compat/tabs.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/bs3compat/bs3compat.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/jqueryui/jquery-ui.min.js"></script>
+<link href="11-Generalized_Linear_Models-3_files/tocify/jquery.tocify.css" rel="stylesheet" />
+<script src="11-Generalized_Linear_Models-3_files/tocify/jquery.tocify.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/navigation/tabsets.js"></script>
+<link href="11-Generalized_Linear_Models-3_files/highlightjs/default.css" rel="stylesheet" />
+<script src="11-Generalized_Linear_Models-3_files/highlightjs/highlight.js"></script>
+<script src="11-Generalized_Linear_Models-3_files/clipboard/clipboard.min.js"></script>
+<link href="11-Generalized_Linear_Models-3_files/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+<script src="11-Generalized_Linear_Models-3_files/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+<script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
+<link href="11-Generalized_Linear_Models-3_files/font-awesome/css/all.css" rel="stylesheet" />
+<link href="11-Generalized_Linear_Models-3_files/font-awesome/css/v4-shims.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    
+    const ttl = $('.title.toc-ignore').text();
+    const subttl = $('.subtitle').text();
+    
+    $('.title.toc-ignore').remove();
+    $('.subtitle').remove();
+    
+    $('<h1 class = "title toc-ignore">' + ttl + '</h1><h3 class = "subtitle">' + subttl + '</h3>')
+      .appendTo('.tocify');
+    
+    $('.section.level2:first').show();
+      
+  });
+  
+  $(window).on('load', function() {
+  
+    $('.tocify-item.list-group-item').click(function(event){
+        
+      $('.section.level2').hide();
+      
+      var id = $(this).data('unique');
+      
+      $('#'+id).show(100, function(){
+        $('html').scrollTop(0);
+      });
+      
+    });
+  
+  });
+
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lab 11</h1>
+<h3 class="subtitle">Generalized Linear Models</h3>
+
+</div>
+
+
+<div id="Outline" class="section level2">
+<h2>Outline</h2>
+<p><strong>TL;DR</strong> Extensions to generalized linear models.</p>
+<p><strong>Caution!</strong> Please note that all labs assume that you
+are working in an RStudio Project directory!</p>
+<div id="objectives" class="section level3">
+<h3>Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol style="list-style-type: decimal">
+<li>Predicting with a GLM</li>
+<li>Plotting a bivariate GLM with standard errors</li>
+<li>Fitting a rate model with constant offset</li>
+<li>Testing for dispersion</li>
+<li>Fitting a quasi-Poisson GLM</li>
+</ol>
+</div>
+<div id="r-packages" class="section level3">
+<h3>R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a
+href="https://cran.r-project.org/web/packages/AER/AER.pdf">AER</a></li>
+<li><a
+href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
+<li><a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a></li>
+<li><a href="https://here.r-lib.org/">here</a></li>
+</ul>
+<p>To install these packages, <strong>run the following code in your
+console</strong>:</p>
+<pre class="r"><code>install.packages(
+  c(&quot;AER&quot;, &quot;archdata&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;here&quot;)
+)</code></pre>
+<p><strong>Note:</strong> You should not <code>install.packages()</code>
+in an Rmd document. Use that function in your R console instead. Then
+use <code>library()</code> as part of the preamble in your Rmd document
+to check packages out of the library and use them in that R session.
+This should always go at the start of your document!</p>
+<pre class="r"><code>library(AER)
+library(archdata)
+library(dplyr)
+library(ggplot2)
+library(here)</code></pre>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<ul>
+<li><code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during
+surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code></li>
+<li>reference: <a
+href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
+class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>surveys</code>
+<ul>
+<li>A hypothetical dataset including counts of grave goods and measures
+of distance (in meters) from a great house in the American
+Southwest.</li>
+<li>package: NA</li>
+<li>reference: <a
+href="https://github.com/kbvernon/qaad/tree/master/datasets"
+class="uri">https://github.com/kbvernon/qaad/tree/master/datasets</a></li>
+</ul></li>
+<li><code>Snodgrass</code>
+<ul>
+<li>Includes measurements of size, location, and contents of 91 pit
+houses at the Snodgrass site in Butler County, Missouri.</li>
+<li>package: archdata</li>
+<li>reference: <a
+href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
+class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
+</ul></li>
+<li><code>surveys</code>
+<ul>
+<li>A hypothetical dataset including site counts per survey block along
+with measures of area (in km2) and fit of elevation (in meters) for each
+survey block.</li>
+<li>package: NA</li>
+<li>reference: <a
+href="https://github.com/kbvernon/qaad/tree/master/datasets"
+class="uri">https://github.com/kbvernon/qaad/tree/master/datasets</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="Prediction" class="section level2">
+<h2>Prediction</h2>
+<p>In this section, we’ll learn how to predict with a GLM and how to
+plot a trend line along with the standard errors. We’ll be using the
+<code>Snodgrass</code> data to answer the following</p>
+<p><strong>Question</strong> Does the size of a house structure
+(measured in square feet) make it more or less likely that the structure
+is found inside the inner walls of the site?</p>
+<p>We’ve already saved this data to disk, so we’ll load it in again and
+prepare it for analysis using the same code as in the previous lab.</p>
+<pre class="r"><code>snodgrass &lt;- here(&quot;darts&quot;, &quot;snodgrass.csv&quot;) %&gt;% 
+  read.csv() %&gt;% 
+  as_tibble() %&gt;% 
+  rename_with(tolower) %&gt;% 
+  select(inside, area) %&gt;% 
+  mutate(
+    inside = ifelse(inside == &quot;Inside&quot;, 1, 0) # read as &quot;if Inside, set to 1, else 0&quot;
+  )</code></pre>
+<p>As before, we’ll plot these data using a scatterplot.</p>
+<pre class="r"><code>ggplot(snodgrass, aes(area, inside)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = &quot;Area (sq ft)&quot;,
+    y = &quot;Inside inner wall&quot;
+  )</code></pre>
+<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>And, now we’ll fit a GLM with a binomial error distribution and a
+logit link function:</p>
+<pre class="r"><code>glm_snodgrass &lt;- glm(
+  inside ~ area,
+  family = binomial(link = &quot;logit&quot;),
+  data = snodgrass
+)</code></pre>
+<p>Here’s the summary again.</p>
+<pre class="r"><code>summary(glm_snodgrass)
+## 
+## Call:
+## glm(formula = inside ~ area, family = binomial(link = &quot;logit&quot;), 
+##     data = snodgrass)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -2.110  -0.481  -0.184   0.288   2.571  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -8.66307    1.81844   -4.76  1.9e-06 ***
+## area         0.03476    0.00751    4.63  3.7e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 123.669  on 90  degrees of freedom
+## Residual deviance:  57.728  on 89  degrees of freedom
+## AIC: 61.73
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p>To predict with this, we use the <code>predict()</code> function,
+just as we did with linear models.</p>
+<pre class="r"><code>fit &lt;- predict(glm_snodgrass)
+
+# showing the first five fit
+fit[1:5]
+##      1      2      3      4      5 
+## -3.658  0.235  1.973  7.031  5.588</code></pre>
+<p>Note that these are on the logit scale, to get these back onto the
+scale of the response (i.e., probability), we need to apply the inverse
+link function to these data. To do that, we extract the function from
+the error distribution of the model with the <code>family()</code>
+function and the <code>$</code> operator.</p>
+<pre class="r"><code>inverse_link &lt;- family(glm_snodgrass)$linkinv</code></pre>
+<p>This is a function, so we can now apply it to our fit.</p>
+<pre class="r"><code>inverse_link(fit[1:5])
+##      1      2      3      4      5 
+## 0.0251 0.5586 0.8780 0.9991 0.9963</code></pre>
+<p>We can use this now to plot the estimated response over our
+observations.</p>
+<pre class="r"><code>snodgrass &lt;- snodgrass %&gt;% 
+  mutate(
+    logit = predict(glm_snodgrass),
+    probability = inverse_link(logit)
+  )
+
+# plot
+ggplot(snodgrass) + 
+  geom_point(
+    aes(area, inside),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_line(
+    aes(area, probability),
+    size = 1,
+    color = &quot;#A20000&quot;
+  ) +
+  labs(
+    x = &quot;Area (sq ft)&quot;,
+    y = &quot;Inside inner wall&quot;
+  )</code></pre>
+<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To get the standard errors, we can run <code>predict()</code> with
+the argument <code>se.fit = TRUE</code>.</p>
+<pre class="r"><code>estimates &lt;- predict(glm_snodgrass, se.fit = TRUE)
+
+str(estimates)
+## List of 3
+##  $ fit           : Named num [1:91] -3.658 0.235 1.973 7.031 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:91] &quot;1&quot; &quot;2&quot; &quot;3&quot; ...
+##  $ se.fit        : Named num [1:91] 0.78 0.359 0.61 1.639 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:91] &quot;1&quot; &quot;2&quot; &quot;3&quot; ...
+##  $ residual.scale: num 1</code></pre>
+<p>TWo things to note here. First, this is a list with three items:
+<code>fit</code>, <code>se.fit</code>, and <code>residual.scale</code>.
+The <code>fit</code> is just the estimated response, <code>se.fit</code>
+the standard error of predicted means, and <code>residual.scale</code>
+the residual standard deviations. The second thing to note is that,
+again, the fit and standard error are both on the logit scale, so we
+need to apply the inverse link function. Doing that, though, is a little
+trickier because we’re working with a list. Here, just to make it as
+obvious as possible what we’re doing, I’m going to give you one very
+crude, but also very simple method.</p>
+<pre class="r"><code>snodgrass &lt;- snodgrass %&gt;% 
+  mutate(
+    logit = estimates$fit,
+    se = estimates$se.fit,
+    probability = inverse_link(logit),
+    conf_hi = inverse_link(logit + 2*se),
+    conf_lo = inverse_link(logit - 2*se)
+  )</code></pre>
+<p>Here, we add the <code>logit</code> response and <code>se</code> or
+standard errors to the <code>snodgrass</code> table by extracting the
+<code>fit</code> and <code>se.fit</code> items from the
+<code>estimates</code> list. We then convert the <code>logit</code>
+response to a <code>probability</code> by applying the
+<code>inverse_link()</code> function. Next, we estimate the upper
+confidence line <code>conf_hi</code> by applying the
+<code>inverse_link()</code> to the sum of the <code>logit</code>
+response and 2 times the standard error (<code>se</code>). To get the
+lower confidence line <code>conf_lo</code>, we do the same, but taking
+the difference.</p>
+<p>Now we have everything we need to plot the confidence ribbon with
+<code>geom_ribbon()</code>. Notice that I add the ribbon to the plot
+before adding the observed points and the estimated trend line! This
+ensures that points and line are not obscured by the confidence
+ribbon.</p>
+<pre class="r"><code>ggplot(snodgrass) +
+  geom_ribbon(
+    aes(area, ymin = conf_lo, ymax = conf_hi),
+    alpha = 0.5,
+    fill = &quot;gray75&quot;
+  ) + 
+  geom_point(
+    aes(area, inside),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_line(
+    aes(area, probability),
+    size = 1,
+    color = &quot;#A20000&quot;
+  ) +
+  labs(
+    x = &quot;Area (sq ft)&quot;,
+    y = &quot;Inside inner wall&quot;
+  )</code></pre>
+<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<p>For these exercises, we’ll use the modified version of the
+<code>DartPoints</code> dataset from the <code>archdata</code> package
+that we created in the previous lab. We are going to use length to see
+if we can discriminate Pedernales dart points from the other dart
+points.</p>
+<ol style="list-style-type: decimal">
+<li>First, load the data in with <code>read.csv()</code> and
+<code>here()</code>. Be sure to call this table <code>darts</code>.</li>
+<li>Make a scatter plot of the data.<br />
+</li>
+<li>Build a GLM of the Pedernales type as a function of dart length
+using a Binomial distribution and the logit link.</li>
+<li>Use <code>predict()</code> with <code>se.fit = TRUE</code> and
+assign this to an object called <code>estimates</code>.</li>
+<li>Extract the inverse link function from the model with
+<code>family()$linkinv</code> and give it the name
+<code>inverse_link</code>.</li>
+<li>Now, add the logit, probability, standard errors, and
+inverse-transformed standard errors to the <code>darts</code> table,
+applying the inverse link function where necessary.</li>
+<li>Plot the confidence ribbon. Make sure to add the ribbon to the plot
+before adding observations or the trend line!</li>
+</ol>
+</div>
+</div>
+<div id="Rate_Model" class="section level2">
+<h2>Rate Model</h2>
+<p>In this section, we’ll learn how to create a rate model using a
+Poisson GLM with a a log offset to account for differences in the size
+of the sampling interval. Here, we’ll be using the <code>surveys</code>
+data to answer the following</p>
+<p><strong>Question</strong> Does elevation drive variation in the
+number of archaeological sites per survey block?</p>
+<p>So, first, we’ll load in the data. This time, we’ll have to download
+the data, then load it into R.</p>
+<pre class="r"><code>download.file(
+  &quot;https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/surveys.csv&quot;,
+  destfile = here(&quot;data&quot;, &quot;surveys.csv&quot;)
+)
+
+surveys &lt;- here(&quot;data&quot;, &quot;surveys.csv&quot;) %&gt;% 
+  read.csv() %&gt;% 
+  as_tibble()
+
+surveys</code></pre>
+<pre><code>## # A tibble: 100 x 4
+##    block sites  area elevation
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
+##  1     1    53  2.86      1.33
+##  2     2    92  4.41      1.43
+##  3     3   108  3.61      1.97
+##  4     4    52  3.44      1.52
+##  5     5    37  2.48      1.54
+##  6     6   132  3.93      2.01
+##  7     7    46  2.74      1.64
+##  8     8    10  1.33      1.12
+##  9     9    48  3.39      1.29
+## 10    10   103  5.47      1.37
+## # ... with 90 more rows</code></pre>
+<p>As before, we’ll plot these data using a scatterplot.</p>
+<pre class="r"><code>ggplot(surveys, aes(elevation, sites)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = &quot;Elevation (km)&quot;,
+    y = &quot;Site count&quot;
+  )</code></pre>
+<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now, let’s look at differences in the area of each survey block.</p>
+<pre class="r"><code>ggplot(surveys, aes(area)) + 
+  geom_histogram(bins = 15) +
+  labs(
+    x = &quot;Area (km2)&quot;,
+    y = &quot;Number of survey blocks&quot;
+  )</code></pre>
+<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>As you can see, the size of each survey block is not the same. This
+is not good! For the size biases the count: bigger areas should just by
+being bigger have more sites and smaller areas less sites <em>just as a
+matter of chance</em>. To account for this, we need to weight the
+response by the area.</p>
+<pre class="r"><code>ggplot(surveys, aes(elevation, sites/area)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = &quot;Elevation (km)&quot;,
+    y = &quot;Site density (n/km2)&quot;
+  )</code></pre>
+<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
+<p>For these exercises, we’ll use the <code>site_counts</code> dataset.
+We are going to use elevation to predict site counts per kilometer on an
+east-west transect through Utah.</p>
+<ol style="list-style-type: decimal">
+<li>First, download the <code>site_counts</code> data with</li>
+</ol>
+<pre class="r"><code>download.file(
+  &quot;https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/site_counts.csv&quot;,
+  destfile = here(&quot;data&quot;, &quot;site_counts.csv&quot;)
+)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Make a scatter plot of the data.<br />
+</li>
+<li>Build a GLM of site counts per kilometer as a function of elevation
+using a Poisson distribution and a log link.</li>
+<li>Build an intercept-only GLM of site counts using the same
+distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC
+of the intercept-only model?</li>
+</ul></li>
+<li>Now compare these models using a Likelihood Ratio Test with
+<code>anova()</code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<div id="Homework" class="section level2">
+<h2>Homework</h2>
+<p>No homework this week!</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
