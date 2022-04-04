@@ -36,12 +36,14 @@ navbar:
           href: slides/10-Generalized_Linear_Models-2.html
         - text: "11-Generalized Linear Models 3"
           href: slides/11-Generalized_Linear_Models-3.html
-        - text: "12-Generalized Additive Models"
-          href: slides/12-Generalized_Additive_Models.html
-        - text: "13-Cluster Analysis"
-          href: slides/13-Cluster_Analysis.html
-        - text: "14-Ordination"
-          href: slides/14-Ordination.html
+        - text: "12-Generalized Linear Mixed Models"
+          href: slides/12-Generalized_Linear_Mixed_Models.html
+        - text: "13-Generalized Additive Models"
+          href: slides/13-Generalized_Additive_Models.html
+        - text: "14-Cluster Analysis"
+          href: slides/14-Cluster_Analysis.html
+        - text: "15-Ordination"
+          href: slides/15-Ordination.html
     - text: "Labs"
       menu: 
         - text: "01-Introduction"
@@ -66,10 +68,12 @@ navbar:
           href: exercises/10-Generalized_Linear_Models-2.html
         - text: "11-Generalized Linear Models 3"
           href: exercises/11-Generalized_Linear_Models-3.html
-        - text: "12-Generalized Additive Models"
-          href: exercises/12-Generalized_Additive_Models.html
-        - text: "13-Cluster Analysis"
-          href: exercises/13-Cluster_Analysis.html
-        - text: "14-Ordination"
-          href: exercises/14-Ordination.html
+        - text: "12-Generalized Linear Mixed Models"
+          href: exercises/12-Generalized_Linear_Mixed_Models.html
+        - text: "13-Generalized Additive Models"
+          href: exercises/13-Generalized_Additive_Models.html
+        - text: "14-Cluster Analysis"
+          href: exercises/14-Cluster_Analysis.html
+        - text: "15-Ordination"
+          href: exercises/15-Ordination.html
 output: distill::distill_article

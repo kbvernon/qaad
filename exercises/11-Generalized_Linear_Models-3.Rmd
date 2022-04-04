@@ -32,15 +32,11 @@ This lab will guide you through the process of
 
 1. Predicting with a GLM
 2. Plotting a bivariate GLM with standard errors
-2. Fitting a rate model with constant offset
-2. Testing for dispersion
-2. Fitting a quasi-Poisson GLM
 
 ### R Packages
 
 We will be using the following packages:
 
-- [AER](https://cran.r-project.org/web/packages/AER/AER.pdf)
 - [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
 - [dplyr](https://dplyr.tidyverse.org/)
 - [ggplot2](https://ggplot2.tidyverse.org/index.html)
@@ -51,7 +47,7 @@ To install these packages, **run the following code in your console**:
 ```{r, eval = FALSE}
 
 install.packages(
-  c("AER", "archdata", "dplyr", "ggplot2", "here")
+  c("archdata", "dplyr", "ggplot2", "here")
 )
 
 ```
@@ -60,7 +56,6 @@ install.packages(
 
 ```{r}
 
-library(AER)
 library(archdata)
 library(dplyr)
 library(ggplot2)
@@ -74,18 +69,10 @@ library(here)
     - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
     - package: `archdata`
     - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
-- `surveys`
-    - A hypothetical dataset including counts of grave goods and measures of distance (in meters) from a great house in the American Southwest.
-    - package: NA
-    - reference: <https://github.com/kbvernon/qaad/tree/master/datasets>
 - `Snodgrass`
     - Includes measurements of size, location, and contents of 91 pit houses at the Snodgrass site in Butler County, Missouri.
     - package: archdata
     - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
-- `surveys`
-    - A hypothetical dataset including site counts per survey block along with measures of area (in km2) and fit of elevation (in meters) for each survey block.
-    - package: NA
-    - reference: <https://github.com/kbvernon/qaad/tree/master/datasets>
 
 ## Prediction {#Prediction}
 
@@ -284,110 +271,6 @@ For these exercises, we'll use the modified version of the `DartPoints` dataset 
 2. Extract the inverse link function from the model with `family()$linkinv` and give it the name `inverse_link`.
 2. Now, add the logit, probability, standard errors, and inverse-transformed standard errors to the `darts` table, applying the inverse link function where necessary.
 2. Plot the confidence ribbon. Make sure to add the ribbon to the plot before adding observations or the trend line!
-
-## Rate Model {#Rate_Model}
-
-In this section, we'll learn how to create a rate model using a Poisson GLM with a a log offset to account for differences in the size of the sampling interval. Here, we'll be using the `surveys` data to answer the following
-
-**Question** Does elevation drive variation in the number of archaeological sites per survey block?
-
-So, first, we'll load in the data. This time, we'll have to download the data, then load it into R. 
-
-```{r}
-#| echo = FALSE
-
-surveys <- read_csv("https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/surveys.csv")
-```
-
-```{r}
-#| eval = FALSE
-
-download.file(
-  "https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/surveys.csv",
-  destfile = here("data", "surveys.csv")
-)
-
-surveys <- here("data", "surveys.csv") %>% 
-  read.csv() %>% 
-  as_tibble()
-
-surveys
-
-```
-
-```{r}
-#| echo = FALSE
-surveys
-```
-
-As before, we'll plot these data using a scatterplot. 
-
-```{r}
-
-ggplot(surveys, aes(elevation, sites)) + 
-  geom_point(
-    size = 3,
-    alpha = 0.6
-  ) +
-  labs(
-    x = "Elevation (km)",
-    y = "Site count"
-  )
-
-```
-
-Now, let's look at differences in the area of each survey block.
-
-```{r}
-
-ggplot(surveys, aes(area)) + 
-  geom_histogram(bins = 15) +
-  labs(
-    x = "Area (km2)",
-    y = "Number of survey blocks"
-  )
-
-```
-
-As you can see, the size of each survey block is not the same. This is not good! For the size biases the count: bigger areas should just by being bigger have more sites and smaller areas less sites _just as a matter of chance_. To account for this, we need to weight the response by the area.
-
-```{r}
-
-ggplot(surveys, aes(elevation, sites/area)) + 
-  geom_point(
-    size = 3,
-    alpha = 0.6
-  ) +
-  labs(
-    x = "Elevation (km)",
-    y = "Site density (n/km2)"
-  )
-
-```
-
-
-
-### Exercises
-
-For these exercises, we'll use the `site_counts` dataset. We are going to use elevation to predict site counts per kilometer on an east-west transect through Utah.
-
-1.  First, download the `site_counts` data with
-
-```{r}
-#| eval = FALSE
-download.file(
-  "https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/site_counts.csv",
-  destfile = here("data", "site_counts.csv")
-)
-```
-
-2. Make a scatter plot of the data.  
-2. Build a GLM of site counts per kilometer as a function of elevation using a Poisson distribution and a log link.
-5. Build an intercept-only GLM of site counts using the same distribution and link.
-6. Compare the AIC of these two models.
-    - Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?
-7.  Now compare these models using a Likelihood Ratio Test with `anova()` and `test = "LRT"`.
-    - What is the result? Is there a significant improvement?
 
 ## Homework {#Homework}
 

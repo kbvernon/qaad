@@ -120,3 +120,37 @@ write_csv(
   surveys,
   here("datasets", "surveys.csv")
 )
+
+# Violent trauma ----------------------------------------------------------
+
+n <- 100
+
+set.seed(1941)
+
+ppt <- rnorm(n, mean = 6.5, sd = 1.35)
+
+b0 <- log(5)
+b1 <- log(0.03)
+
+span <- abs(rnorm(n, mean = 3, sd = 1.1))
+
+bs <- 1.4
+
+lambda <- exp(b0 + b1 * ppt + bs * log(span)) 
+
+trauma <- rpois(n, lambda)
+
+plot(ppt, trauma)
+
+surveys <- tibble(
+  block = 1:n,
+  sites = sites,
+  area = area,
+  elevation = elevation
+)
+
+write_csv(
+  surveys,
+  here("datasets", "surveys.csv")
+)
+

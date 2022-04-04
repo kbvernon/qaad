@@ -289,17 +289,12 @@ are working in an RStudio Project directory!</p>
 <ol style="list-style-type: decimal">
 <li>Predicting with a GLM</li>
 <li>Plotting a bivariate GLM with standard errors</li>
-<li>Fitting a rate model with constant offset</li>
-<li>Testing for dispersion</li>
-<li>Fitting a quasi-Poisson GLM</li>
 </ol>
 </div>
 <div id="r-packages" class="section level3">
 <h3>R Packages</h3>
 <p>We will be using the following packages:</p>
 <ul>
-<li><a
-href="https://cran.r-project.org/web/packages/AER/AER.pdf">AER</a></li>
 <li><a
 href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
 <li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
@@ -309,15 +304,14 @@ href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a><
 <p>To install these packages, <strong>run the following code in your
 console</strong>:</p>
 <pre class="r"><code>install.packages(
-  c(&quot;AER&quot;, &quot;archdata&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;here&quot;)
+  c(&quot;archdata&quot;, &quot;dplyr&quot;, &quot;ggplot2&quot;, &quot;here&quot;)
 )</code></pre>
 <p><strong>Note:</strong> You should not <code>install.packages()</code>
 in an Rmd document. Use that function in your R console instead. Then
 use <code>library()</code> as part of the preamble in your Rmd document
 to check packages out of the library and use them in that R session.
 This should always go at the start of your document!</p>
-<pre class="r"><code>library(AER)
-library(archdata)
+<pre class="r"><code>library(archdata)
 library(dplyr)
 library(ggplot2)
 library(here)</code></pre>
@@ -334,16 +328,6 @@ surface surveys at Fort Hood, Texas.</li>
 href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
 class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
 </ul></li>
-<li><code>surveys</code>
-<ul>
-<li>A hypothetical dataset including counts of grave goods and measures
-of distance (in meters) from a great house in the American
-Southwest.</li>
-<li>package: NA</li>
-<li>reference: <a
-href="https://github.com/kbvernon/qaad/tree/master/datasets"
-class="uri">https://github.com/kbvernon/qaad/tree/master/datasets</a></li>
-</ul></li>
 <li><code>Snodgrass</code>
 <ul>
 <li>Includes measurements of size, location, and contents of 91 pit
@@ -352,16 +336,6 @@ houses at the Snodgrass site in Butler County, Missouri.</li>
 <li>reference: <a
 href="https://cran.r-project.org/web/packages/archdata/archdata.pdf"
 class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a></li>
-</ul></li>
-<li><code>surveys</code>
-<ul>
-<li>A hypothetical dataset including site counts per survey block along
-with measures of area (in km2) and fit of elevation (in meters) for each
-survey block.</li>
-<li>package: NA</li>
-<li>reference: <a
-href="https://github.com/kbvernon/qaad/tree/master/datasets"
-class="uri">https://github.com/kbvernon/qaad/tree/master/datasets</a></li>
 </ul></li>
 </ul>
 </div>
@@ -560,106 +534,6 @@ inverse-transformed standard errors to the <code>darts</code> table,
 applying the inverse link function where necessary.</li>
 <li>Plot the confidence ribbon. Make sure to add the ribbon to the plot
 before adding observations or the trend line!</li>
-</ol>
-</div>
-</div>
-<div id="Rate_Model" class="section level2">
-<h2>Rate Model</h2>
-<p>In this section, we’ll learn how to create a rate model using a
-Poisson GLM with a a log offset to account for differences in the size
-of the sampling interval. Here, we’ll be using the <code>surveys</code>
-data to answer the following</p>
-<p><strong>Question</strong> Does elevation drive variation in the
-number of archaeological sites per survey block?</p>
-<p>So, first, we’ll load in the data. This time, we’ll have to download
-the data, then load it into R.</p>
-<pre class="r"><code>download.file(
-  &quot;https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/surveys.csv&quot;,
-  destfile = here(&quot;data&quot;, &quot;surveys.csv&quot;)
-)
-
-surveys &lt;- here(&quot;data&quot;, &quot;surveys.csv&quot;) %&gt;% 
-  read.csv() %&gt;% 
-  as_tibble()
-
-surveys</code></pre>
-<pre><code>## # A tibble: 100 x 4
-##    block sites  area elevation
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
-##  1     1    53  2.86      1.33
-##  2     2    92  4.41      1.43
-##  3     3   108  3.61      1.97
-##  4     4    52  3.44      1.52
-##  5     5    37  2.48      1.54
-##  6     6   132  3.93      2.01
-##  7     7    46  2.74      1.64
-##  8     8    10  1.33      1.12
-##  9     9    48  3.39      1.29
-## 10    10   103  5.47      1.37
-## # ... with 90 more rows</code></pre>
-<p>As before, we’ll plot these data using a scatterplot.</p>
-<pre class="r"><code>ggplot(surveys, aes(elevation, sites)) + 
-  geom_point(
-    size = 3,
-    alpha = 0.6
-  ) +
-  labs(
-    x = &quot;Elevation (km)&quot;,
-    y = &quot;Site count&quot;
-  )</code></pre>
-<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Now, let’s look at differences in the area of each survey block.</p>
-<pre class="r"><code>ggplot(surveys, aes(area)) + 
-  geom_histogram(bins = 15) +
-  labs(
-    x = &quot;Area (km2)&quot;,
-    y = &quot;Number of survey blocks&quot;
-  )</code></pre>
-<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>As you can see, the size of each survey block is not the same. This
-is not good! For the size biases the count: bigger areas should just by
-being bigger have more sites and smaller areas less sites <em>just as a
-matter of chance</em>. To account for this, we need to weight the
-response by the area.</p>
-<pre class="r"><code>ggplot(surveys, aes(elevation, sites/area)) + 
-  geom_point(
-    size = 3,
-    alpha = 0.6
-  ) +
-  labs(
-    x = &quot;Elevation (km)&quot;,
-    y = &quot;Site density (n/km2)&quot;
-  )</code></pre>
-<p><img src="11-Generalized_Linear_Models-3_files/figure-html/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
-<div id="exercises-1" class="section level3">
-<h3>Exercises</h3>
-<p>For these exercises, we’ll use the <code>site_counts</code> dataset.
-We are going to use elevation to predict site counts per kilometer on an
-east-west transect through Utah.</p>
-<ol style="list-style-type: decimal">
-<li>First, download the <code>site_counts</code> data with</li>
-</ol>
-<pre class="r"><code>download.file(
-  &quot;https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/site_counts.csv&quot;,
-  destfile = here(&quot;data&quot;, &quot;site_counts.csv&quot;)
-)</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>Make a scatter plot of the data.<br />
-</li>
-<li>Build a GLM of site counts per kilometer as a function of elevation
-using a Poisson distribution and a log link.</li>
-<li>Build an intercept-only GLM of site counts using the same
-distribution and link.</li>
-<li>Compare the AIC of these two models.
-<ul>
-<li>Is the AIC of the proposed model less than or greater than the AIC
-of the intercept-only model?</li>
-</ul></li>
-<li>Now compare these models using a Likelihood Ratio Test with
-<code>anova()</code> and <code>test = "LRT"</code>.
-<ul>
-<li>What is the result? Is there a significant improvement?</li>
-</ul></li>
 </ol>
 </div>
 </div>
