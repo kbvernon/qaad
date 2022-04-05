@@ -124,7 +124,7 @@ ggplot(sites_tbl) +
 --
 
 2. Aggregate data
-    - Loss of information, particular within-group differences
+    - Loss of information, particularly within-group differences
     - Risk of committing the ecological fallacy
 --
 
@@ -209,14 +209,20 @@ facet_labels <- tibble(
   survey = LETTERS[1:8]
 )
 
-gg_responses <- ggplot(responses) +
-  geom_ribbon(
-    aes(elevation, ymin = ymin, ymax = ymax, group = survey),
-    fill = "gray80",
-    alpha = 0.5
+gg_responses <- ggplot(responses, aes(elevation, residential, color = survey)) +
+  geom_point(
+    data = sites_tbl,
+    aes(elevation, residential, fill = survey),
+    shape = 21,
+    color = "gray80",
+    size = 3.5
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  geom_line(
+    size = 3,
+    alpha = 0.35
   ) +
   geom_line(
-    aes(elevation, residential, color = survey),
     size = 1.3
   ) +
   geom_text(
@@ -227,14 +233,6 @@ gg_responses <- ggplot(responses) +
     vjust = 1
   ) +
   scale_color_viridis(name = "Survey", discrete = TRUE) +
-  geom_point(
-    data = sites_tbl,
-    aes(elevation, residential, fill = survey),
-    shape = 21,
-    color = "gray80",
-    size = 3.5
-  ) +
-  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
   labs(
     x = "Elevation (km)",
     y = "Number of Residential Features"
@@ -321,7 +319,7 @@ $$\beta_{j} = \gamma_0 + \gamma_{1}W_{j} + u_{j}\\ u \sim N(0, \tau^2)$$
 
 Where
 
-- $W$ is some property of the group
+- $W$ is some property of the group (not required)
 - $\gamma_0$ is the overall intercept and slope across all groups
 - $\gamma_1$ is the variation of the intercept and slope between groups
 - $u$ is the error around the intercept and slope for each group
@@ -352,11 +350,18 @@ responses <- ggpredict(
 #| out.height = "100%",
 #| fig.asp = 1
 
-gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
-  geom_ribbon(
-    aes(ymin = conf.low, ymax = conf.high, group = group),
-    fill = "gray80",
-    alpha = 0.5
+ggplot(responses, aes(x = x, y = predicted, color = group)) +
+  geom_point(
+    data = sites_tbl %>% rename("group" = survey),
+    aes(elevation, residential, fill = group),
+    shape = 21,
+    color = "gray80",
+    size = 3.5
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  geom_line(
+    size = 3,
+    alpha = 0.35
   ) +
   geom_line(
     aes(color = group),
@@ -370,14 +375,6 @@ gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
     vjust = 1
   ) +
   scale_color_viridis(name = "Survey", discrete = TRUE) +
-  geom_point(
-    data = sites_tbl %>% rename("group" = survey),
-    aes(elevation, residential, fill = group),
-    shape = 21,
-    color = "gray80",
-    size = 3.5
-  ) +
-  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
   labs(
     x = "Elevation (km)",
     y = "Number of Residential Features"
@@ -390,8 +387,6 @@ gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
     legend.position = "none"
   ) +
   coord_cartesian(ylim = c(0, 45))
-
-gg_mixedeffects
 
 ```
 
@@ -454,11 +449,18 @@ responses <- ggpredict(
 #| out.height = "100%",
 #| fig.asp = 1
 
-gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
-  geom_ribbon(
-    aes(ymin = conf.low, ymax = conf.high, group = group),
-    fill = "gray80",
-    alpha = 0.5
+ggplot(responses, aes(x = x, y = predicted, color = group)) +
+  geom_point(
+    data = sites_tbl %>% rename("group" = survey),
+    aes(elevation, residential, fill = group),
+    shape = 21,
+    color = "gray80",
+    size = 3.5
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  geom_line(
+    size = 3,
+    alpha = 0.35
   ) +
   geom_line(
     aes(color = group),
@@ -472,14 +474,6 @@ gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
     vjust = 1
   ) +
   scale_color_viridis(name = "Survey", discrete = TRUE) +
-  geom_point(
-    data = sites_tbl %>% rename("group" = survey),
-    aes(elevation, residential, fill = group),
-    shape = 21,
-    color = "gray80",
-    size = 3.5
-  ) +
-  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
   labs(
     x = "Elevation (km)",
     y = "Number of Residential Features"
@@ -492,8 +486,6 @@ gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
     legend.position = "none"
   ) +
   coord_cartesian(ylim = c(0, 45))
-
-gg_mixedeffects
 
 ```
 
