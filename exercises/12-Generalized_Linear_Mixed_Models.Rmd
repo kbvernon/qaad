@@ -1,0 +1,426 @@
+---
+title: "Lab 11"
+subtitle: "Generalized Linear Models"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float:
+      smooth_scroll: false
+    self_contained: false
+    css: custom_style.css
+    includes:
+      in_header: toggle.html
+    theme: 
+      bootswatch: sandstone
+---
+
+```{r}
+#| include = FALSE,
+#| code = xfun::read_utf8(here::here("exercises", "before_chunk.R"))
+```
+
+## Outline {#Outline}
+
+**TL;DR** Random effects!
+
+**Caution!** Please note that all labs assume that you are working in an RStudio Project directory!
+
+### Objectives
+
+This lab will guide you through the process of
+
+1. Fitting a rate model with a GLM
+2. Fitting a random-intercept GLMM
+2. Fitting a random-slope GLMM
+2. Visualizing GLMMs
+
+### R Packages
+
+We will be using the following packages:
+
+- [dplyr](https://dplyr.tidyverse.org/)
+- [ggeffects](https://strengejacke.github.io/ggeffects)
+- [ggplot2](https://ggplot2.tidyverse.org/index.html)
+- [here](https://here.r-lib.org/)
+- [lme4](https://cran.r-project.org/web/packages/lme4/lme4.pdf)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+To install these packages, **run the following code in your console**:
+
+```{r, eval = FALSE}
+
+install.packages(
+  c("dplyr", "ggeffects", "ggplot2", "here", "lme4", "viridis")
+)
+
+```
+
+**Note:** You should not `install.packages()` in an Rmd document. Use that function in your R console instead. Then use `library()` as part of the preamble in your Rmd document to check packages out of the library and use them in that R session. This should always go at the start of your document!
+
+```{r}
+
+library(dplyr)
+library(ggeffects)
+library(ggplot2)
+library(here)
+library(lme4)
+library(viridis)
+
+```
+
+### Data
+
+- `surveys`
+    - A hypothetical dataset including site counts per survey block along with measures of area (in km2) and fit of elevation (in meters) for each survey block.
+    - package: NA
+    - reference: <https://github.com/kbvernon/qaad/tree/master/datasets>
+- `survey polygons`
+    - A hypothetical dataset including counts of residential features and measures of elevation at 400 archaeological sites distributed across eight survey quadrats.
+    - package: NA
+    - reference: <https://github.com/kbvernon/qaad/tree/master/datasets>
+
+## Rate Model {#Rate_Model}
+
+In this section, we'll learn how to create a rate model using a Poisson GLM with a a log offset to account for differences in the size of the sampling interval. Here, we'll be using the `surveys` data to answer the following
+
+**Question** Does elevation drive variation in the number of archaeological sites per survey block?
+
+So, first, we'll load in the data. This time, we'll have to download the data, then load it into R. 
+
+```{r}
+#| echo = FALSE
+
+surveys <- read_csv("https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/surveys.csv")
+```
+
+```{r}
+#| eval = FALSE
+
+download.file(
+  "https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/surveys.csv",
+  destfile = here("data", "surveys.csv")
+)
+
+surveys <- here("data", "surveys.csv") %>% 
+  read.csv() %>% 
+  as_tibble()
+
+surveys
+
+```
+
+```{r}
+#| echo = FALSE
+surveys
+```
+
+As before, we'll plot these data using a scatterplot. 
+
+```{r}
+
+ggplot(surveys, aes(elevation, sites)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Elevation (km)",
+    y = "Site count"
+  )
+
+```
+
+Now, let's look at differences in the area of each survey block.
+
+```{r}
+
+ggplot(surveys, aes(area)) + 
+  geom_histogram(
+    color = "gray95",
+    bins = 15
+  ) +
+  labs(
+    x = "Area (km2)",
+    y = "Number of survey blocks"
+  )
+
+```
+
+As you can see, the size of each survey block is not the same. This is not good! For the size biases the count: bigger areas should just by being bigger have more sites and smaller areas less sites _just as a matter of chance_. To account for this, we need to weight the response by the area.
+
+```{r}
+
+ggplot(surveys, aes(elevation, sites/area)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Elevation (km)",
+    y = "Site density (n/km2)"
+  )
+
+```
+
+## Random Intercept {#Random_Intercept}
+
+```{r}
+#| echo = FALSE
+
+elevation <- here("datasets", "elevation.tif") %>% rast()
+
+gpkg <- here("datasets", "qaad.gpkg")
+
+surveys <- read_sf(gpkg, "surveys")
+sites <- read_sf(gpkg, "sites")
+
+```
+
+In this section, we will learn how to fit a Generalized Linear Mixed-Effects Model (GLMM) with the `lme4` package in R. To give this some context, let's image this scenario. We want to know whether archaeological site complexity has some relationship with certain ecological variables like temperature and precipitation. In this case, we don't have measures of those variables, just elevation, which is correlated with both. To measure site complexity, we decide to use a simple count of architectural features, specifically residential features. So, we establish eight survey quadrats in our area of interest and go collect data on sites we find in each (as shown in the figure below).
+
+```{r}
+#| echo = FALSE
+
+ggplot() +
+  geom_tile(
+    data = as.data.frame(elevation/1000, xy = TRUE),
+    aes(x, y, fill = elevation)
+  ) +
+  scale_fill_viridis(name = "Elevation (km)") +
+  geom_sf(
+    data = surveys,
+    fill = "transparent"
+  ) +
+  geom_sf(
+    data = sites,
+    shape = 21,
+    color = "black",
+    fill = "white", 
+    size = 2
+  ) +
+  coord_sf(expand = FALSE) +
+  theme_void(15) +
+  theme(
+    panel.spacing = margin(),
+    plot.margin = margin(),
+    legend.position = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  )
+
+```
+
+After completing the survey and entering all the data into a spreadsheet, we pull it into R in the familiar way, albeit with some downloading from GitHub:
+
+```{r}
+#| echo = FALSE
+
+sites <- here("datasets", "survey-polygons_sites.csv") %>% read_csv()
+
+```
+
+```{r}
+#| eval = FALSE
+
+fn <- here("data", "residential_feature_counts.png")
+
+download.file(
+  "https://raw.githubusercontent.com/kbvernon/qaad/master/datasets/survey-polygons_sites.csv",
+  destfile = fn
+)
+
+sites <- read.csv(fn) %>% as_tibble()
+
+sites
+
+```
+
+
+Now, we want to answer the following
+
+__Question__ To what extent does elevation determine the number of residential features found at each site?
+
+As per usual, let's visualize this relationship with a scatterplot.
+
+```{r}
+#| echo = FALSE
+
+ggplot(sites) +
+  geom_point(
+    aes(elevation, residential, fill = survey),
+    shape = 21,
+    color = "gray80",
+    size = 4
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of Residential Features"
+  )
+
+```
+
+The first thing we want to acknowledge here is that our samples, while they might be random _within_ each quadrat, are not necessarily random _between_ each survey quadrat. Intuitively, a site is more likely to share the same or a similar number of features with sites in its own quadrat than it is with sites in other quadrats. There could be a number of reasons for this, one being [Tobler's Law](https://en.wikipedia.org/wiki/Tobler%27s_first_law_of_geography): 
+
+> ... everything is related to everything else, but near things are more related than distant things. -Waldo Tobler (1970)
+
+This and similar situations will almost always lead to autocorrelation in the errors, which can bias inferences about coefficient estimates as the standard errors tend to be underestimated. 
+
+The second thing we have to note, and this is related to the first, is the potential for heteroscedasticity, or changes in the error variance. Just as we might worry that sites in the same quadrat auto-correlate, we might worry that the variance (in this case, in the number of features at each site) differs across quadrats, too. This may, though not necessarily, lead to non-constant variance when the number of features is regressed against elevation, which - again - can bias inferences about coefficient estimates by either under or overestimating the standard errors. 
+
+A powerful way to address these issues surrounding grouped data is to model variation in the relationship between a predictor and response variable (that is, variation in the coefficients) across groups using higher-order properties of those groups. Importantly, we are going to do this at the same time that we model the first-order observations (the counts of features at individual sites). This is known as mixed-effect modeling, mixed-effects because you have both fixed-effects and random-effects. That is, you have the overall intercept and slope estimates across groups (the fixed-effects) and variance in intercept and slope across groups (the random-effects). 
+
+Now, let's see how to fit one of these models in R. The syntax is very similar to a GLM, but with one important change in the model formula. To specify a random-intercept, for example, we add to the total formula the expression `(1|<group>)`, substituting in for `<group>` the name of the group variable in our data. `1` here indicates the intercept, and `|<group>` can be read as "by group," so the whole thing is "model variation in intercept by group." Using our data, the complete formula looks like this:
+
+```{r}
+#| eval = FALSE
+
+residential ~ elevation + (1|survey)
+
+```
+
+This is the model specification for a GLMM with a random-effect for the intercept. The R package `lme4` provides functionality to fit a GLMM with this kind of model specification, specifically the `glmer()` function. I believe it stands for _generalized linear mixed-effects regression_, but don't quote me on that. While the name of this function is new, it has the same basic interface as the `glm()` function. You give it the model formula, tell it what exponential family distribution to use, and provide it with a dataset. Here is how we fit a GLMM for our data:
+
+```{r}
+
+# ri = random intercept
+features_ri <- glmer(
+  residential ~ elevation + (1|survey),
+  family = poisson,
+  data = sites
+)
+
+```
+
+Notice that we supply a `poisson` distribution to the `family` argument. This is because we are modeling counts, specifically counts of residential features at each site. 
+
+Here is the summary for this model.
+
+```{r}
+
+summary(features_ri)
+
+```
+
+A couple of things to note about this summary.
+
+1. It provides a table with important likelihood statistics like the AIC, BIC, and log-Likelihood.
+2. It provides estimates of the random effects, in this case, just the random intercept across survey blocks. The standard deviation is 0.697.
+2. It estimates the fixed effects (what would be the coefficient estimates in a simple GLM). Here we have both the intercept and slope coefficients. These are total effects across all groups when variation in the intercept (the random effect) is zero.
+
+## Random Slope {#Random_Slope}
+
+Adding a random-effect for the slope (or slopes) requires a simple amendment to the equation specified above. Specifically, we will replace the `1` in `(1|<group>)` with the name of a covariate that we believe may have a varying coefficient across groups. So, the new syntax is `(<covariate>|<group>)`, in this case `(elevation|survey)`. Note that this also implicitly includes a random-effect for the intercept. We read this as saying "model variation in the intercept and slope for elevation by survey block."
+
+Here is the full syntax for fitting a random-slope model.
+
+```{r}
+
+# rs = random slope
+features_rs <- glmer(
+  residential ~ elevation + (elevation|survey),
+  family = poisson,
+  data = sites
+)
+
+```
+
+And here is the model summary.
+
+```{r}
+
+summary(features_rs)
+
+```
+
+This is the same print out as before, but with a few notable differences. 
+
+1. First, the random effects table includes estimates of the variance in the elevation coefficient. The standard deviation is 0.607. Notice that the standard deviation for the intercept changed, too!
+2. Second, the random effect also the Inter-Class Correlation (ICC) defined as the standard deviation of the intercept ($\tau^2$, or the variance between groups) divided by the sum of $\tau^2$ and the standard deviation of the slope ($\sigma^2$, or the residual variance not explained by the model). That is,
+
+$$ICC = \frac{\tau^2}{\tau^2+\sigma^2}$$
+
+The main thing to use this statistic for is to assess the importance of groups in the model. If ICC is zero, then the group effect is negligible.
+
+## Visualizing GLMMs {#Visualizing_GLMMs}
+
+Now, let's talk about how to visualize the modeled relationship between feature counts and elevation. For a GLMM, this is a wee-bit more complicated than a simple GLM, so we are going to use a new package called `ggeffects` for this purpose. The process is still the same. First, we generate a table of data by using the model to estimate the response across the range of the covariate. Then, we use that data to plot the response. In this case, we will use the `ggpredict()` function from `ggeffects` to generate a table of data for plotting. Then, we will use `ggplot()` to generate the figure.
+
+The `ggpredict()` function is extremely useful. In fact, you might even consider using it to generate data for visualizing GLMs and even simple linear models. Like with the base `predict()` function, it's first argument is a fitted model. You can also specify what variables to visualize (in this case, we only have one, `elevation`), and you can tell it what levels of a factor variable (in this case, `survey` blocks) to visualize with. You provide this to the `terms` argument. 
+
+If you want to include random-effects, we have add a few arguments to `ggpredict()`. First, we need to provide the factor variable to the `terms` argument. In this case, that would be `terms = c("elevation", "survey")`. Second, we need to specify the type of model this is using `type = "random"`. So, the full function call using the random-slope model is this.
+
+```{r}
+
+responses <- ggpredict(
+  features_rs,
+  terms = c("elevation", "survey"),
+  type = "random"
+)
+
+responses
+
+```
+
+While this printout is somewhat involved, under the hood, it's really just a `data.frame` with six important columns: 
+
+1. `x` - the predictor variable, 
+2. `predicted` - the estimated response, 
+3. `std.error` - the standard error
+4. `conf.low` - the lower confidence level at 95%, so roughly $predicted - 2\cdot std.error$.
+5. `conf.high` - the upper confidence level at 95%, so roughly $predicted + 2\cdot std.error$.
+6. `group` - the levels or groups in the factor variable used, in this case, to estimate random effects.
+
+So, we can use these variables in our `responses` table to plot the responses! Here, we are going to do all of the following.
+
+1. We are going to facet these responses by group because a single plot gets a little too involved to be easily interpreted. 
+2. We are going to add the original observations as points. To make sure that they are faceted correctly, we will change the name of the `survey` variable in the `sites` table to `group`, the same name it has in the `responses` table. 
+2. We'll also use the `viridis` color package to apply the `viridis` color palette to the survey groups. Note that we use the same `name = "Survey"` for both `scale_fill_viridis()` and `scale_color_viridis()`. This does two things. 
+    - First, and most simply, it sets the title of the legend. 
+    - Second, it ensures that the legend for color and fill are combined into one legend.
+2. To make the points more visible, we
+    - Reduce the opacity of the fill to 0.5 (in the `scale_fill_viridis()` function!), so we can see overlap in points.
+    - We also set `shape = 21` and `color = "gray75"`, so we can add a gray circle around each point to delineate them.
+2. The facet labels are redundant with the color scheme and legend, so we will remove those, too, with `theme()`.
+
+```{r}
+#| out.height = "100%",
+#| fig.asp = 1
+
+ggplot(responses) + 
+  geom_point(
+    data = sites %>% rename("group" = survey),
+    aes(elevation, residential, fill = group),
+    shape = 21,
+    color = "gray75",
+    size = 4
+  ) +
+  scale_fill_viridis(
+    name = "Survey",
+    alpha = 0.7,
+    discrete = TRUE
+  ) +
+  geom_line(
+    aes(x, predicted, color = group),
+    size = 1.3
+  ) +
+  scale_color_viridis(
+    name = "Survey",
+    discrete = TRUE
+  ) +
+  facet_wrap(~ group, nrow = 3, ncol = 3) +
+  theme(
+    strip.background = element_blank(), # remove gray box above each facet
+    strip.text = element_blank() # remove text labels above each facet
+  ) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of Residential Features"
+  )
+  
+```
+
+
+## Homework {#Homework}
+
+No homework this week!
