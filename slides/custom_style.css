@@ -60,84 +60,16 @@ font stuff
   font-size: 70%; 
 }
 
-.tiny{
+.tiny {
   font-size: 40%;
 }
 
-.pull-lleft {
-  float: left;
-  width: 15%;
-}
+.w-18 {width: 18%}
+.w-28 {width: 28%}
+.w-28 {width: 38%}
+.w-28 {width: 48%}
 
-.pull-lright {
-  float: right;
-  width: 84%;
-}
-
-.pull-lright ~ * {
-  clear: both;
-}
-
-.pull-rleft {
-  float: left;
-  width: 60%;
-}
-
-.pull-rright {
-  float: right;
-  width: 37%;
-}
-
-.pull-rright ~ * {
-  clear: both;
-}
-
-
-.pull-left-38 {
-  float: left;
-  width: 38%;
-}
-
-.pull-right-60 {
-  float: right;
-  width: 60%;
-}
-
-.pull-right-60 ~ * {
-  clear: both;
-}
-
-.pull-left-60 {
-  float: left;
-  width: 60%;
-}
-
-.pull-right-38 {
-  float: right;
-  width: 38%;
-}
-
-.pull-right-38 ~ * {
-  clear: both;
-}
-
-.pull-left-70 {
-  float: left;
-  width: 70%;
-}
-
-.pull-right-28 {
-  float: right;
-  width: 28%;
-}
-
-.pull-right-28 ~ * {
-  clear: both;
-}
-
-
-
-div[class^="pull-"] p:first-child{
+.fl p:first-child, .fr p:first-child, .pull-left p:first-child, .pull-right p:first-child {
   margin-top: 0;
 }
 

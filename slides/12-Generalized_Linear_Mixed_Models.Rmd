@@ -19,38 +19,547 @@ output:
 #| code = xfun::read_utf8(here::here("slides", "before_chunk.R"))
 ```
 
-```{r setup, include = FALSE}
+```{r}
 
-knitr::opts_chunk$set(
-  echo = FALSE,
-  warning = FALSE,
-  message = FALSE,
-  error = TRUE,
-  collapse = TRUE, 
-  fig.align = "center",
-  dpi = 300
+elevation <- here("datasets", "elevation.tif") %>% rast()
+
+gpkg <- here("datasets", "qaad.gpkg")
+
+surveys <- read_sf(gpkg, "surveys")
+sites <- read_sf(gpkg, "sites")
+
+sites_tbl <- here("datasets", "survey-polygons_sites.csv") %>% read_csv()
+
+```
+
+
+## Outline
+
+1. A hypothetical survey of sites
+2. The problem of natural groupings
+2. What to do about them?
+2. Generalized Linear Mixed-Effects Models (GLMMs)
+2. GLM with dummy variables
+2. GLMM method
+2. GLMM - Random Intercept
+2. GLMM - Random Slope
+
+---
+class: center middle
+
+## __Question__ How many residential features at each site?
+
+```{r}
+#| out.width = "70%"
+
+ggplot() +
+  geom_tile(
+    data = as.data.frame(elevation/1000, xy = TRUE),
+    aes(x, y, fill = elevation)
+  ) +
+  scale_fill_viridis(name = "Elevation (km)") +
+  geom_sf(
+    data = surveys,
+    fill = "transparent"
+  ) +
+  geom_sf(
+    data = sites,
+    shape = 21,
+    color = "black",
+    fill = "white", 
+    size = 2
+  ) +
+  coord_sf(expand = FALSE) +
+  theme_void(15) +
+  theme(
+    panel.spacing = margin(),
+    plot.margin = margin(),
+    legend.position = c(0.98, 0.98),
+    legend.justification = c("right", "top")
+  )
+
+```
+
+---
+
+## Natural groupings
+
+.pull-left[
+
+Lead to:
+
+1. autocorrelation (non-independence)
+2. heteroscedasticity (non-constant variance)
+
+]
+
+.pull-right[
+
+```{r}
+#| out.width = "100%"
+
+ggplot(sites_tbl) +
+  geom_point(
+    aes(elevation, residential, fill = survey),
+    shape = 21,
+    color = "gray80",
+    size = 4
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of Residential Features"
+  )
+
+```
+
+]
+
+---
+
+## What to do about natural groupings?
+
+1. Nothing? 
+    - Violation of independence assumption
+--
+
+2. Aggregate data
+    - Loss of information, particular within-group differences
+    - Risk of committing the ecological fallacy
+--
+
+3. Dummy variables
+    - A coefficient for every level gobbles up degrees of freedom
+    - Difficult to generalize
+--
+
+4. Mixed effects model
+    - Models variance at multiple levels
+    - Addresses independence issues
+    - Straightforward conceptualization of multilevel data
+
+---
+
+## Generalized linear mixed effect models (GLMMs)
+
+Extend
+- GLMs by incorporating random effects
+- LMMs by incorporating non-Normal responses
+
+Your pick really...
+
+--
+
+Conceptually similar to a GLM with dummy variables, but it
+- treats coefficients themselves as random variables with mean and variance
+- doesn't require a reference class (uses grand-mean instead)
+- uses similarities between groups to refine estimates
+- allows for inference testing on cross-level effects
+
+---
+
+## GLM with a dummy variable
+
+```{r}
+
+features_glm <- glm(
+  residential ~ elevation * survey,
+  family = poisson,
+  data = sites_tbl
 )
 
-options(
-  htmltools.dir.version = FALSE,
-  str = strOptions(vec.len = 3)
+inverse_link <- family(features_glm)$linkinv
+
+responses <- lapply(
+  sites_tbl$survey,
+  function(x){
+    
+    new_data <- tibble(
+      elevation = with(sites_tbl, seq(min(elevation), max(elevation), length = 300)),
+      survey = x
+    )
+    
+    estimates <- predict(features_glm, newdata = new_data, se.fit = TRUE)
+    
+    new_data <- new_data %>% 
+      mutate(
+        residential = inverse_link(estimates$fit),
+        ymin = with(estimates, inverse_link(fit - 2*se.fit)),
+        ymax = with(estimates, inverse_link(fit + 2*se.fit))
+      )
+    
+    new_data
+    
+  }
+) %>% 
+  bind_rows()
+
+```
+
+.pull-left[
+
+```{r}
+#| out.height = "100%",
+#| fig.asp = 1
+
+facet_labels <- tibble(
+  x = 0, y = 45,
+  label = LETTERS[1:8],
+  group = LETTERS[1:8],
+  survey = LETTERS[1:8]
+)
+
+gg_responses <- ggplot(responses) +
+  geom_ribbon(
+    aes(elevation, ymin = ymin, ymax = ymax, group = survey),
+    fill = "gray80",
+    alpha = 0.5
+  ) +
+  geom_line(
+    aes(elevation, residential, color = survey),
+    size = 1.3
+  ) +
+  geom_text(
+    data = facet_labels,
+    aes(x, y, label = label, color = survey),
+    size = 8,
+    hjust = 0,
+    vjust = 1
+  ) +
+  scale_color_viridis(name = "Survey", discrete = TRUE) +
+  geom_point(
+    data = sites_tbl,
+    aes(elevation, residential, fill = survey),
+    shape = 21,
+    color = "gray80",
+    size = 3.5
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of Residential Features"
+  ) +
+  facet_wrap(~survey, nrow = 3, ncol = 3) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    plot.margin = margin(6,3,3,3),
+    legend.position = "none"
+  ) +
+  coord_cartesian(ylim = c(0, 45))
+
+gg_responses
+
+```
+
+]
+
+.pull-right[
+
+```{r}
+
+coefficients_table <- tidy(features_glm)
+
+coefficients_table %>% 
+  mutate("q" = if_else(p.value > 0.05, "&#10060;", "&#10004;")) %>% 
+  kbl(
+    format = "html", 
+    escape = FALSE,
+    col.names = c("", names(.)[2:5], ""),
+    align = c("lllllc"),
+    table.attr = "class='table-model table-fullwidth'"
+  ) %>% 
+  kable_paper(
+    "striped", 
+    position = "left"
+  ) %>% 
+  scroll_box(height = "5in")
+
+```
+
+]
+
+---
+
+## GLM with a dummy variable
+
+.pull-left[
+
+```{r}
+#| out.height = "100%",
+#| fig.asp = 1
+
+gg_responses
+
+```
+
+]
+
+.pull-right[
+
+Can calculate mean and variance of coefficients across all groups $j$ in a post-hoc fashion, using a model's coefficient estimates $\hat\beta$
+
+$$\bar\beta = \frac{1}{j} \sum_{i=1}^{j} \hat\beta_{j}$$
+
+$$Var(\bar\beta)=\frac{1}{j} \sum_{i=1}^{j} (\hat\beta_{j}-\bar\beta)^2$$
+
+but, it's better to calculate these parameters directly from the data as part of the model fitting process.
+
+]
+
+---
+
+## Two-Level GLMM
+
+__Level One__ Model the dependent variable as a function of your level-one predictors.
+
+$$y_{j} = \beta_{j}X_{j} + \epsilon_{j}\\ \epsilon \sim N(0, \sigma^2)$$
+
+__Level Two__ Model the coefficients as a function of your level-two predictors.
+
+$$\beta_{j} = \gamma_0 + \gamma_{1}W_{j} + u_{j}\\ u \sim N(0, \tau^2)$$
+
+Where
+
+- $W$ is some property of the group
+- $\gamma_0$ is the overall intercept and slope across all groups
+- $\gamma_1$ is the variation of the intercept and slope between groups
+- $u$ is the error around the intercept and slope for each group
+
+---
+
+## GLMM - Random Intercept
+
+```{r}
+
+features_glmm <- lme4::glmer(
+  residential ~ elevation + (1|survey),
+  data = sites_tbl,
+  family = poisson
+)
+
+responses <- ggpredict(
+  features_glmm, 
+  terms = c("elevation", "survey"), 
+  type = 'random'
 )
 
 ```
 
-Outline
+.pull-left[
 
-1. 
-2. 
-2. 
+```{r}
+#| out.height = "100%",
+#| fig.asp = 1
 
+gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
+  geom_ribbon(
+    aes(ymin = conf.low, ymax = conf.high, group = group),
+    fill = "gray80",
+    alpha = 0.5
+  ) +
+  geom_line(
+    aes(color = group),
+    size = 1.3
+  ) +
+  geom_text(
+    data = facet_labels,
+    aes(x, y, label = label, color = group),
+    size = 8,
+    hjust = 0,
+    vjust = 1
+  ) +
+  scale_color_viridis(name = "Survey", discrete = TRUE) +
+  geom_point(
+    data = sites_tbl %>% rename("group" = survey),
+    aes(elevation, residential, fill = group),
+    shape = 21,
+    color = "gray80",
+    size = 3.5
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of Residential Features"
+  ) +
+  facet_wrap(~group, nrow = 3, ncol = 3) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    plot.margin = margin(6,3,3,3),
+    legend.position = "none"
+  ) +
+  coord_cartesian(ylim = c(0, 45))
 
+gg_mixedeffects
 
+```
+
+]
+
+.pull-right[
+
+```{r}
+
+coefficients_table <- tidy(features_glmm) %>% 
+  select(-effect) %>% 
+  mutate(
+    term = c("(Intercept)", "elevation", "(Intercept) &#x3C3;<sup>2</sup>")
+  )
+
+coefficients_table %>% 
+  mutate("q" = if_else(p.value > 0.05, "&#10060;", "&#10004;")) %>% 
+  kbl(
+    format = "html", 
+    escape = FALSE,
+    col.names = c("", "", names(.)[3:6], ""),
+    align = c("lllllc"),
+    table.attr = "class='table-model table-fullwidth'"
+  ) %>% 
+  kable_paper(
+    "striped", 
+    position = "left"
+  ) %>% 
+  pack_rows("Fixed Effects",  1, 2, indent = FALSE) %>% 
+  pack_rows("Random Effects", 3, 3, indent = FALSE) %>% 
+  collapse_rows(1)
+
+```
+
+]
 
 ---
 
-## Smithsonian Trinomials
+## GLMM - Random Slopes
 
+```{r}
 
+features_glmm_slope <- lme4::glmer(
+  residential ~ elevation + (elevation|survey),
+  data = sites_tbl,
+  family = poisson
+)
 
+responses <- ggpredict(
+  features_glmm_slope, 
+  terms = c("elevation", "survey"), 
+  type = 'random'
+)
 
+```
+
+.pull-left[
+
+```{r}
+#| out.height = "100%",
+#| fig.asp = 1
+
+gg_mixedeffects <- ggplot(responses, aes(x = x, y = predicted)) +
+  geom_ribbon(
+    aes(ymin = conf.low, ymax = conf.high, group = group),
+    fill = "gray80",
+    alpha = 0.5
+  ) +
+  geom_line(
+    aes(color = group),
+    size = 1.3
+  ) +
+  geom_text(
+    data = facet_labels,
+    aes(x, y, label = label, color = group),
+    size = 8,
+    hjust = 0,
+    vjust = 1
+  ) +
+  scale_color_viridis(name = "Survey", discrete = TRUE) +
+  geom_point(
+    data = sites_tbl %>% rename("group" = survey),
+    aes(elevation, residential, fill = group),
+    shape = 21,
+    color = "gray80",
+    size = 3.5
+  ) +
+  scale_fill_viridis(name = "Survey", discrete = TRUE, alpha = 0.8) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of Residential Features"
+  ) +
+  facet_wrap(~group, nrow = 3, ncol = 3) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    plot.margin = margin(6,3,3,3),
+    legend.position = "none"
+  ) +
+  coord_cartesian(ylim = c(0, 45))
+
+gg_mixedeffects
+
+```
+
+]
+
+.pull-right[
+
+```{r}
+
+coefficients_table <- tidy(features_glmm_slope) %>% 
+  select(-effect) %>% 
+  mutate(
+    term = c("(Intercept)", "elevation", "(Intercept) &#x3C3;<sup>2</sup>", 
+             "ICC*", "elevation &#x3C4;<sup>2</sup>")
+  )
+
+coefficients_table %>% 
+  mutate("q" = if_else(p.value > 0.05, "&#10060;", "&#10004;")) %>% 
+  kbl(
+    format = "html", 
+    escape = FALSE,
+    col.names = c("", "", names(.)[3:6], ""),
+    align = c("lllllc"),
+    table.attr = "class='table-model table-fullwidth'"
+  ) %>% 
+  kable_paper(
+    "striped", 
+    position = "left"
+  ) %>% 
+  pack_rows("Fixed Effects",  1, 2, indent = FALSE) %>% 
+  pack_rows("Random Effects", 3, 5, indent = FALSE) %>% 
+  collapse_rows(1)
+
+```
+
+.grey[_ICC = `\\(\tau^2/(\tau^2 + \sigma^2)\\)`. If ICC = 0, then group effect is negligible._]
+
+]
+
+---
+
+## &#x1F52D; Looking Ahead
+
+```{r}
+
+schedule <- here("_misc", "course_outline.xlsx") %>% 
+  readxl::read_excel(1) %>% 
+  mutate(
+    date = lubridate::ymd(date),
+    description = glue::glue(
+    "<b>{topic}</b> <span style = 'font-size: 80%; color: #9C9C9C;'>({date})</span><br>
+    <div style = 'font-size: 80%; font-style: italic; color: #9C9C9C;'>{details}</div>"
+  )) %>% 
+  select(description)
+
+```
+
+.pull-left[
+
+```{r}
+
+schedule %>% 
+  slice(13:16) %>% 
+  kbl(escape = FALSE, col.names = NULL) %>% 
+  kable_paper(c("striped", "hover"))
+
+```
+
+]

@@ -1,5 +1,8 @@
 
+library(broom)
+library(broom.mixed)
 library(fontawesome)
+library(ggeffects)
 library(ggtext)
 library(glue)
 library(here)
@@ -10,6 +13,7 @@ library(patchwork)
 library(readxl)
 library(sf)
 library(showtext)
+library(terra)
 library(tidyverse)
 library(viridis)
 library(xaringanExtra)
@@ -25,7 +29,8 @@ knitr::opts_chunk$set(
   fig.align = "center",
   fig.asp = 0.7,
   fig.retina = 3,
-  dev = "svglite"
+  dpi = 300,
+  dev.args = list(png = list(type = "cairo"))
 )
 
 options(

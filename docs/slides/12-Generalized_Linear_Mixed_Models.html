@@ -19,6 +19,8 @@
     <script src="libs/shareon/shareon.min.js"></script>
     <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
     <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="custom_style.css" type="text/css" />
   </head>
@@ -28,7 +30,7 @@ class: center, middle, inverse, title-slide
 
 # Quantitative Analysis of Archaeological Data
 ## Lecture 12: Generalized Linear Mixed Models
-### Last updated: 2022-04-04
+### Last updated: 2022-04-05
 
 ---
 
@@ -37,19 +39,457 @@ class: center, middle, inverse, title-slide
 
 
 
-Outline
 
-1. 
-2. 
-2. 
+## Outline
+
+1. A hypothetical survey of sites
+2. The problem of natural groupings
+2. What to do about them?
+2. Generalized Linear Mixed-Effects Models (GLMMs)
+2. GLM with dummy variables
+2. GLMM method
+2. GLMM - Random Intercept
+2. GLMM - Random Slope
+
+---
+class: center middle
+
+## __Question__ How many residential features at each site?
+
+&lt;img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-3-1.png" width="70%" style="display: block; margin: auto;" /&gt;
 
 ---
 
-## Watershed Boundary Dataset structure visualization
+## Natural groupings
 
-&lt;img src="https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/styles/full_width/public/thumbnails/image/WBD_Base_HUStructure_small.png?itok=AXL0TZiu" width="50%" style="display: block; margin: auto;" /&gt;
+.pull-left[
+
+Lead to:
+
+1. autocorrelation (non-independence)
+2. heteroscedasticity (non-constant variance)
+
+]
+
+.pull-right[
+
+&lt;img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+## What to do about natural groupings?
+
+1. Nothing? 
+    - Violation of independence assumption
+--
+
+2. Aggregate data
+    - Loss of information, particular within-group differences
+    - Risk of committing the ecological fallacy
+--
+
+3. Dummy variables
+    - A coefficient for every level gobbles up degrees of freedom
+    - Difficult to generalize
+--
+
+4. Mixed effects model
+    - Models variance at multiple levels
+    - Addresses independence issues
+    - Straightforward conceptualization of multilevel data
+
+---
+
+## Generalized linear mixed effect models (GLMMs)
+
+Extend
+- GLMs by incorporating random effects
+- LMMs by incorporating non-Normal responses
+
+Your pick really...
+
+--
+
+Conceptually similar to a GLM with dummy variables, but it
+- treats coefficients themselves as random variables with mean and variance
+- doesn't require a reference class (uses grand-mean instead)
+- uses similarities between groups to refine estimates
+- allows for inference testing on cross-level effects
+
+---
+
+## GLM with a dummy variable
 
 
+
+.pull-left[
+
+&lt;img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-6-1.png" width="2100" height="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+&lt;div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:5in; "&gt;&lt;table class="table-model table-fullwidth lightable-paper lightable-striped" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; '&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt;  &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; p.value &lt;/th&gt;
+   &lt;th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"&gt;  &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.344 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.148 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 9.109 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.492 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.302 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 4.937 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyB &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.143 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.264 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.541 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.588 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyC &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.667 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.212 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -3.145 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.002 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyD &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.014 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.234 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.059 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.953 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyE &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.093 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.226 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.414 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.679 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyF &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.847 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.418 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -2.024 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.043 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyG &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.546 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.278 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.967 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.049 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; surveyH &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.742 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.213 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 8.186 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyB &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.381 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.362 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.055 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.292 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyC &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.134 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.394 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -2.875 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.004 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyD &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.954 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.783 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.219 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.223 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyE &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.096 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.385 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -2.850 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.004 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyF &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.560 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.917 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -1.702 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.089 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyG &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.504 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.861 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.586 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.558 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ❌ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; elevation:surveyH &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -2.351 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.519 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -4.526 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;&lt;/div&gt;
+
+]
+
+---
+
+## GLM with a dummy variable
+
+.pull-left[
+
+&lt;img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-8-1.png" width="2100" height="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Can calculate mean and variance of coefficients across all groups `\(j\)` in a post-hoc fashion, using a model's coefficient estimates `\(\hat\beta\)`
+
+`$$\bar\beta = \frac{1}{j} \sum_{i=1}^{j} \hat\beta_{j}$$`
+
+`$$Var(\bar\beta)=\frac{1}{j} \sum_{i=1}^{j} (\hat\beta_{j}-\bar\beta)^2$$`
+
+but, it's better to calculate these parameters directly from the data as part of the model fitting process.
+
+]
+
+---
+
+## Two-Level GLMM
+
+__Level One__ Model the dependent variable as a function of your level-one predictors.
+
+`$$y_{j} = \beta_{j}X_{j} + \epsilon_{j}\\ \epsilon \sim N(0, \sigma^2)$$`
+
+__Level Two__ Model the coefficients as a function of your level-two predictors.
+
+`$$\beta_{j} = \gamma_0 + \gamma_{1}W_{j} + u_{j}\\ u \sim N(0, \tau^2)$$`
+
+Where
+
+- `\(W\)` is some property of the group
+- `\(\gamma_0\)` is the overall intercept and slope across all groups
+- `\(\gamma_1\)` is the variation of the intercept and slope between groups
+- `\(u\)` is the error around the intercept and slope for each group
+
+---
+
+## GLMM - Random Intercept
+
+
+
+.pull-left[
+
+&lt;img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-10-1.png" width="2100" height="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+&lt;table class="table-model table-fullwidth lightable-paper lightable-striped" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; '&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; p.value &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="2"&gt;&lt;td colspan="7" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Fixed Effects&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;vertical-align: middle !important;" rowspan="2"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.228 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.254 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 4.84 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   
+   &lt;td style="text-align:left;"&gt; elevation &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.688 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.108 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 6.36 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr grouplength="1"&gt;&lt;td colspan="7" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Random Effects&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; survey &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) σ&lt;sup&gt;2&lt;/sup&gt; &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.697 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+
+---
+
+## GLMM - Random Slopes
+
+
+
+.pull-left[
+
+&lt;img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-13-1.png" width="2100" height="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+&lt;table class="table-model table-fullwidth lightable-paper lightable-striped" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; '&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; p.value &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt;  &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="2"&gt;&lt;td colspan="7" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Fixed Effects&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;vertical-align: middle !important;" rowspan="2"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.251 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.277 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 4.51 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   
+   &lt;td style="text-align:left;"&gt; elevation &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.558 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.268 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2.08 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.037 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr grouplength="3"&gt;&lt;td colspan="7" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Random Effects&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;vertical-align: middle !important;" rowspan="3"&gt; survey &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) σ&lt;sup&gt;2&lt;/sup&gt; &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.758 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   
+   &lt;td style="text-align:left;"&gt; ICC* &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; -0.529 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   
+   &lt;td style="text-align:left;"&gt; elevation τ&lt;sup&gt;2&lt;/sup&gt; &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.607 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.grey[_ICC = `\\(\tau^2/(\tau^2 + \sigma^2)\\)`. If ICC = 0, then group effect is negligible._]
+
+]
+
+---
+
+## &amp;#x1F52D; Looking Ahead
+
+
+
+.pull-left[
+
+&lt;table class=" lightable-paper lightable-striped lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Linear Models 4&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-05)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Linear Mixed-Effects, Generalized Linear Mixed-Effects&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Additive Models&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-12)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;LOESS Regression, Splines, Piecewise Regression&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Cluster Analysis&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-19)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Distance Measures, k-means, Hierarchical Clustering, Validation&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Ordination&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-26)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Distance Measures, Principal Component Analysis, Regression&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

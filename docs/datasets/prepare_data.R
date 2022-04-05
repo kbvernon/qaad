@@ -1,8 +1,11 @@
 
 library(here)
-library(dplyr)
-library(readr)
-
+library(FedData)
+library(MASS)
+library(sf)
+library(terra)
+library(tidyverse)
+library(viridis)
 
 # Advertising -------------------------------------------------------------
 
@@ -154,3 +157,132 @@ write_csv(
   here("datasets", "surveys.csv")
 )
 
+
+
+# survey polygons ---------------------------------------------------------
+
+# somewhere in San Juan County, UT
+surveys <- list(
+  matrix(
+    c(464, 4100, # in kilometers
+      464, 4110, 
+      474, 4110, 
+      474, 4100, 
+      464, 4100),
+    ncol = 2, 
+    byrow = TRUE
+  )
+) %>% 
+  st_polygon()
+
+surveys <- list(
+  surveys + c(03, 17),
+  surveys + c(17, 23),
+  surveys + c(25, 05),
+  surveys + c(40, 11),
+  surveys + c(12, 38),
+  surveys + c(53, 03),
+  surveys + c(57, 14),
+  surveys + c(31, 36)
+) %>% 
+  map(~.x * 1000) %>% # convert to meters
+  st_sfc(crs = 26912) %>% 
+  st_sf() %>% 
+  mutate(survey = LETTERS[1:n()])
+
+gpkg <- here("datasets", "qaad.gpkg")
+
+write_sf(
+  surveys,
+  dsn = gpkg,
+  layer = "surveys"
+)
+
+
+# survey polygon elevations -----------------------------------------------
+
+elevation <- get_ned(surveys, label = "sjco")
+
+elevation <- elevation %>% 
+  rast() %>% 
+  project("epsg:26912")
+
+elevation <- elevation %>% 
+  resample(
+    rast(
+      extent = ext(elevation),
+      resolution = c(100, 100),
+      crs = crs(elevation)
+    )
+  ) %>% 
+  mask(vect(surveys))
+
+names(elevation) <- "elevation"
+
+writeRaster(
+  elevation,
+  filename = here("datasets", "elevation.tif")
+)
+
+# feature counts with mixed effects ---------------------------------------
+
+ngroups <- nrow(surveys)
+nsites <- rpois(ngroups, 50) # number of sites in each survey polygon
+nobservations <- sum(nsites) # total number of sites
+
+set.seed(123)
+
+sites <- st_sample(surveys, size = nsites) %>% 
+  st_sfc() %>% 
+  st_sf() %>% 
+  mutate(site = 1:n()) %>% 
+  st_join(surveys) 
+
+write_sf(
+  sites,
+  dsn = gpkg,
+  layer = "sites"
+)
+
+# convert to kilometers and reduce by one
+# makes it easier to simulate response with a poisson
+sites$elevation <- terra::extract(elevation, vect(sites))[,2]/1000 - 1
+
+sites <- st_drop_geometry(sites)
+
+set.seed(123)
+
+b0 <- 1.32
+b1 <- 0.75
+
+b0_var <- 0.5
+b1_var <- 0.4
+res_re <- 0.1
+
+sigma <- matrix(
+  c(b0_var, res_re, res_re, b1_var),
+  nrow = 2,
+  ncol = 2
+)
+
+re <- mvrnorm(ngroups, mu = c(0, 0), sigma)
+
+b0_re <- rep(re[,1], rev(nsites))
+b1_re <- rep(re[,2], rev(nsites))
+
+lambda <- exp((b0 + b0_re) + (b1 + b1_re) * sites$elevation)
+
+y <- rpois(nobservations, lambda)
+
+sites$residential <- y
+
+# fit_glmer <- lme4::glmer(
+#   residential ~ elevation + (elevation|survey),
+#   data = sites,
+#   family = poisson
+# )
+
+write_csv(
+  sites,
+  file = here("datasets", "survey-polygons_sites.csv")
+)
