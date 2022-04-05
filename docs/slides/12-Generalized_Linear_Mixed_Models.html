@@ -289,13 +289,7 @@ Conceptually similar to a GLM with dummy variables, but it
 
 .pull-right[
 
-Can calculate mean and variance of coefficients across all groups `\(j\)` in a post-hoc fashion, using a model's coefficient estimates `\(\hat\beta\)`
-
-`$$\bar\beta = \frac{1}{j} \sum_{i=1}^{j} \hat\beta_{j}$$`
-
-`$$Var(\bar\beta)=\frac{1}{j} \sum_{i=1}^{j} (\hat\beta_{j}-\bar\beta)^2$$`
-
-but, it's better to calculate these parameters directly from the data as part of the model fitting process.
+Can, in principle, calculate mean and variance of coefficients across all groups in a post-hoc fashion, using a model's estimates, but it's better to calculate these parameters directly from the data as part of the model fitting process.
 
 ]
 
