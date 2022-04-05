@@ -1,6 +1,6 @@
 ---
-title: "Lab 11"
-subtitle: "Generalized Linear Models"
+title: "Lab 12"
+subtitle: "Generalized Linear Mixed Models"
 output: 
   html_document:
     toc: true

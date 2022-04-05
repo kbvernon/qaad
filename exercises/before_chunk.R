@@ -27,7 +27,8 @@ knitr::opts_chunk$set(
   fig.align = "center",
   fig.asp = 0.7,
   fig.retina = 3,
-  dev.args = list(type = "cairo-png")
+  dpi = 300,
+  dev.args = list(png = list(type = "cairo"))
 )
 
 options(

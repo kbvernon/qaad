@@ -11,7 +11,7 @@
 
 
 
-<title>Lab 11</title>
+<title>Lab 12</title>
 
 <script src="12-Generalized_Linear_Mixed_Models_files/header-attrs/header-attrs.js"></script>
 <script src="12-Generalized_Linear_Mixed_Models_files/jquery/jquery-3.6.0.min.js"></script>
@@ -272,8 +272,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Lab 11</h1>
-<h3 class="subtitle">Generalized Linear Models</h3>
+<h1 class="title toc-ignore">Lab 12</h1>
+<h3 class="subtitle">Generalized Linear Mixed Models</h3>
 
 </div>
 
@@ -393,7 +393,7 @@ surveys</code></pre>
     x = &quot;Elevation (km)&quot;,
     y = &quot;Site count&quot;
   )</code></pre>
-<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-7-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <p>Now, let’s look at differences in the area of each survey block.</p>
 <pre class="r"><code>ggplot(surveys, aes(area)) + 
   geom_histogram(
@@ -404,7 +404,7 @@ surveys</code></pre>
     x = &quot;Area (km2)&quot;,
     y = &quot;Number of survey blocks&quot;
   )</code></pre>
-<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-8-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <p>As you can see, the size of each survey block is not the same. This
 is not good! For the size biases the count: bigger areas should just by
 being bigger have more sites and smaller areas less sites <em>just as a
@@ -419,7 +419,7 @@ response by the area.</p>
     x = &quot;Elevation (km)&quot;,
     y = &quot;Site density (n/km2)&quot;
   )</code></pre>
-<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-9-1.png" width="2100" style="display: block; margin: auto;" /></p>
 </div>
 <div id="Random_Intercept" class="section level2">
 <h2>Random Intercept</h2>
@@ -434,7 +434,7 @@ simple count of architectural features, specifically residential
 features. So, we establish eight survey quadrats in our area of interest
 and go collect data on sites we find in each (as shown in the figure
 below).</p>
-<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-11-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <p>After completing the survey and entering all the data into a
 spreadsheet, we pull it into R in the familiar way, albeit with some
 downloading from GitHub:</p>
@@ -453,7 +453,7 @@ sites</code></pre>
 number of residential features found at each site?</p>
 <p>As per usual, let’s visualize this relationship with a
 scatterplot.</p>
-<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-14-1.png" width="2100" style="display: block; margin: auto;" /></p>
 <p>The first thing we want to acknowledge here is that our samples,
 while they might be random <em>within</em> each quadrat, are not
 necessarily random <em>between</em> each survey quadrat. Intuitively, a
@@ -812,7 +812,7 @@ we will remove those, too, with <code>theme()</code>.</li>
     x = &quot;Elevation (km)&quot;,
     y = &quot;Number of Residential Features&quot;
   )</code></pre>
-<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-21-1.png" width="672" height="100%" style="display: block; margin: auto;" /></p>
+<p><img src="12-Generalized_Linear_Mixed_Models_files/figure-html/unnamed-chunk-21-1.png" width="2100" height="100%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="Homework" class="section level2">
 <h2>Homework</h2>
