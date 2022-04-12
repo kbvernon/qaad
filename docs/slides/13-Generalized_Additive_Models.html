@@ -30,7 +30,7 @@ class: center, middle, inverse, title-slide
 
 # Quantitative Analysis of Archaeological Data
 ## Lecture 13: Generalized Additive Models
-### Last updated: 2022-04-11
+### Last updated: 2022-04-12
 
 ---
 
@@ -334,10 +334,10 @@ Note that each constraint returns a degree of freedom!
 
 A **smoothing spline** is actually a "LOSS+PENALTY" model fitting procedure  
 
-`$$RSS + (\lambda\cdot roughness)$$`
+`$$-\mathcal{l} + (\lambda\cdot roughness)$$`
 
 where  
-- the first term is the RSS of a model fit using a spline with an arbitrarily large number of knots and
+- the first term is the negative log-Likelihood of a model fit using a spline with an arbitrarily large number of knots and
 
 - the second terms is a __roughness penalty__, with `\(\lambda\)` being a _tuning parameter_ that scales the penalty.
 
