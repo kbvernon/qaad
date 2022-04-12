@@ -1,6 +1,6 @@
 ---
 title: "Quantitative Analysis of Archaeological Data"
-subtitle: "Lecture 12: Generalized Additive Models"  
+subtitle: "Lecture 13: Generalized Additive Models"  
 date: 'Last updated: `r Sys.Date()`'
 output:
   xaringan::moon_reader:
@@ -14,24 +14,870 @@ output:
       ratio: '16:9'
 ---
 
-```{r, echo = FALSE, child = here::here("slides", "before_chunk.Rmd")}
+```{r} 
+#| include = FALSE, 
+#| code = xfun::read_utf8(here::here("slides", "before_chunk.R"))
 ```
 
-```{r setup, include = FALSE}
+```{r}
 
-knitr::opts_chunk$set(
-  echo = FALSE,
-  warning = FALSE,
-  message = FALSE,
-  error = TRUE,
-  collapse = TRUE, 
-  fig.align = "center",
-  dpi = 300
-)
-
-options(
-  htmltools.dir.version = FALSE,
-  str = strOptions(vec.len = 3)
-)
+patch <- here("datasets", "patch-residence.csv") %>% 
+  read_csv() %>% 
+  mutate(
+    sex = factor(sex)
+  )
 
 ```
+
+
+## Outline
+
+1. A Goldilocks distance for central-place foragers
+    - A simple linear model?
+    - Polynomial regression?
+2. A general strategy for non-linear data
+    - Model responses of Y across _regions_ of X
+    - Three challenges: (1) How to define regions? (2) How to make models continuous? and<br>(3) How to avoid over-fitting?
+2. Basis functions
+    - Piecewise constant (step function) and piecewise polynomial
+    - Natural spline (with truncated power)
+    - Smoothing spline (with roughness penalty)  
+2. Generalized Additive Models
+    - GAM = GLM + Splines
+    - Effective Degrees of Freedom
+
+---
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+```{r}
+
+sigmoid <- function(x, x0) 1 / (1 + exp(-(x-x0)))
+
+assumptions <- tibble(
+  distance = seq(0, 10, length = 100)
+) %>% 
+  mutate(
+    "Within-Group Competition" = 1 - sigmoid(distance, 4),
+    "Predation Threat" = sigmoid(distance, 6),
+    "Patch Quality" = 0.75
+  ) %>% 
+  pivot_longer(
+    cols = -distance, 
+    names_to = "variable",
+    values_to = "value"
+  ) %>% 
+  select(variable, distance, value) %>% 
+  arrange(variable, distance) %>% 
+  mutate(
+    variable = factor(variable),
+    variable = fct_relevel(variable, "Within-Group Competition", "Predation Threat")
+  )
+
+mylabels <- tibble(
+  x = c(0, 10, 10),
+  y = c(0.05, 0.72, 0.05),
+  label = c("Predation\nThreat", "Patch Quality", "Within-Group\nCompetition"),
+  color = c("Predation Threat", "Patch Quality", "Within-Group Competition")
+)
+
+ggplot() +
+  geom_line(
+    data = assumptions,
+    aes(distance, value, color = variable),
+    size = 2
+  ) +
+  geom_text(
+    data = mylabels,
+    aes(x, y, label = label, color = color),
+    hjust = c(0, 1, 1),
+    vjust = c(0, 1, 0),
+    size = 7,
+    lineheight = 0.85
+  ) +
+  scale_color_viridis(
+    end = 0.97,
+    discrete = TRUE
+  ) +
+  labs(
+    x = "Distance from Central-Place",
+    y = NULL
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    legend.position = "none"
+  )
+
+remove(sigmoid, assumptions, mylabels)
+
+```
+
+]
+
+.pull-right[
+
+Assumptions
+
+- Probability of predation increases with distance from a central place.
+- Within-group competition decreases with distance from a central place.
+- Patch quality is constant.
+
+Prediction
+
+- Foragers will spend relatively more time in patches at some intermediate distance from a central place (and relatively less time in patches closer and farther away).
+
+]
+
+---
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+```{r}
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  )
+
+```
+
+]
+
+.pull-right[
+
+__Question__ How do we model this?
+
+]
+
+
+---
+count: false
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+```{r}
+
+fit <- lm(time ~ distance, data = patch)
+b0 <- coefficients(fit)[["(Intercept)"]]
+b1 <- coefficients(fit)[["distance"]]
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_abline(
+    intercept = b0,
+    slope = b1,
+    color = qaad_colors("rufous_red"),
+    size = 1.5
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+remove(fit, b0, b1)
+
+```
+
+]
+
+.pull-right[
+
+__Question__ How do we model this?
+
+Can try a linear-model, but we get... 
+
+- auto-correlation,
+- heteroscedasticity, and
+- the slope is not-significant!
+
+]
+
+
+
+
+
+---
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+```{r}
+
+fit <- lm(time ~ poly(distance, 2), data = patch)
+
+estimate <- tibble(
+  distance = patch %>% pull(distance),
+  time = predict(fit)
+)
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_line(
+    data = estimate,
+    aes(distance, time),
+    color = qaad_colors("rufous_red"),
+    size = 1.5
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+__Question__ How do we model this?
+
+Could try a linear model with polynomials...
+
+$$Y = \beta X^d$$
+
+...but this lacks generality.
+
+]
+
+---
+
+## A general strategy for non-linear data
+
+.pull-left[
+
+```{r}
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+Divide X into regions using __knots__ (dashed lines).
+
+.pull-left[
+
+.center[**Regions**]
+
+$$
+\begin{aligned}
+&\; X < 2.5 \\  
+2.5 \leq &\; X < 5.0 \\ 
+5.0 \leq &\; X < 7.5 \\
+7.5 \leq &\; X
+\end{aligned}
+$$  
+]
+
+]
+
+---
+
+## A general strategy for non-linear data
+
+.pull-left[
+
+```{r}
+
+patch_cuts <- patch %>% 
+  mutate(
+    cuts = cut(distance, breaks = c(-Inf, 2.5, 5, 7.5, Inf))
+  ) %>% 
+  nest_by(cuts) %>% 
+  mutate(
+    model = list(lm(time ~ distance, data = data)),
+    estimate = list(unname(predict(model)))
+  ) %>% 
+  select(-model) %>% 
+  unnest(everything())
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate, group = cuts),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+Divide X into regions using __knots__ (dashed lines).
+
+Model each region separately.
+
+]
+
+---
+
+## A general strategy for non-linear data
+
+.pull-left[
+
+```{r}
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate, group = cuts),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+Divide X into regions using __knots__ (dashed lines).
+
+Model each region separately.
+
+
+Challenges: 
+
+1. How to define regions (knots)?
+2. How to make models continuous?
+2. How to avoid over-fitting?
+
+]
+
+---
+
+## Basis Functions
+
+- Simple formula for a linear model.
+
+$$y_{i} = E(y_{i}) + \epsilon_{i}$$
+$$E(y_{i}) = \beta X_{i}$$
+
+- A basis function is any function applied to the set of predictor variables $X$.
+
+$$E(y_{i}) = \beta\, f(X_{i})$$
+
+- Examples include polynomials, log-transforms, and exponentiation
+- As these are fixed and known, they can still be combined in an ordinary linear model.  
+
+---
+
+## Piecewise Functions
+
+.pull-left[
+
+```{r}
+
+mylabels <- tibble(
+  x = seq(0, 7.5, by = 2.5) + 0.3,
+  y = 5.9,
+  label = LETTERS[1:4]
+)
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  geom_text(
+    data = mylabels,
+    aes(x, y, label = label),
+    size = 10,
+    hjust = 0,
+    vjust = 1,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+**Piecewise functions** are basis functions that use dummy variables to group data into regions of $X$ as defined by knots, $k$ (dashed lines), with $X < k_1$ being the reference class.  
+
+Crucially, this reduces the degrees of freedom by one less than the number of $k$!  
+
+]
+
+---
+
+## Piecewise Constant Functions
+
+.pull-left[
+
+```{r}
+
+fit <- lm(
+  time ~ cut(distance, breaks = c(-Inf, 2.5, 5, 7.5, Inf)),
+  data = patch
+)
+
+patch_cuts <- tibble(
+  distance = seq(0, 10, length = 200)
+) %>% 
+  mutate(
+    estimate = predict(fit, newdata = tibble(distance))
+  )
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  geom_text(
+    data = mylabels,
+    aes(x, y, label = label),
+    size = 10,
+    hjust = 0,
+    vjust = 1,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+A **piecewise constant** (or step) function models differences in intercept.  
+
+Unfortunately, these do not capture variation within each region.  
+
+]
+
+---
+
+## Piecewise Polynomial Functions
+
+.pull-left[
+
+```{r}
+
+patch_cuts <- patch %>% 
+  mutate(
+    cuts = cut(distance, breaks = c(-Inf, 2.5, 5, 7.5, Inf))
+  ) %>% 
+  nest_by(cuts) %>% 
+  mutate(
+    model = list(lm(time ~ poly(distance, 3), data = data)),
+    estimate = list(unname(predict(model)))
+  ) %>% 
+  select(-model) %>% 
+  unnest(everything())
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate, group = cuts),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  geom_text(
+    data = mylabels,
+    aes(x, y, label = label),
+    size = 10,
+    hjust = 0,
+    vjust = 1,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+.right[_Piecewise cubic polynomial_]
+
+]
+
+.pull-right[
+
+A **piecewise polynomial** function models differences in slope and intercept.
+
+Unfortunately, these are not continuous.
+
+]
+
+---
+
+## Natural Spline
+
+.pull-left[
+
+```{r}
+
+fit <- lm(
+  time ~ ns(distance, knots = c(2.5, 5, 7.5)),
+  data = patch
+)
+
+patch_cuts <- tibble(
+  distance = seq(0, 10, length = 200)
+) %>% 
+  mutate(
+    estimate = predict(fit, newdata = tibble(distance))
+  )
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_vline(
+    xintercept = c(2.5, 5, 7.5),
+    linetype = "dashed"
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  geom_text(
+    data = mylabels,
+    aes(x, y, label = label),
+    size = 10,
+    hjust = 0,
+    vjust = 1,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+.right[_Natural cubic spline_]
+
+]
+
+.pull-right[
+
+A **spline** is a piecewise polynomial function subject to the constraint of continuity.
+
+To ensure continuity, splines use a **truncated power** transform on each successive knot, $k$:
+
+$$f(X, k)_{+}^{d} = \left\{\begin{array}{ c l } (X-k)^d & if\; X > k; \\ 0 & otherwise \end{array} \right.$$
+
+A **natural spline** includes an additional constraint to reign in variance at the boundaries (in regions A and D in the example). It must be linear in these areas.  
+
+Note that each constraint returns a degree of freedom!
+
+]
+
+
+---
+
+## Smooth Spline
+
+.pull-left[
+
+```{r}
+
+fit <- with(patch, smooth.spline(distance, time))
+
+patch_cuts <- tibble(
+  distance = seq(0, 10, length = 200)
+) %>% 
+  mutate(
+    estimate = predict(fit, distance)$y
+  )
+
+ggplot(patch) +
+  geom_line(
+    aes(distance, time),
+    color = "gray80",
+    size = 0.5
+  ) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+.right[_Cubic spline_]
+
+]
+
+.pull-right[
+
+A **smoothing spline** is actually a "LOSS+PENALTY" model fitting procedure  
+
+$$RSS + (\lambda\cdot roughness)$$
+
+where  
+- the first term is the RSS of a model fit using a spline with an arbitrarily large number of knots and
+
+- the second terms is a __roughness penalty__, with $\lambda$ being a _tuning parameter_ that scales the penalty.
+
+Note that increasing $\lambda$ is like adding constraints in that it reduces model complexity, in this case the **effective degrees of freedom**.
+
+]
+
+---
+
+## Generalized Additive Models
+
+.pull-left[
+
+```{r}
+
+fit <- gam(time ~ s(distance), data = patch)
+
+patch_cuts <- tibble(
+  distance = seq(0, 10, length = 200)
+) %>% 
+  mutate(
+    estimate = predict(fit, newdata = tibble(distance))
+  )
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time),
+    size = 4,
+    color = "gray25", 
+    alpha = 0.75
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate),
+    size = 1.5,
+    color = qaad_colors("rufous_red")
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) 
+
+```
+
+]
+
+.pull-right[
+
+A **Generalized Additive Model** or GAM is a method for fitting multiple splines.
+
+$$g(E(y_i)) = \beta_0 + \sum_{j=1}^{n} f_j(x_{ij})$$
+
+- Extension to a GLM, so it can model non-normal responses.
+- Called an _additive_ model because it calculates a separate spline for each term and adds them together.
+
+]
+
+---
+
+## Generalized Additive Models
+
+.pull-left[
+
+```{r}
+
+fit <- gam(time ~ s(distance, by = sex), data = patch)
+
+patch_cuts <- tibble(
+  distance = rep(seq(0, 10, length = 200), 2)
+) %>% 
+  mutate(
+    sex = rep(c("female", "male"), each = n()/2),
+    estimate = predict(fit, newdata = tibble(distance, sex))
+  )
+
+ggplot(patch) +
+  geom_point(
+    aes(distance, time, color = sex),
+    size = 4, 
+    alpha = 0.75
+  ) +
+  geom_line(
+    data = patch_cuts,
+    aes(distance, estimate, color = sex),
+    size = 1.5
+  ) +
+  scale_color_viridis(
+    name = NULL,
+    discrete = TRUE
+  ) +
+  labs(
+    x = "Distance from central place (km)",
+    y = "Time in Patch (hours)"
+  ) + 
+  theme(
+    legend.position = c(0.03, 0.95),
+    legend.justification = c("left", "top"),
+    legend.text = element_text(size = 18)
+  )
+
+```
+
+]
+
+.pull-right[
+
+Can incorporate all the nice features of a GLM, including interaction terms and mixed-effects.
+
+```{r}
+
+broom::tidy(fit) %>% 
+  rename("t.statistic" = statistic) %>% 
+  kbl(table.attr = "class='table-model table-fullwidth'") %>% 
+  kable_paper(c("striped", "hover"))
+
+```
+
+]
+
+---
+
+## &#x1F52D; Looking Ahead
+
+```{r}
+
+schedule <- here("_misc", "course_outline.xlsx") %>% 
+  readxl::read_excel(1) %>% 
+  mutate(
+    date = lubridate::ymd(date),
+    description = glue::glue(
+    "<b>{topic}</b> <span style = 'font-size: 80%; color: #9C9C9C;'>({date})</span><br>
+    <div style = 'font-size: 80%; font-style: italic; color: #9C9C9C;'>{details}</div>"
+  )) %>% 
+  select(description)
+
+```
+
+.pull-left[
+
+```{r}
+
+schedule %>% 
+  slice(14:16) %>% 
+  kbl(escape = FALSE, col.names = NULL) %>% 
+  kable_paper(c("striped", "hover"))
+
+```
+
+]

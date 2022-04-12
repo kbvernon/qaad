@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Quantitative Analysis of Archaeological Data</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="custom_style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Quantitative Analysis of Archaeological Data
+## Lecture 13: Generalized Additive Models
+### Last updated: 2022-04-11
+
+---
+
+
+
+
+
+
+
+## Outline
+
+1. A Goldilocks distance for central-place foragers
+    - A simple linear model?
+    - Polynomial regression?
+2. A general strategy for non-linear data
+    - Model responses of Y across _regions_ of X
+    - Three challenges: (1) How to define regions? (2) How to make models continuous? and&lt;br&gt;(3) How to avoid over-fitting?
+2. Basis functions
+    - Piecewise constant (step function) and piecewise polynomial
+    - Natural spline (with truncated power)
+    - Smoothing spline (with roughness penalty)  
+2. Generalized Additive Models
+    - GAM = GLM + Splines
+    - Effective Degrees of Freedom
+
+---
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-3-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Assumptions
+
+- Probability of predation increases with distance from a central place.
+- Within-group competition decreases with distance from a central place.
+- Patch quality is constant.
+
+Prediction
+
+- Foragers will spend relatively more time in patches at some intermediate distance from a central place (and relatively less time in patches closer and farther away).
+
+]
+
+---
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-4-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+__Question__ How do we model this?
+
+]
+
+
+---
+count: false
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-5-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+__Question__ How do we model this?
+
+Can try a linear-model, but we get... 
+
+- auto-correlation,
+- heteroscedasticity, and
+- the slope is not-significant!
+
+]
+
+
+
+
+
+---
+
+## A Goldilocks Distance?
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-6-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+__Question__ How do we model this?
+
+Could try a linear model with polynomials...
+
+`$$Y = \beta X^d$$`
+
+...but this lacks generality.
+
+]
+
+---
+
+## A general strategy for non-linear data
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-7-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Divide X into regions using __knots__ (dashed lines).
+
+.pull-left[
+
+.center[**Regions**]
+
+$$
+`\begin{aligned}
+&amp;\; X &lt; 2.5 \\  
+2.5 \leq &amp;\; X &lt; 5.0 \\ 
+5.0 \leq &amp;\; X &lt; 7.5 \\
+7.5 \leq &amp;\; X
+\end{aligned}`
+$$  
+]
+
+]
+
+---
+
+## A general strategy for non-linear data
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-8-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Divide X into regions using __knots__ (dashed lines).
+
+Model each region separately.
+
+]
+
+---
+
+## A general strategy for non-linear data
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-9-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Divide X into regions using __knots__ (dashed lines).
+
+Model each region separately.
+
+
+Challenges: 
+
+1. How to define regions (knots)?
+2. How to make models continuous?
+2. How to avoid over-fitting?
+
+]
+
+---
+
+## Basis Functions
+
+- Simple formula for a linear model.
+
+`$$y_{i} = E(y_{i}) + \epsilon_{i}$$`
+`$$E(y_{i}) = \beta X_{i}$$`
+
+- A basis function is any function applied to the set of predictor variables `\(X\)`.
+
+`$$E(y_{i}) = \beta\, f(X_{i})$$`
+
+- Examples include polynomials, log-transforms, and exponentiation
+- As these are fixed and known, they can still be combined in an ordinary linear model.  
+
+---
+
+## Piecewise Functions
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-10-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+**Piecewise functions** are basis functions that use dummy variables to group data into regions of `\(X\)` as defined by knots, `\(k\)` (dashed lines), with `\(X &lt; k_1\)` being the reference class.  
+
+Crucially, this reduces the degrees of freedom by one less than the number of `\(k\)`!  
+
+]
+
+---
+
+## Piecewise Constant Functions
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-11-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+A **piecewise constant** (or step) function models differences in intercept.  
+
+Unfortunately, these do not capture variation within each region.  
+
+]
+
+---
+
+## Piecewise Polynomial Functions
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-12-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+.right[_Piecewise cubic polynomial_]
+
+]
+
+.pull-right[
+
+A **piecewise polynomial** function models differences in slope and intercept.
+
+Unfortunately, these are not continuous.
+
+]
+
+---
+
+## Natural Spline
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-13-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+.right[_Natural cubic spline_]
+
+]
+
+.pull-right[
+
+A **spline** is a piecewise polynomial function subject to the constraint of continuity.
+
+To ensure continuity, splines use a **truncated power** transform on each successive knot, `\(k\)`:
+
+`$$f(X, k)_{+}^{d} = \left\{\begin{array}{ c l } (X-k)^d &amp; if\; X &gt; k; \\ 0 &amp; otherwise \end{array} \right.$$`
+
+A **natural spline** includes an additional constraint to reign in variance at the boundaries (in regions A and D in the example). It must be linear in these areas.  
+
+Note that each constraint returns a degree of freedom!
+
+]
+
+
+---
+
+## Smooth Spline
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-14-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+.right[_Cubic spline_]
+
+]
+
+.pull-right[
+
+A **smoothing spline** is actually a "LOSS+PENALTY" model fitting procedure  
+
+`$$RSS + (\lambda\cdot roughness)$$`
+
+where  
+- the first term is the RSS of a model fit using a spline with an arbitrarily large number of knots and
+
+- the second terms is a __roughness penalty__, with `\(\lambda\)` being a _tuning parameter_ that scales the penalty.
+
+Note that increasing `\(\lambda\)` is like adding constraints in that it reduces model complexity, in this case the **effective degrees of freedom**.
+
+]
+
+---
+
+## Generalized Additive Models
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-15-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+A **Generalized Additive Model** or GAM is a method for fitting multiple splines.
+
+`$$g(E(y_i)) = \beta_0 + \sum_{j=1}^{n} f_j(x_{ij})$$`
+
+- Extension to a GLM, so it can model non-normal responses.
+- Called an _additive_ model because it calculates a separate spline for each term and adds them together.
+
+]
+
+---
+
+## Generalized Additive Models
+
+.pull-left[
+
+&lt;img src="13-Generalized_Additive_Models_files/figure-html/unnamed-chunk-16-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Can incorporate all the nice features of a GLM, including interaction terms and mixed-effects.
+
+&lt;table class="table-model table-fullwidth lightable-paper lightable-striped lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; edf &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ref.df &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; t.statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; s(distance):sexfemale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; s(distance):sexmale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.69 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+
+---
+
+## &amp;#x1F52D; Looking Ahead
+
+
+
+.pull-left[
+
+&lt;table class=" lightable-paper lightable-striped lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Generalized Additive Models&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-12)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;LOESS Regression, Splines, Piecewise Regression&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Cluster Analysis&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-19)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Distance Measures, k-means, Hierarchical Clustering, Validation&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Ordination&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-26)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Distance Measures, Principal Component Analysis, Regression&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "magula",
+"highlightLines": true,
+"countIncrementalSlides": true,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

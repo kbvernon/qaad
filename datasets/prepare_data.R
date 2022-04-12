@@ -286,3 +286,32 @@ write_csv(
   sites,
   file = here("datasets", "survey-polygons_sites.csv")
 )
+
+
+# patch residence ---------------------------------------------------------
+
+set.seed(6742)
+
+n <- 50
+
+x <- seq(0, 10, length = n)
+
+y <- (50 * dnorm(x, 4.3, sd = 2.3)) + rnorm(n)
+y <- scales::rescale(y, to = c(0, 5.9))
+
+# plot(x,y)
+
+female <- tibble(sex = "female", distance = x, time = y)
+
+y <- (30 * dnorm(x, 7.3, sd = 1.8)) + rnorm(n) + log(x + 0.01)
+y <- scales::rescale(y, to = c(0.5, 5.1))
+
+# plot(x,y)
+
+male <- tibble(sex = "male", distance = x, time = y)
+
+write_csv(
+  bind_rows(female, male),
+  file = here("datasets", "patch-residence.csv")
+)
+
