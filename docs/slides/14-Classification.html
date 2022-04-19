@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Quantitative Analysis of Archaeological Data</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/tachyons/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link href="libs/animate.css/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/shareon/shareon.min.css" rel="stylesheet" />
+    <script src="libs/shareon/shareon.min.js"></script>
+    <link href="libs/xaringanExtra-shareagain/shareagain.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-shareagain/shareagain.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="custom_style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Quantitative Analysis of Archaeological Data
+## Lecture 14: Classification
+### Last updated: 2022-04-19
+
+---
+
+
+
+
+
+
+
+## Outline
+
+1. Supervised classifiers (with response)
+    - Logistic regression
+    - Linear Discriminant Analysis (LDA)
+2. Unsupervised classifiers (without response)
+    - Principal Component Analysis (PCA)
+    - k-means
+    - hierarchical clustering
+
+
+---
+class: center middle
+
+## Is it a dart?
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-3-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Logistic Regression
+
+
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-5-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+&lt;table class="table-model table-fullwidth lightable-paper lightable-striped lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; z.value &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8.105 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.303 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6.220 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; length &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.072 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.029 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.443 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.015 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; width &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.261 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.101 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.588 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.010 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; thickness &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.278 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.253 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.098 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.272 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; neck &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.041 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.128 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.324 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.746 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Note that estimates are on the logit scale!
+
+]
+
+---
+
+## LDA with one predictor
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-7-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Uses the distribution of each X to define a **discriminant function** `\(f_k\)` for each group `\(k\)`. 
+
+For each observation `\(i\)`, `\(f_k\)` determines the probability that `\(i\)` is in `\(k\)`. 
+
+Linear assumptions for Xs! Homoscedasticity, normality, independence, no multi-collinearity.  
+
+]
+
+
+
+---
+count: false
+
+## LDA with one predictor
+
+
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-9-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Uses the distribution of each X to define a **discriminant function** `\(f_k\)` for each group `\(k\)`. 
+
+For each observation `\(i\)`, `\(f_k\)` determines the probability that `\(i\)` is in `\(k\)`. 
+
+Linear assumptions for Xs! Homoscedasticity, normality, independence, no multi-collinearity. 
+
+Decision boundary (dashed line) between group 1 and 2 is the point where `\(f_1 = f_2\)`.
+
+]
+
+---
+class: center middle
+
+## What type is it?
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-10-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## LDA with multiple predictors
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-11-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Works the same way with multiple predictors, but uses a multivariate probability distribution.
+
+Note that it still assumes linearity! In fact, LDA is equivalent to simple linear regression!
+
+]
+
+---
+
+## LDA with multiple predictors
+
+
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-13-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+Works the same way with multiple predictors, but uses a multivariate probability distribution.
+
+Note that it still assumes linearity! In fact, LDA is equivalent to simple linear regression!
+
+Decision boundary (dark red line) between 
+- between derp and flerp is the point where `\(f_{derp} = f_{flerp}\)`
+- between derp and merp is the point where `\(f_{derp} = f_{merp}\)`
+- between merp and flerp is the point where `\(f_{merp} = f_{flerp}\)`
+
+]
+
+---
+
+## Principal Component Analysis
+
+
+
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+**What is it?** An ordination method for reducing the number of dimensions (variables) in a dataset.  
+
+**Why is it?** PCA can (1) visualize complex datasets, (2) summarize redundant variables, (3) impute missing data, and (4) remove collinearity.  
+
+**How is it?** Think of it like a set of nested OLS models, only the variance isn't parallel to the y-axis, but orthogonal to the principal component.
+
+The **goal** is to maximize the projected variance (spread of points on the PC line), or equivalently, to minimize the orthogonal distance from each point (orange lines connecting points to PC line).  
+
+]
+
+---
+
+## Principal Component Analysis
+
+.pull-left[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+
+**Why is it?** PCA can 
+
+(1) **visualize complex datasets** - PC1 and PC2 represent three dimensions (variables) and their correlation (positive is &lt; 90&amp;deg;, negative is &gt; &amp;deg;)
+
+(2) **summarize redundant variables** - PC1 can be interpreted as a general measure of *shape*. 
+
+(3) **impute missing data** - if missing one measure (like thickness), can estimate this based on measures of other variables (width and length).
+
+(4) **remove collinearity** - the PCs are orthogonal to each other and are uncorrelated by definition.
+
+]
+
+---
+class: center middle
+
+## Principal Component Analysis
+
+.w-70.ml-auto.mr-auto.tl[
+
+&lt;img src="14-Classification_files/figure-html/unnamed-chunk-17-1.png" width="2100" style="display: block; margin: auto;" /&gt;
+
+Figure on left is a "scree" plot showing the proportion of variance explained, `\(R^2\)`, for each individual PC. Figure on right is the cumulative variance explained, the total `\(R^2\)` when including each additional PC.
+
+]
+
+---
+
+## K-means clustering
+
+.pull-left[
+
+&lt;img src="images/12_8.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+.right[Figure from [James *et al* (2021) ISLR](https://www.statlearning.com/)]
+
+]
+
+.pull-right[
+
+**What is it?** A clustering algorithm that minimizes differences within groups (equivalently, maximizes similarity).
+
+Requires a **measure of difference** or similarity. Most common is squared Euclidean distance.
+
+**Assumes** that each observation belongs to one and only one group.
+
+]
+
+---
+
+## K-means clustering
+
+.pull-left[
+
+&lt;img src="images/12_8.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+.right[Figure from [James *et al* (2021) ISLR](https://www.statlearning.com/)]
+
+]
+
+.pull-right[
+
+**How is it?** 
+
+- Must choose the number of groups `\(K\)` prior to sorting.
+- Algorithm randomly assigns points to each group.
+- Calculates the centroids of each group (the means of each variable).
+- Re-assigns points to groups based on their distance from centroids.
+- Repeats until the within-group differences are minimized.
+
+]
+
+---
+
+## Hierarchical clustering
+
+.pull-left[
+
+&lt;img src="images/12_10.png" width="380" style="display: block; margin: auto;" /&gt;
+
+.right[Figure from [James *et al* (2021) ISLR](https://www.statlearning.com/)]
+
+]
+
+.pull-right[
+
+**What is it?** A clustering algorithm that minimizes differences within groups (equivalently, maximizes similarity).
+
+Requires a **measure of difference** or similarity. Most common is squared Euclidean distance.
+
+Does not require a decision about the number of `\(K\)`.
+
+A **linkage** rule must be chosen.
+
+Results in dendrograms ("trees") representing groups and degrees of similarity/difference between observations.
+
+]
+
+---
+
+## Dendrograms
+
+.pull-left[
+
+&lt;img src="images/12_11.png" width="512" style="display: block; margin: auto;" /&gt;
+
+.right[Figure from [James *et al* (2021) ISLR](https://www.statlearning.com/)]
+
+]
+
+.pull-right[
+
+A **leaf** is the lowest terminal point and represents a unique observation.
+
+A **fusion** represents the point where two observations or groups of observations are most similar.
+- Fusions lower in the tree represent greater similarity.
+- Fusions higher in the tree represent greater difference.
+- Cannot infer similarity based on horizontal distance in the tree!
+
+**Hierarchy** refers to nested clusters in the tree.
+
+**Cuts** (dashed-lines) in the tree determine the number of groups. Thus, the position of the cut acts like `\(K\)` in K-means.
+
+]
+
+---
+
+## Hierarchical clustering
+
+.pull-left[
+
+&lt;img src="images/12_13.png" width="502" style="display: block; margin: auto;" /&gt;
+
+.right[Figure from [James *et al* (2021) ISLR](https://www.statlearning.com/)]
+]
+
+.pull-right[
+
+**How is it?**
+
+- Starts by measuring all pairwise differences between individual observations (classified as clusters of one).
+- The two clusters that are the least dissimilar are fused, with the height of the fusion determined by the degree of difference.
+- Compute differences for the new set of clusters.
+- Fuse.
+- Rinse and repeat until all clusters are fused into one.
+
+]
+
+---
+class: middle center
+
+## There's a lot more to consider here, naturally, but...
+
+
+---
+class: middle center
+
+&lt;img src="images/yenn.jpg" width="324" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+
+## &amp;#x1F52D; Looking Ahead
+
+
+
+.pull-left[
+
+&lt;table class=" lightable-paper lightable-striped lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Classification&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-19)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;Logistic regression, LDA, PCA, k-means, Hierarchical Clustering, distance measures&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; &lt;b&gt;Make-up day&lt;/b&gt; &lt;span style="font-size: 80%; color: #9C9C9C;"&gt;(2022-04-26)&lt;/span&gt;&lt;br&gt;
+&lt;div style="font-size: 80%; font-style: italic; color: #9C9C9C;"&gt;NA&lt;/div&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "magula",
+"highlightLines": true,
+"countIncrementalSlides": true,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
