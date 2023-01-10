@@ -1,0 +1,30 @@
+/*-- scss:defaults --*/
+$eerieblack:  #212529 !default;
+$pinetree:    #262A10 !default;
+$kobe:        #942911 !default;
+$darkcyan:    #0F8B8D !default;
+$carrot:      #EC9A29 !default;
+$lightgray:   #DAD2D8 !default;
+$persianblue: #383FBC !default;
+$battleship:  #858585 !default;
+
+$primary:   $eerieblack !default;
+$success:   $carrot !default;
+$info:      $darkcyan !default;
+$warning:   $eerieblack !default;
+$danger:    $kobe !default;
+
+$presentation-font-size-root: 30px;
+$presentation-line-height: 1.2;
+$presentation-h2-font-size: 1.8em;
+
+/*-- scss:rules --*/
+.reveal .slide ul li, 
+.reveal .slide ol li {
+    margin-top: 0.3em !important;
+    margin-bottom: 0.15em !important;
+}
+
+strong, b, a {
+  color: $kobe;  
+}

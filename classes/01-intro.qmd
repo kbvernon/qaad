@@ -1,0 +1,15 @@
+---
+title: "Week 01: Introduction"
+description: "Why statistics? Why R? Why Quarto? Making a webpage and a plot in just seconds!"
+date: today
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/01-intro-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 01 Lab](../labs/01-intro-lab.qmd)
+

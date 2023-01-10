@@ -1,0 +1,457 @@
+---
+title: "Lecture 01: Introduction"  
+date: 'Last updated: `r Sys.Date()`'
+format: 
+  revealjs: 
+    transition: fade
+    theme: [default, slides.scss]
+    slide-number: true
+    width: 1250
+    code-overflow: wrap
+execute:
+  freeze: auto
+---
+
+```{r}
+#| include: false
+
+library(gt)
+library(glue)
+library(here)
+library(htmltools)
+library(tidyverse)
+
+```
+
+## 📋 Lecture Outline
+
+- __Course Mechanics__  
+  - 🧱 Structure  
+  - &#x1F3AF; Objectives  
+  - &#x1F3CB; Expectations  
+  - &#x1F91D; Ethics  
+  - &#x1F4BE; Software  
+- __Course Content__  
+  - Why statistics?  
+  - What is an archaeological population?  
+  - A note about terminology and notation  
+  - Statistical programming with {{< fa brands r-project color=steelblue >}}  
+  - Literate programming with Quarto  
+
+# Course Mechanics
+
+## 🧱 Course Structure
+
+- __Meetings__ are __online__ every Tuesday from 2:00 to 5:00 PM MST.  
+- __Meeting structure__:   
+  - homework review and lecture (80 minutes),    
+  - break (10 minutes), and  
+  - lab (90 minutes).  
+- __Course work__:  
+  - lab and homework exercises due every Monday before class by 9:00 PM MST, and a  
+  - term project.  
+- All __course materials__ will be made available on the [course website](kbvernon.github.io/qaad).  
+* All __graded materials__ will be submitted through Canvas.  
+
+## &#x1F3AF; Course Objectives 
+
+:::{.fragment}
+Students will develop __programming skills__ by learning how to:
+
+- import and export data,
+- wrangle (or prepare) data for analysis,
+- explore and visualize data, and
+- build models of data and evaluate them.
+:::
+
+:::{.fragment}
+And students will gain __statistical understanding__ by learning how to:
+
+- formulate questions and alternative hypotheses,
+- identify and explain appropriate statistical tools,
+- report the results of analysis using scientific standards, and
+- communicate the analysis to a general audience.
+:::
+
+## &#x1F3CB; Course Expectations {background-image="images/slc_map.png" background-size="cover"}
+
+Learning is a lot like moving to a new city. You get lost, you get frustrated, you even get embarrassed! But gradually, over time, you come to know your way around. Unfortunately, you'll only have four months in this new city, so we need to be realistic about what we can actually achieve here.
+
+<br>
+
+:::{.fragment}
+You won't become fluent in R, markdown, or statistics, but... 
+:::  
+
+:::{.fragment}
+you will gain some sense of _the way things tend to go_ with those languages.  
+:::
+
+## &#x1F91D; Course Ethics
+
+All course policies and other University requirements can be found in the course syllabus. They are very, very thorough, so rather than enumerate them all, let's just summarize them this way:
+
+:::{.incremental}
+- There are many ways to be a bully. Don't be any of them.  
+- And if you see someone getting bullied, do something about it.  
+:::
+
+## &#x1F4BE; Software
+
+The primary statistical tools for this class are
+
+- [{{< fa brands r-project color=steelblue >}} Programming Language](https://www.r-project.org/) 
+- [RStudio](https://www.rstudio.com/)
+- [Quarto](https://quarto.org/)
+
+We will go over how to install each of these during our first lab.
+
+# Course Content
+
+## Why statistics?
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![](images/samples_and_populations-1.png){.absolute width="50%" style="z-index: 0; "}
+![](images/samples_and_populations-2.png){.fragment .absolute fragment-index=1 width="50%" style="z-index: 1; "}
+![](images/samples_and_populations-3.png){.fragment .absolute fragment-index=2 width="50%" style="z-index: 2; "}
+:::
+
+::: {.column width="40%"}
+
+<br>
+We want to understand something about a __population__.  
+<br>
+We can never observe the entire population, so we draw a __sample__.  
+
+::: {.fragment fragment-index=1}
+<br>
+We then use a model to __describe__ the sample.  
+:::
+
+::: {.fragment fragment-index=2}
+<br>
+By comparing that model to a null model, we can __infer__ something about the population.  
+:::
+
+:::
+
+:::
+
+## What population does archaeology study?
+
+![](images/anthropological-population-0.png){.absolute left=90 width="75%" style="z-index: 0; "}
+![](images/anthropological-population-1.png){.fragment .absolute left=90 width="75%" style="z-index: 1; "}
+
+## A note on terminology and notation
+
+:::: {.columns}
+
+::: {.column width="53%"}
+
+- A __statistic__ is a property of a __sample__.  
+
+  "We measured the heights of 42 actors who auditioned for the role of Aragorn and took the average."  
+  
+- A __parameter__ is a property of a __population__.  
+
+  "Human males have an average height of 1.74 meters (5.7 feet)."  
+  
+  Note: Parameters are usually capitalized.
+
+:::
+
+::: {.column width="47%"}
+
+```{r}
+#| results: asis
+
+tibble(
+  variable = c("Size", "Mean", "Standard Deviation", "Proportion", "Correlation"),
+  population = c("N", "μ", "σ", "P", "ρ"),
+  sample = c("n", "x̄", "s", "p", "r")
+) |>  
+  gt() |> 
+  cols_label(
+    variable = ""
+  ) |> 
+  cols_align("right", 1) |> 
+  cols_align("center", 2:3) |> 
+  opt_table_lines(extent = "none") |>
+  tab_options(
+    container.width = pct(100),
+    table.font.size = px(24),
+    table.width = pct(85)
+  ) |> 
+  tab_style(
+    style = "padding-right:20px;padding-left:20px",
+    locations = cells_column_labels()
+  ) |> 
+  as_raw_html()
+
+```
+
+:::
+
+::::
+
+## Why {{< fa brands r-project color=steelblue >}}?
+
+::: {.panel-tabset}
+
+### It's free! 
+
+R is free software under the terms of the [Free Software Foundation's](http://www.gnu.org/) GNU General Public License.  
+
+### It's transferrable! 
+
+R will run on any system: Mac OS, Windows, or Linux.  
+
+### It's efficient! 
+
+R lets you exploit the awesome computing powers of the modern world. It also provides an elegant and concise syntax for writing complex statistical operations.
+
+```{r}
+#| eval: false
+
+# fit a generalized linear model with a Gaussian error distribution
+glm(
+  formula = y ~ x, 
+  family  = gaussian,
+  data    = my_data
+)
+
+```
+
+### It's extensible! 
+
+R users can write add-on packages that provide additional functionality. Here are a few of my favorites.
+
+```{css}
+
+.hexBadges {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  width: 745px;
+  height: 175px;
+}
+
+.hexBadges img {
+  width: 120px;
+  height: 139px;
+}
+
+```
+
+```{r}
+#| output: asis
+
+# https://community.rstudio.com/t/how-to-add-a-hyperlink-to-an-image-created-by-knitr-include-graphics/99195
+image_link <- function(image, url, name){
+  
+  a(
+    href=url,
+    img(
+      src = image,
+      width = "120px",
+      height = "139px",
+      title = name,
+      alt = paste0(name, "hex sticker")
+    )
+  )
+  
+}
+
+div(
+  class = "hexBadges",
+  image_link(
+    image = "https://d33wubrfki0l68.cloudfront.net/621a9c8c5d7b47c4b6d72e8f01f28d14310e8370/193fc/css/images/hex/dplyr.png",
+    url = "https://dplyr.tidyverse.org",
+    name = "dplyr"
+  ),
+  image_link(
+    image = "https://d33wubrfki0l68.cloudfront.net/2c6239d311be6d037c251c71c3902792f8c4ddd2/12f67/css/images/hex/ggplot2.png",
+    url = "https://ggplot2.tidyverse.org",
+    name = "ggplot2"
+  ),
+  image_link(
+    image = "https://d33wubrfki0l68.cloudfront.net/c1c91484f898fe9d7d90a570900f1d5cd703fe2e/d7df4/css/images/hex/readr.png",
+    url = "https://readr.tidyverse.org",
+    name = "readr"
+  ),
+  image_link(
+    image = "https://d33wubrfki0l68.cloudfront.net/476fa4025501dcec05be08248b32d390dd2337d5/574c6/css/images/hex/tidyr.png",
+    url = "https://tidyr.tidyverse.org/",
+    name = "tidyr"
+  ),
+  image_link(
+    image = "images/sf-hex.png",
+    url = "https://r-spatial.github.io/sf/",
+    name = "simple features"
+  ),
+  image_link(
+    image = "https://github.com/rspatial/terra/raw/master/man/figures/logo.png",
+    url = "https://rspatial.github.io/terra/index.html",
+    name = "terra"
+  )
+)
+
+```
+
+### It's pretty figures!
+
+R offers a lot of tools to produce really, really impressive graphics. For example, here is a simple plot of a normal distribution:
+
+```{r}
+#| fig-width: 5
+#| fig-align: center
+
+set.seed(12345)
+
+x <- seq(-5, 5, length = 100)
+y <- dnorm(x)
+
+dark_red <- "#A20000"
+
+ggplot(tibble(x, y), aes(x,y)) +
+  geom_polygon(
+    color = dark_red,
+    fill = alpha(dark_red, 0.2)
+  ) + 
+  labs(
+    title = "A Pretty Gausian!",
+    x = NULL,
+    y = NULL
+  ) +
+  theme_bw(14)
+
+```
+
+### It's reproducible!
+
+R facilitates reproducible research in two ways. First, it forces you to declare explicitly each step in your analysis.
+
+```{r}
+#| echo: true
+#| eval: false
+
+# take the mean
+mean(my_data)
+
+# take the standard deviation
+sd(my_data)
+
+```
+
+Second, it makes R code shareable. In the simplest case, we use R _scripts_, but we can also use [Quarto](https://quarto.org/), a much more flexible tool for writing, running, and _explaining_ R code.
+
+### It's a community!
+
+R is also an incredibly active and growing community.
+
+![](images/r-downloads.png){width="650px" fig-align="center"}
+:::
+
+## Literate programming with markdown {{< fa brands markdown >}}
+
+> Markdown is a lightweight markup language for creating formatted text using a plain-text editor.
+> _[From the Wikipedia page](https://en.wikipedia.org/wiki/Markdown)._
+
+<br>
+
+. . .
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+__INPUT__
+
+***
+
+::: {style="font-size:1.4em;"}
+`````
+This is a sentence in Markdown, containing `code`, **bold text**, and *italics*.
+`````
+:::
+
+:::
+
+::: {.column}
+
+__OUTPUT__
+
+***
+
+This is a sentence in Markdown, containing `code`, **bold text**, and *italics*.
+
+:::
+
+::::
+
+## Quarto = Markdown + R
+
+[Quarto](https://quarto.org/) allows you to run code and format text in one document.  
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+__INPUT__  
+
+***
+
+````
+This is an example of Quarto, with markdown __syntax__ 
+and __R code__ that gets run.
+
+```{{r}}
+#| fig-width: 4
+#| fig-asp: 1
+#| fig-align: center
+
+fit <- lm(dist ~ speed, data = cars)
+
+par(pty = "s")
+
+plot(cars, pch = 19, col = 'darkgray')
+abline(fit, lwd = 2)
+```
+
+````
+
+:::
+
+::: {.column width="45%"}
+
+__OUTPUT__  
+
+***
+
+This is an example of rmarkdown, with markdown __syntax__ and __R code__ that gets run.
+
+```{r}
+#| echo: false
+#| fig-width: 4
+#| fig-asp: 1
+#| fig-align: center
+
+fit <- lm(dist ~ speed, data = cars)
+
+par(pty = "s", mar = c(4,4,1,1))
+
+plot(cars, pch = 19, col = 'darkgray')
+abline(fit, lwd = 2)
+```
+
+:::
+
+::::
+
+## &#x1F4C3; This Week's Assignments
+
+- Lab 01 - Introduction to R, RStudio, and Quarto
+- Pre-course self-assessment

@@ -1,0 +1,112 @@
+/*-- scss:defaults --*/
+$eerieblack:  #212529 !default;
+$pinetree:    #262A10 !default;
+$kobe:        #942911 !default;
+$darkcyan:    #0F8B8D !default;
+$carrot:      #EC9A29 !default;
+$lightgray:   #DAD2D8 !default;
+$persianblue: #383FBC !default;
+$battleship:  #858585 !default;
+
+$primary:   $eerieblack !default;
+$success:   $carrot !default;
+$info:      $darkcyan !default;
+$warning:   $eerieblack !default;
+$danger:    $kobe !default;
+
+/*-- scss:rules --*/
+:root {
+  --bs-body-color: $primary;
+}
+
+strong, b, a {
+  color: $kobe;  
+}
+
+#quarto-header nav {
+  background-color: $primary;
+}
+
+.navbar {
+  border-color: $primary;
+}
+
+.navbar-dark .navbar-brand {
+    color: white;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: white;
+}
+
+.slide-deck {
+  border: 3px solid #dee2e6;
+  width: 100%;
+  height: 475px;
+}
+
+@media only screen and (max-width: 600px) {
+ .slide-deck {
+    height: 400px;
+  }
+}
+
+code {
+  background-color: "#C2C2C2";
+  color: $persianblue;
+}
+
+td.listing-description {
+  width: 55%;
+}
+
+.listing-description {
+  color: $battleship;
+  font-size: 0.9em;
+}
+
+.listing-date, .listing-title {
+  color: $kobe;
+}
+
+#title-block-header .description {
+  color: $battleship;
+  font-size: 0.9em;
+}
+
+h2[data-anchor-id="outline"]:before {
+  content: "\01F4CB \00a0";
+}
+
+h2[data-anchor-id="homework"]:before {
+  content: "\01F3E0 \00a0";
+}
+
+h3[data-anchor-id^="exercises"]:before {
+  content: "\01F3CB  \00a0";
+}
+
+li[data-unique = "Outline"]:before {
+  content: "\01F4CB \00a0";
+}
+
+#objectives h3:before {
+  content: "\01F3AF \00a0";
+}
+
+#r-packages h3:before {
+  content: "\01F4E6  \00a0";
+}
+
+#data h3:before {
+  content: "\01F4BE  \00a0";
+}
+
+div[id*="exercises"] h3:before {
+  content: "\01F3CB  \00a0";
+}
+
+#Homework h2:before {
+  content: "\01F3E0 \00a0";
+}
+

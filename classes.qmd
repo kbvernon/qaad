@@ -1,0 +1,8 @@
+---
+title: "Classes"
+listing:
+  contents: classes
+  type: table
+  fields: [date, title, description]
+---
+

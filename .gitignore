@@ -2,9 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-_misc/
-/slides/*_files/
-/slides/*.html
-/slides/libs/
-/exercises/*_files/
-/exercises/*.html
+/_misc/
+/.quarto/
+/labs/images/
+/slides/images/

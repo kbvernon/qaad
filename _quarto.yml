@@ -1,0 +1,41 @@
+project:
+  type: website
+
+website:
+  title: "Quantitative Analysis of Archaeological Data"
+  description: "A website for the University of Utah course ANTH 5850: Quantitative Analysis of Archaeological Data"
+  site-url: kbvernon.github.io/qaad
+  search: false
+  
+  navbar:
+    title: "QAAD"
+    left:
+      - text: "Classes"
+        href: classes.qmd
+      - text: "Help"
+        href: help.qmd
+
+  page-footer:
+    center: |
+      &copy; 2023 Kenneth B. Vernon. Powered by [Quarto](https://quarto.org/).\
+      The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.
+
+format:
+  html:
+    theme: 
+      - cosmo
+      - custom.scss
+    toc: true
+    mainfont: sans-serif
+    fontcolor: "#151314"
+    linkcolor: "#BF211E"
+    smooth-scroll: true
+    reference-location: margin
+    citation-location: margin
+
+editor: source
+
+execute: 
+  echo: false
+  error: false
+  warning: false

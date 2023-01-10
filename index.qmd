@@ -1,0 +1,20 @@
+---
+title: "Quantitative Analysis of Archaeological Data"
+toc: false
+---
+
+## Welcome!  
+
+This is a Github page setup to host lectures and other content for the University of Utah course __ANTH 5850: Quantitative Analysis of Archaeological Data__ (affectionately referred to as "quad"). As its name suggests, this class offers students quantitative tools and techniques for working with archaeological data. Those tools include, first and foremost, the __language of statistics__, but also importantly the __statistical programming language R__, and finally the mark-up language __Markdown__ (via Quarto), which aids in literate programming (think science communication). Obviously, no one can become fluent in a language - much less three languages! - with just four months of exposure. For that, there is no substitute for immersion, for living and working with these languages and the people who speak them, meaning scientists. This course is merely designed to get you started on that process and to hopefully make it smoother for you as you go. I think the word for it is a "survey" course.
+
+On this website, you'll find course lecture slides and labs. These are organized by class meetings, which you can find a link to in the navbar. The site was built using the open-source scientific and technical publishing system, [Quarto](https://quarto.org/), which you'll also learn about in this course! The source code for the website, along with the lecture slides and lab exercises, can be found at the associated [Github repository](https://github.com/kbvernon/qaad).
+
+## Inspiration?
+
+I can't take credit for all of the content in this course. The lecture slides, in particular, are adapted from the lectures of [Dr. Simon Brewer](https://faculty.utah.edu/u0784726-SIMON_C._BREWER/teaching/index.hml;jsessionid=7AAABB19497C8EC501602EDB0FFEA437) in the Department of Geography at the University of Utah. The R labs, at least the parts of them concerned with data science rather than statistics, draw heavily on the very popular book [R for Data Science (2e)](https://r4ds.hadley.nz/) by Hadley Wickham and Garrett Grolemund.
+
+It probably goes without saying, of course, but those folks are way smarter than I could ever hope to be, so any errors or confusions that occur here are definitely, one-hundred percent, without a doubt my own. 
+
+## Reuse {.appendix}
+
+Text and figures are licensed under Creative Commons Attribution [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Any computer code (R, HTML, CSS, etc.) in slides and worksheets, including in slide and worksheet sources, is also licensed under [MIT](https://github.com/wilkelab/SDS375/LICENSE.md). Note that figures in slides may be pulled in from external sources and may be licensed under different terms. For such images, image credits are available in the slide notes, accessible via pressing the letter 'p'.
