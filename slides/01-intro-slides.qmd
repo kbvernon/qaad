@@ -1,5 +1,6 @@
 ---
-title: "Lecture 01: Introduction"  
+title: "Lecture 01: Introduction"
+date: 'Last updated: `r Sys.Date()`'
 ---
 
 ```{r}
@@ -196,7 +197,7 @@ tibble(
   .panel-tabset {
   	display: grid;
   	grid-gap: 1em;
-  	grid-template-columns: 21% 79%;
+  	grid-template-columns: 25% 75%;
   }
   
   .panel-tabset-tabby {
@@ -377,10 +378,6 @@ R is also an incredibly active and growing community.
 
 > Markdown is a lightweight markup language for creating formatted text using a plain-text editor.
 > _[From the Wikipedia page](https://en.wikipedia.org/wiki/Markdown)._
-
-<br>
-
-. . .
 
 :::: {.columns}
 

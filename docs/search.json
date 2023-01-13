@@ -214,7 +214,7 @@
     "href": "slides/01-intro-slides.html#literate-programming-with-markdown-fa-brands-markdown",
     "title": "Lecture 01: Introduction",
     "section": "Literate programming with markdown ",
-    "text": "Literate programming with markdown \n\nMarkdown is a lightweight markup language for creating formatted text using a plain-text editor. From the Wikipedia page.\n\n\n\n\n\nINPUT\n\n\nThis is a sentence in Markdown, containing `code`, **bold text**, and *italics*.\n\n\nOUTPUT\n\nThis is a sentence in Markdown, containing code, bold text, and italics."
+    "text": "Literate programming with markdown \n\nMarkdown is a lightweight markup language for creating formatted text using a plain-text editor. From the Wikipedia page.\n\n\n\nINPUT\n\n\nThis is a sentence in Markdown, containing `code`, **bold text**, and *italics*.\n\n\nOUTPUT\n\nThis is a sentence in Markdown, containing code, bold text, and italics."
   },
   {
     "objectID": "slides/01-intro-slides.html#quarto-markdown-r",
@@ -229,5 +229,12 @@
     "title": "Lecture 01: Introduction",
     "section": "📃 This Week’s Assignments",
     "text": "📃 This Week’s Assignments\n\nLab 01 - Introduction to R, RStudio, and Quarto\nPre-course self-assessment"
+  },
+  {
+    "objectID": "slides/01-intro-slides.html",
+    "href": "slides/01-intro-slides.html",
+    "title": "Lecture 01: Introduction",
+    "section": "",
+    "text": "Course Mechanics\n\n🧱 Structure\n\n🎯 Objectives\n\n🏋 Expectations\n\n🤝 Ethics\n\n💾 Software\n\n\nCourse Content\n\nWhy statistics?\n\nWhat is an archaeological population?\n\nA note about terminology and notation\n\nStatistical programming with \n\nLiterate programming with Quarto"
   }
 ]
