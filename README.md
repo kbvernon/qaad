@@ -1,0 +1,3 @@
+
+This is a Github page setup to host lectures and other content for the University of Utah course __ANTH 5850: Quantitative Analysis of Archaeological Data__ (affectionately referred to as "quad"). On this website, you'll find course lecture slides and labs. These are organized by class meetings, which you can find a link to in the navbar. The site was built using the open-source scientific and technical publishing system, [Quarto](https://quarto.org/), which you'll also learn about in this course! The source code for the website, along with the lecture slides and lab exercises, can be found at the associated [Github repository](https://github.com/kbvernon/qaad).
+
