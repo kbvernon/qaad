@@ -1,10 +1,5 @@
 ---
 title: "Week 01: Introduction"
-toc-location: left
-code-overflow: wrap
-execute: 
-  echo: true
-  freeze: auto
 ---
 
 ## Outline
@@ -188,7 +183,7 @@ plot(
 
 ## R Basics
 
-![](images/r-stuff.png){width="75%"}
+![](images/r-stuff.png){width="75%" fig-align="center"}
 
 ### R is a calculator
 
