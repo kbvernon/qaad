@@ -16,7 +16,12 @@ $danger:    $kobe !default;
 
 /*-- scss:rules --*/
 :root {
-  --bs-body-color: $primary;
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-color: var(--bs-gray-700);
+}
+
+h1, h2, h3, h4, h5 {
+  color: $primary;
 }
 
 strong, b, a {
@@ -74,39 +79,37 @@ td.listing-description {
   font-size: 0.9em;
 }
 
-h2[data-anchor-id="outline"]:before {
+h2[data-anchor-id="outline"]:before,
+a[data-scroll-target="#outline"]:before {
   content: "\01F4CB \00a0";
 }
 
-h2[data-anchor-id="homework"]:before {
-  content: "\01F3E0 \00a0";
-}
-
-h3[data-anchor-id^="exercises"]:before {
-  content: "\01F3CB  \00a0";
-}
-
-li[data-unique = "Outline"]:before {
-  content: "\01F4CB \00a0";
-}
-
-#objectives h3:before {
+h3[data-anchor-id="objectives"]:before,
+a[data-scroll-target="#objectives"]:before {
   content: "\01F3AF \00a0";
 }
 
-#r-packages h3:before {
+h3[data-anchor-id="r-packages"]:before,
+a[data-scroll-target="#r-packages"]:before {
   content: "\01F4E6  \00a0";
 }
 
-#data h3:before {
+h3[data-anchor-id="data"]:before,
+a[data-scroll-target="#data"]:before {
   content: "\01F4BE  \00a0";
 }
 
-div[id*="exercises"] h3:before {
+h3[data-anchor-id="exercises"]:before,
+a[data-scroll-target="#exercises"]:before {
   content: "\01F3CB  \00a0";
 }
 
-#Homework h2:before {
+h2[data-anchor-id="homework"]:before,
+a[data-scroll-target="#homework"]:before {
   content: "\01F3E0 \00a0";
 }
 
+h3[data-anchor-id^="exercises"]:before,
+a[data-scroll-target^="#exercises"]:before {
+  content: "\01F3CB  \00a0";
+}

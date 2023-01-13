@@ -27,9 +27,6 @@ format:
       - cosmo
       - custom.scss
     toc: true
-    mainfont: sans-serif
-    fontcolor: "#151314"
-    linkcolor: "#BF211E"
     smooth-scroll: true
     reference-location: margin
     citation-location: margin
