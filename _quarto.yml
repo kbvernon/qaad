@@ -1,6 +1,9 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - "*.qmd"
+    - "!LICENSE.md"
 
 website:
   title: "Quantitative Analysis of Archaeological Data"
