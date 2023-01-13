@@ -1,0 +1,5 @@
+toc-location: left
+code-overflow: wrap
+execute: 
+  echo: true
+  freeze: auto

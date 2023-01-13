@@ -1,0 +1,10 @@
+date: 'Last updated: `r Sys.Date()`'
+format: 
+  revealjs: 
+    transition: fade
+    theme: [default, slides.scss]
+    slide-number: true
+    width: 1250
+    code-overflow: wrap
+execute:
+  freeze: auto
