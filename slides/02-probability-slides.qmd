@@ -1,6 +1,7 @@
 ---
 title: "Lecture 02: Probability as a Model"  
 date: 'Last updated: `r Sys.Date()`'
+fig-asp: 0.7
 ---
 
 {{< include _setup.qmd >}}
