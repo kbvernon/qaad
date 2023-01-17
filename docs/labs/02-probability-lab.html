@@ -287,6 +287,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Of course, these aren’t just automatically on your computer, so you have to install the packages first. Then you can open them in R. To do that, you use the function <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code>. For the packages used today, you can use this call just once like so:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"archdata"</span>, <span class="st">"ggplot2"</span>, <span class="st">"palmerpenguins"</span>, <span class="st">"skimr"</span>, <span class="st">"viridis"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Note that you only need to run this once, so don’t put this as a line in your Quarto document, which you might render multiple times. Just run it in the console.</p>
 <section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
 <ol type="1">
 <li>Open a new Quarto document and add the R Preamble with an R code chunk with the <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> calls that load the R packages required for this lab.</li>
@@ -302,7 +306,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Let’s use R to describe some properties of a sample of penguins from Palmer Station in Antarctica. These data became available in R when you loaded the <code>palmerpenguins</code> package. They aren’t currently visible in your environment (for complicated reasons), but trust me, they’re there. The name of the dataset is <code>penguins</code>, so you can call it that way.</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">penguins</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">penguins</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 8
   species island    bill_length_mm bill_depth_mm flipper_l…¹ body_…² sex    year
@@ -349,21 +353,21 @@ tibble [344 × 8] (S3: tbl_df/tbl/data.frame)
 <p><span class="math display">\[\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i\]</span></p>
 <p>Remember that this is only an estimate of the central tendency of a population, <span class="math inline">\(\mu\)</span>! In R, you can calculate the mean by hand if you like, but it’s probably easier to use the built-in R function, <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>. Let’s use this to calculate the mean bill length of penguins.</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] NA</code></pre>
 </div>
 </div>
 <p>Whoops! Need to set <code>na.rm = TRUE</code> to ignore missing or <code>NA</code> values.</p>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 43.9</code></pre>
 </div>
 </div>
 <p>An important limitation of the mean is its sensitivity to outliers - you know, like rich people. If you calculate the mean household income in the United States, for example, the incomes of obscenely wealthy individuals like Jeff Bezos and Elon Musk will pull that measure up, thus painting a much rosier picture of the US than the reality the rest of us live in. When there are extreme outliers, it is often advisable to use the median because it is less sensitive to outliers as it is the “middle” number or value that evenly divides the sample in half.</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 44.5</code></pre>
 </div>
@@ -381,7 +385,7 @@ Note
 <div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>By the way, did you notice the weird use of the dollar sign <code>$</code>? This is used to index data and pull out a specific element by its name. For example, when we run the code snippet <code>penguins$bill_length_mm</code>, we are asking R to pull the variable <code>bill_length_mm</code> from the <code>penguins</code> table and give us its values. One important implication of this sort of indexing is that we can assign the variable to its own object outside of the table, e.g.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bill_length</span> <span class="op">&lt;-</span> <span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bill_length</span> <span class="op">&lt;-</span> <span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You’ll actually learn more about this, in particular how to work with tabular data, in the next lab.</p>
 </div>
 </div>
@@ -391,7 +395,7 @@ Note
 <p><span class="math display">\[s^{2} = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^{2}\]</span></p>
 <p>This is an estimate of the population variance, <span class="math inline">\(\sigma^2\)</span>. To calculate the variance of a sample with R, use <code><a href="https://rdrr.io/r/stats/cor.html">var()</a></code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">body_mass_g</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">body_mass_g</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 643131</code></pre>
 </div>
@@ -399,7 +403,7 @@ Note
 <p>Whoa! That’s a really big number. Do penguins get that big? The answer, of course, is No.&nbsp;The number is large because variance is <em>squared</em> error, so this is in units of squared-grams, <span class="math inline">\(g^2\)</span>, not grams, <span class="math inline">\(g\)</span>. Why do we square it? Well, if you think about it, some of the errors will be negative and some will be positive (some penguins will be larger than average and some smaller), but on balance - on average - the sum of the errors will tend towards zero, which is not terribly informative of the spread of the data. Or, put that another way, what we want with a measure of dispersion is not just difference but <em>distance</em> from the mean, and distance is always positive. Squaring the errors is one way of ensuring that the values are positive (similar to taking the absolute value).</p>
 <p>There is one small catch to squaring though. It makes it a really weird measure to think about - like, what is a square gram? Hard to say. That’s why it is common to take the square root of the variance, to get the measure back into units of the data. This value is known as the standard deviation, <span class="math inline">\(s\)</span>. You can calculate it with the <code><a href="https://rdrr.io/r/stats/sd.html">sd()</a></code> function.</p>
 <div class="cell">
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">body_mass_g</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">$</span><span class="va">body_mass_g</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 802</code></pre>
 </div>
@@ -408,7 +412,7 @@ Note
 </section><section id="table-summaries" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="table-summaries">Table summaries</h3>
 <p>To generate summary statistics for all the variables in your data, base R provides a really nice <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function that you can apply to a table like so:</p>
 <div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      species          island    bill_length_mm bill_depth_mm 
  Adelie   :152   Biscoe   :168   Min.   :32.1   Min.   :13.1  
@@ -432,7 +436,7 @@ Note
 <div class="skim-table page-columns page-full">
 <div class="page-columns page-full"><p></p><div class="no-row-height column-margin column-container"><span class="">Note that I have applied css styling to this table output to make it more compact and fit on the screen. Yours will look slightly different.</span></div></div>
 <div class="cell">
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">skim</span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">skim</span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped">
 <caption>Data summary</caption>
@@ -663,7 +667,7 @@ Tip
 </div>
 <p>So, to continue our analogy above, we’re going to treat R like our illustrator, and <code>ggplot2</code> is the language we are going to speak to R to visualize our data. So, how do we do that? Well, let’s start with the basics. Suppose we want to know if there’s some kind of relationship (an allometric relationship) among the Palmer Station penguins between their body mass and bill length. Here’s how we would visualize that.</p>
 <div class="cell">
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -679,10 +683,10 @@ Tip
 <li>The final thing to point out here is that we combined or connected these arguments using the plus-sign, <code>+</code>. You should read this literally as <em>addition</em>, as in “make this ggplot of the penguins data and add a point geometry to it.” Be aware that the use of the plus-sign in this way is unique to the <code>ggplot2</code> package and won’t work with other graphical tools in R.</li>
 </ol>
 <p>We can summarize these ideas with a simple template. All that is required to make a graph in R is to replace the elements in the bracketed sections with a dataset, a geometry function, and an aesthetic mapping.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> <span class="sc">&lt;</span>DATA<span class="sc">&gt;</span>) <span class="sc">+</span> </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="er">&lt;</span>GEOM_FUNCTION<span class="sc">&gt;</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="sc">&lt;</span>MAPPINGS<span class="sc">&gt;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> <span class="sc">&lt;</span>DATA<span class="sc">&gt;</span>) <span class="sc">+</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="er">&lt;</span>GEOM_FUNCTION<span class="sc">&gt;</span>(<span class="at">mapping =</span> <span class="fu">aes</span>(<span class="sc">&lt;</span>MAPPINGS<span class="sc">&gt;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>One of the great things about ggplot, something that makes it stand out compared to alternative graphics engines in R, is that you can assign plots to a variable and call it in different places, or modify it as needed.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins_plot</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins_plot</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -701,7 +705,7 @@ Tip
 </div>
 <p>Consider, for example, the fact that there are three penguin species in our dataset: Adelie, Gentoo, and Chinstrap. Do we think the relationship between body mass and bill length holds for all of them? Let’s add penguin species to our aesthetic mapping (specifically to the <code>color</code> parameter) and see what happens.</p>
 <div class="cell">
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -711,7 +715,7 @@ Tip
 </div>
 <p>Notice that ggplot2 automatically assigns a unique color to each species and adds a legend to the right that explains each color. In this way, the color doesn’t just change the look of the figure. It conveys information about the data. Rather than mapping a variable in the data to a specific aesthetic, though, we can also define an aesthetic manually for the geometry as a whole. In this case, the aesthetics do not convey information about the data. They merely change the look of the figure. The key to doing this is to move the specification outside the <code>aes()</code>, but still inside the <code>geom_point()</code> function.</p>
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span>,</span>
 <span>    shape <span class="op">=</span> <span class="fl">21</span>,</span>
@@ -752,7 +756,7 @@ Tip
 <ol type="1">
 <li>Change the code below to map the <code>species</code> variable to the x-axis (in addition to the color).</li>
 </ol>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -760,7 +764,7 @@ Tip
 <li><p>What does this do to the position of the points?</p></li>
 <li><p>Change the code below to map the <code>species</code> variable to the shape aesthetic (in addition to the color).</p></li>
 </ol>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># hint: use shape = ...</span></span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># hint: use shape = ...</span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
@@ -768,7 +772,7 @@ Tip
 <ol start="4" type="1">
 <li>Change the code below to map the <code>species</code> variable to the size aesthetic (replacing color).</li>
 </ol>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># hint: use size = ...</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># hint: use size = ...</span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
@@ -776,7 +780,7 @@ Tip
 <ol start="5" type="1">
 <li>For the following code, change the color, size, and shape aesthetics for the entire geometry (do not map them to the data).</li>
 </ol>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span>,</span>
 <span>    color <span class="op">=</span> , <span class="co"># &lt;------- insert value here</span></span>
@@ -796,7 +800,7 @@ Tip
 </div>
 </div>
 <p>Both represent the same data and the same x and y variables, but they do so in very different ways. That difference concerns their different <strong>geometries</strong>. As their name suggests, these are geometrical objects used to represent the data. To change the geometry, simply change the <code>geom_*()</code> function. For example, to create the plots above, use the <code>geom_point()</code> and <code>geom_smooth()</code> functions.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># left</span></span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># left</span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
@@ -809,7 +813,7 @@ Tip
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>While every geometry function takes a <code>mapping</code> argument, not every aesthetic works (or is needed) for every geometry. For example, there’s no <code>shape</code> aesthetic for lines, but there is a <code>linetype</code>. Conversely, points have a <code>shape</code>, but not a <code>linetype</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_smooth</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, linetype <span class="op">=</span> <span class="va">species</span><span class="op">)</span>,</span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -819,7 +823,7 @@ Tip
 </div>
 <p>One really important thing to note here is that you can add multiple geometries to the same plot to represent the same data. Simply add them together with <code>+</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_smooth</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, linetype <span class="op">=</span> <span class="va">species</span><span class="op">)</span>,</span>
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
@@ -831,7 +835,7 @@ Tip
 </div>
 </div>
 <p>That’s a hideous figure, though it should get the point across. While layering in this way is a really powerful tool for visualizing data, it does have one important drawback. Namely, it violates the DRY principle (Don’t Repeat Yourself), as it specifies the x and y variables twice. This makes it harder to make changes, forcing you to edit the same aesthetic parameters in multiple locations. To avoid this, <code>ggplot2</code> allows you to specify a common set of aesthetic mappings in the <code>ggplot()</code> function itself. These will then apply globally to all the geometries in the figure.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">penguins</span>,</span>
 <span>  mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -839,7 +843,7 @@ Tip
 <span>  <span class="fu">geom_point</span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>color <span class="op">=</span> <span class="va">species</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Notice that you can still specify specific aesthetic mappings in each geometry function. These will apply only <em>locally</em> to that specific geometry rather than <em>globally</em> to all geometries in the plot. In the same way, you can specify different <code>data</code> for each geometry.</p>
 <div class="cell">
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">penguins</span>,</span>
 <span>  mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -863,7 +867,7 @@ Tip
 </section><section id="facets" class="level2"><h2 class="anchored" data-anchor-id="facets">Facets</h2>
 <p>Sometimes mapping variables to aesthetics can generate a lot of noise and clutter, making it hard to read or interpret a figure. One way to handle this is to split your plot into multiple plots or <strong>facets</strong> based on levels of a categorical variable like <code>species</code>. To do this for one categorical variable, you use the <code>facet_wrap()</code> function.</p>
 <div class="cell">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -874,7 +878,7 @@ Tip
 </div>
 <p>Placing <code>species</code> in the <code>vars()</code> function tells <code>facet_wrap()</code> to “split the plot <em>by species</em>.” If you want to split the plot by two categorical variables, like <code>species</code> and <code>sex</code>, use the <code>facet_grid()</code> function.</p>
 <div class="cell">
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -885,7 +889,7 @@ Tip
 </div>
 <p>Evidently, there are some penguins for whom the sex is unknown. To remove these penguins from the dataset, you can use the <code><a href="https://rdrr.io/r/stats/na.fail.html">na.omit()</a></code> function.</p>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -898,7 +902,7 @@ Tip
 <ol type="1">
 <li>Use <code>facet_wrap()</code> to split the following scatterplot of the penguins data by sex.</li>
 </ol>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
@@ -907,7 +911,7 @@ Tip
 <li><p>Now, map the <code>species</code> to the color aesthetic for the point geometry.</p></li>
 <li><p>Use <code>facet_grid()</code> to split the following scatterplot of the penguins data by species and island.</p></li>
 </ol>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span> </span>
@@ -919,7 +923,7 @@ Tip
 <section id="labels" class="level3"><h3 class="anchored" data-anchor-id="labels">Labels</h3>
 <p>By default, <code>ggplot2</code> uses the names of the variables in the data to label the axes. This, however, can lead to poor graphics as naming conventions in R are not the same as those you might want to use to visualize your data. Fortunately, <code>ggplot2</code> provides tools for renaming the axis and plot titles. The one you are likely to use most often is probably the <code>labs()</code> function. Here is a standard usage:</p>
 <div class="cell">
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -934,7 +938,7 @@ Tip
 </div>
 </section><section id="color-palettes" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="color-palettes">Color Palettes</h3>
 <div class="page-columns page-full"><p>When you map a variable to an aesthetic property, <code>ggplot2</code> will supply a default color palette. This is fine if you are just wanting to explore the data yourself, but when it comes to publication-ready graphics, you should be a little more thoughtful. The main reason for this is that you want to make sure your graphics are <strong>accessible</strong>. For instance, the default <code>ggplot2</code> color palette is not actually colorblind safe. To address this shortcoming, you can specify colorblind safe color palettes using the <code>scale_color_viridis()</code> function from the <code>viridis</code> package.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> It works like this:</p><div class="no-row-height column-margin column-container"><li id="fn3"><p><sup>3</sup>&nbsp;When it comes to colors in R, the sky is the limit. As far as I am aware, the most comprehensive list of palettes for use in R is provided by the <a href="https://emilhvitfeldt.github.io/paletteer/"><code>paletteer</code> package</a>, which attempts to collect all of the palettes scattered across the R ecosystem into one place. See also this beautiful website for creating custom color palettes: <a href="https://coolors.co/" class="uri">https://coolors.co/</a>.</p></li></div></div>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -971,7 +975,7 @@ Tip
 </ul>
 </li>
 </ol>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -988,7 +992,7 @@ Tip
 <p>To control the display of non-data elements in a figure, you can specify a theme. This is done with the <code>theme()</code> function. Using this can get pretty complicated, pretty quick, as there are many many elements of a figure that can be modified, so rather than elaborate on it in detail, I want to draw your attention to pre-defined themes that you can use to modify your plots in a consistent way.</p>
 <p>Here is an example of the black and white theme, which removes filled background grid squares, leaving only the grid lines.</p>
 <div class="cell">
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -1012,7 +1016,7 @@ Tip
 </ul>
 </li>
 </ol>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span></span>
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>

@@ -74,6 +74,16 @@ library(viridis)
 
 ````
 
+Of course, these aren't just automatically on your computer, so you have to install the packages first. Then you can open them in R. To do that, you use the function `install.packages()`. For the packages used today, you can use this call just once like so:
+
+```r
+
+install.packages(c("archdata", "ggplot2", "palmerpenguins", "skimr", "viridis"))
+
+```
+
+Note that you only need to run this once, so don't put this as a line in your Quarto document, which you might render multiple times. Just run it in the console.
+
 ### Exercises
 
 1. Open a new Quarto document and add the R Preamble with an R code chunk with the `library()` calls that load the R packages required for this lab.
