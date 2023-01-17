@@ -1,0 +1,99 @@
+/*-- scss:defaults --*/
+$lincoln-green: #105622 !default;
+$eerieblack:    #171614 !default;
+$bluesapphire:  #0C556D !default;
+$blue-ncs:      #0094C6 !default;
+$wintergreen:   #6B8F7E !default;
+$old-gold:      #D1B817 !default;
+$bronze:        #D58936 !default;
+$outerspace:    #37423D !default;
+$kobe:          #942911 !default;
+
+$primary: $eerieblack !default;
+$success: $lincoln-green !default;
+$info:    $blue-ncs !default;
+$warning: $bronze !default;
+$danger:  $kobe !default;
+
+/*-- scss:rules --*/
+.dense-list ul li,
+.dense-list ol li {
+  margin-top: 0.15em !important;
+  margin-bottom: 0.15em !important;
+}
+
+strong, b, a {
+  color: $kobe;  
+}
+
+.lincoln {
+  color: $lincoln-green;
+}
+
+.lincoln-bg {
+  background-color: $lincoln-green;
+}
+
+.eerie {
+  color: $eerieblack;
+}
+
+.eerie-bg {
+  background-color: $eerieblack;
+}
+
+.sapphire {
+  color: $bluesapphire;
+}
+
+.sapphire-bg {
+  background-color: $bluesapphire;
+}
+
+.blue-ncs {
+  color: $blue-ncs;
+}
+
+.blue-ncs-bg {
+  background-color: $blue-ncs;
+}
+
+.winter {
+  color: $wintergreen;
+}
+
+.winter-bg {
+  background-color: $wintergreen;
+}
+
+.gold {
+  color: $old-gold;
+}
+
+.gold-bg {
+  background-color: $old-gold;
+}
+
+.bronze {
+  color: $bronze;
+}
+
+.bronze-bg {
+  background-color: $bronze;
+}
+
+.outerspace {
+  color: $outerspace;
+}
+
+.outerspace-bg {
+  background-color: $outerspace;
+}
+
+.kobe {
+  color: $kobe;
+}
+
+.kobe-bg {
+  background-color: $kobe;
+}

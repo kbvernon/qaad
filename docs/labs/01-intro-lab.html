@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.313">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
-<meta name="dcterms.date" content="2023-01-12">
-
-<title>Quantitative Analysis of Archaeological Data - Week 01: Introduction</title>
+<meta name="dcterms.date" content="2023-01-17">
+<meta name="description" content="an introduction to R, RStudio, and Quarto">
+<title>Quantitative Analysis of Archaeological Data - Lab 01: Introduction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -86,7 +84,6 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
@@ -98,8 +95,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -111,18 +107,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit"
   }
-}</script>
-<style>html{ scroll-behavior: smooth; }</style>
-
-
+}</script><style>html{ scroll-behavior: smooth; }</style>
 </head>
-
 <body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
-      <div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">QAAD</span>
@@ -133,7 +123,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="../classes.html">
  <span class="menu-text">Classes</span></a>
   </li>  
@@ -142,72 +132,80 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
  <span class="menu-text">Help</span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
-    </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
   <ul class="collapse">
-  <li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
   <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
-  </ul></li>
-  <li><a href="#working-in-rstudio" id="toc-working-in-rstudio" class="nav-link" data-scroll-target="#working-in-rstudio">Working in RStudio</a>
+  </ul>
+</li>
+  <li>
+<a href="#working-in-rstudio" id="toc-working-in-rstudio" class="nav-link" data-scroll-target="#working-in-rstudio">Working in RStudio</a>
   <ul class="collapse">
-  <li><a href="#pane-layout" id="toc-pane-layout" class="nav-link" data-scroll-target="#pane-layout">Pane layout</a></li>
+<li><a href="#pane-layout" id="toc-pane-layout" class="nav-link" data-scroll-target="#pane-layout">Pane layout</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
-  </ul></li>
-  <li><a href="#make-your-first-plot" id="toc-make-your-first-plot" class="nav-link" data-scroll-target="#make-your-first-plot">Make Your First Plot!</a>
+  </ul>
+</li>
+  <li>
+<a href="#make-your-first-plot" id="toc-make-your-first-plot" class="nav-link" data-scroll-target="#make-your-first-plot">Make Your First Plot!</a>
   <ul class="collapse">
-  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The data</a></li>
+<li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">The data</a></li>
   <li><a href="#the-plot-function" id="toc-the-plot-function" class="nav-link" data-scroll-target="#the-plot-function">The <code>plot()</code> function</a></li>
   <li><a href="#customizing-your-plot" id="toc-customizing-your-plot" class="nav-link" data-scroll-target="#customizing-your-plot">Customizing your plot</a></li>
   <li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
-  </ul></li>
-  <li><a href="#r-basics" id="toc-r-basics" class="nav-link" data-scroll-target="#r-basics">R Basics</a>
+  </ul>
+</li>
+  <li>
+<a href="#r-basics" id="toc-r-basics" class="nav-link" data-scroll-target="#r-basics">R Basics</a>
   <ul class="collapse">
-  <li><a href="#r-is-a-calculator" id="toc-r-is-a-calculator" class="nav-link" data-scroll-target="#r-is-a-calculator">R is a calculator</a></li>
+<li><a href="#r-is-a-calculator" id="toc-r-is-a-calculator" class="nav-link" data-scroll-target="#r-is-a-calculator">R is a calculator</a></li>
   <li><a href="#objects-and-functions" id="toc-objects-and-functions" class="nav-link" data-scroll-target="#objects-and-functions">Objects and Functions</a></li>
   <li><a href="#exercises-2" id="toc-exercises-2" class="nav-link" data-scroll-target="#exercises-2">Exercises</a></li>
-  </ul></li>
-  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow">Workflow</a>
+  </ul>
+</li>
+  <li>
+<a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow">Workflow</a>
   <ul class="collapse">
-  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
-  </ul></li>
-  <li><a href="#r-projects" id="toc-r-projects" class="nav-link" data-scroll-target="#r-projects">R Projects</a>
+<li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#r-projects" id="toc-r-projects" class="nav-link" data-scroll-target="#r-projects">R Projects</a>
   <ul class="collapse">
-  <li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
-  </ul></li>
-  <li><a href="#quarto" id="toc-quarto" class="nav-link" data-scroll-target="#quarto">Quarto</a>
+<li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#quarto" id="toc-quarto" class="nav-link" data-scroll-target="#quarto">Quarto</a>
   <ul class="collapse">
-  <li><a href="#markdown-formatting" id="toc-markdown-formatting" class="nav-link" data-scroll-target="#markdown-formatting">Markdown formatting</a></li>
+<li><a href="#markdown-formatting" id="toc-markdown-formatting" class="nav-link" data-scroll-target="#markdown-formatting">Markdown formatting</a></li>
   <li><a href="#yaml" id="toc-yaml" class="nav-link" data-scroll-target="#yaml">YAML</a></li>
   <li><a href="#r-code-chunks" id="toc-r-code-chunks" class="nav-link" data-scroll-target="#r-code-chunks">R code chunks</a></li>
   <li><a href="#exercises-4" id="toc-exercises-4" class="nav-link" data-scroll-target="#exercises-4">Exercises</a></li>
-  </ul></li>
-  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
   </ul>
-</nav>
-</nav>
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Week 01: Introduction</h1>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 01: Introduction</h1>
 </div>
 
+<div>
+  <div class="description">
+    an introduction to R, RStudio, and Quarto
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -216,7 +214,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 12, 2023</p>
+      <p class="date">January 17, 2023</p>
     </div>
   </div>
   
@@ -224,12 +222,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </div>
   
 
-</header>
-
-<section id="outline" class="level2">
-<h2 class="anchored" data-anchor-id="outline">Outline</h2>
-<section id="objectives" class="level3">
-<h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
 <p>In this lab, you will learn</p>
 <ol type="1">
 <li>how to use RStudio</li>
@@ -238,76 +232,67 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>how to create an R Project folder</li>
 <li>how to make a website (what?!) with Quarto</li>
 <li>and, you’ll also learn the ends and outs of a typical workflow in R</li>
-</ol>
-</section>
-<section id="r-packages" class="level3">
-<h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
 <p>No additional packages required this week.</p>
-</section>
-<section id="data" class="level3">
-<h3 class="anchored" data-anchor-id="data">Data</h3>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
 <ul>
-<li><code>cars</code>
+<li>
+<code>cars</code>
 <ul>
 <li>Includes measurements of car speed and stopping distance.</li>
-<li>package: <code>datasets</code></li>
-<li>reference: <a href="https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html</a></li>
-</ul></li>
+<li>package: <code>datasets</code>
+</li>
+<li>reference: <a href="https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html</a>
+</li>
 </ul>
-</section>
-</section>
-<section id="working-in-rstudio" class="level2">
-<h2 class="anchored" data-anchor-id="working-in-rstudio">Working in RStudio</h2>
+</li>
+</ul></section></section><section id="working-in-rstudio" class="level2"><h2 class="anchored" data-anchor-id="working-in-rstudio">Working in RStudio</h2>
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/rstudio_panes.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figure class="figure"><p><img src="images/rstudio_panes.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 <p>If you are going to do anything with R, <a href="https://rstudio.com/">RStudio</a> is hands-down the best place to do it. RStudio is an open-source integrated development environment (or IDE) that makes programming in R simpler, more efficient, and most importantly, more reproducible. Some of its more user-friendly features are syntax highlighting (it displays code in different colors depending on what it is or does, which makes it easier for you to navigate the code that you’ve written), code completion (it will try to guess what code you are attempting to write and write it for you), and keyboard shortcuts for the more repetitive tasks.</p>
-<section id="pane-layout" class="level3">
-<h3 class="anchored" data-anchor-id="pane-layout">Pane layout</h3>
+<section id="pane-layout" class="level3"><h3 class="anchored" data-anchor-id="pane-layout">Pane layout</h3>
 <p>When you first open RStudio, you should see three window panes: the Console, the Environment, and the Viewer. If you open an R script, a fourth Source pane will also open. The default layout of these panes is shown in the figure above.</p>
 <ul>
-<li><strong>Source</strong>. The Source pane provides basic text editing functionality, allowing you to create and edit R scripts. Importantly, you cannot execute the code in these scripts directly, but you can save the scripts that you write as simple text files. A dead give away that you have an R script living on your computer is the <em>.R</em> extension, for example, <em>my_script.R</em>.<br>
+<li>
+<strong>Source</strong>. The Source pane provides basic text editing functionality, allowing you to create and edit R scripts. Importantly, you cannot execute the code in these scripts directly, but you can save the scripts that you write as simple text files. A dead give away that you have an R script living on your computer is the <em>.R</em> extension, for example, <em>my_script.R</em>.<br>
 </li>
-<li><strong>Console</strong>. The Console pane, as its name suggests, provides an interface to the R console, which is where your code actually gets run. While you can type R code directly into the console, you can’t save the R code you write there into an R script like you can with the Source editor. That means you should reserve the console for <em>non-essential</em> tasks, meaning tasks that are not required to replicate your results.</li>
-<li><strong>Environment</strong>. The Environment pane is sort of like a census of your digital zoo, providing a list of its denizens, i.e., the objects that you have created during your session. This pane also has the History tab, which shows the R code you have sent to the console in the order that you sent it.<br>
+<li>
+<strong>Console</strong>. The Console pane, as its name suggests, provides an interface to the R console, which is where your code actually gets run. While you can type R code directly into the console, you can’t save the R code you write there into an R script like you can with the Source editor. That means you should reserve the console for <em>non-essential</em> tasks, meaning tasks that are not required to replicate your results.</li>
+<li>
+<strong>Environment</strong>. The Environment pane is sort of like a census of your digital zoo, providing a list of its denizens, i.e., the objects that you have created during your session. This pane also has the History tab, which shows the R code you have sent to the console in the order that you sent it.<br>
 </li>
-<li><strong>Viewer</strong>. The Viewer pane is a bit of a catch-all, including a Files tab, a Plots tab, a Help tab, and a Viewer tab.
+<li>
+<strong>Viewer</strong>. The Viewer pane is a bit of a catch-all, including a Files tab, a Plots tab, a Help tab, and a Viewer tab.
 <ul>
 <li>The Files tab works like a file explorer. You can use it to navigate through folders and directories. By default, it is set to your working directory.</li>
 <li>The Plots tab displays any figures you make with R.</li>
 <li>The Help tab is where you can go to find helpful R documentation, including function pages and vignettes.</li>
 <li>The actual Viewer tab provides a window to visualize R Markdown.</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 <p>Let’s try out a few bits of code just to give you a sense of the difference between Source and Console.</p>
 <div class="rmdnote">
 <p>As you work through this lab, you can practice running code in the Console, but make sure to do the actual exercises in an R script.</p>
 </div>
-</section>
-<section id="exercises" class="level3">
-<h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+</section><section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
 <ol type="1">
 <li>First, let’s open a new R script. To open an R script in RStudio, just click <strong>File &gt; New File &gt; R Script</strong> (or hit <code>Ctrl + Shift + N</code>, <code>Cmd + Shift + N</code> on Mac OS).</li>
 <li>Copy this code into the console and hit Enter.</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rep</span>(<span class="st">"Boba Fett"</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"Boba Fett"</span>, <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="3" type="1">
 <li>Now, copy that code into the R script you just opened and hit Enter again. As you see, the code does not run. Instead, the cursor moves down to the next line. To actually run the code, put the cursor back on the line with the code, and hit <code>Ctrl + Enter</code> (<code>CMD + Enter</code> on Mac OS).</li>
-</ol>
-</section>
-</section>
-<section id="make-your-first-plot" class="level2">
-<h2 class="anchored" data-anchor-id="make-your-first-plot">Make Your First Plot!</h2>
+</ol></section></section><section id="make-your-first-plot" class="level2"><h2 class="anchored" data-anchor-id="make-your-first-plot">Make Your First Plot!</h2>
 <p>To ease you into working with R, let’s visualize some data to answer a simple question: Do fast moving objects take longer to slow down than slow moving objects? Don’t worry about understanding all of this! It’s just to give you a feel for the sort of graphics you can make with R. We’ll actually spend all of the next lab learning how to make even better graphics.</p>
-<section id="the-data" class="level3">
-<h3 class="anchored" data-anchor-id="the-data">The data</h3>
-<p>To answer that question, we’ll use the <code>cars</code> data.frame that comes pre-loaded with R. A data.frame is simply an R object that stores tabular data, with rows for each observation and columns for each variable. Let’s have a look at the first <em>n</em> rows of this table, specifically the first 5 rows. We can do this using the function <code>head()</code>.</p>
+<section id="the-data" class="level3"><h3 class="anchored" data-anchor-id="the-data">The data</h3>
+<p>To answer that question, we’ll use the <code>cars</code> data.frame that comes pre-loaded with R. A data.frame is simply an R object that stores tabular data, with rows for each observation and columns for each variable. Let’s have a look at the first <em>n</em> rows of this table, specifically the first 5 rows. We can do this using the function <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cars, <span class="at">n =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">cars</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  speed dist
 1     4    2
@@ -318,168 +303,158 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <p>Note that, in this case, each row represents a car. The first column, or variable, records the <strong>speed</strong> (in miles per hour) each car was traveling when it applied its brakes, and the second column provides measures of the <strong>dist</strong>ances (in feet) that each took to stop.</p>
-</section>
-<section id="the-plot-function" class="level3">
-<h3 class="anchored" data-anchor-id="the-plot-function">The <code>plot()</code> function</h3>
-<p>The base R <code>graphics</code> package provides a generic function for plotting, which - as you might have guessed - is called <code>plot()</code>. To see how it works, try running this code:</p>
+</section><section id="the-plot-function" class="level3"><h3 class="anchored" data-anchor-id="the-plot-function">The <code>plot()</code> function</h3>
+<p>The base R <code>graphics</code> package provides a generic function for plotting, which - as you might have guessed - is called <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>. To see how it works, try running this code:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="01-intro-lab_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="customizing-your-plot" class="level3">
-<h3 class="anchored" data-anchor-id="customizing-your-plot">Customizing your plot</h3>
-<p>With the <code>plot()</code> function, you can do a lot of customization to the resulting graphic. For instance, you can modify all of the following:</p>
+</section><section id="customizing-your-plot" class="level3"><h3 class="anchored" data-anchor-id="customizing-your-plot">Customizing your plot</h3>
+<p>With the <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> function, you can do a lot of customization to the resulting graphic. For instance, you can modify all of the following:</p>
 <ul>
-<li><code>pch</code> will change the point type,</li>
-<li><code>main</code> will change the main plot title,</li>
-<li><code>xlab</code> and <code>ylab</code> will change the x and y axis labels,</li>
-<li><code>cex</code> will change the size of shapes within the plot region,</li>
-<li><code>pch</code> will change the type of point used (you can use triangles, squares, or diamonds, among others),</li>
-<li><code>col</code> changes the color of the point (or its border), and</li>
-<li><code>bg</code> changes the color of the point fill (depending on the type of point it is)</li>
+<li>
+<code>pch</code> will change the point type,</li>
+<li>
+<code>main</code> will change the main plot title,</li>
+<li>
+<code>xlab</code> and <code>ylab</code> will change the x and y axis labels,</li>
+<li>
+<code>cex</code> will change the size of shapes within the plot region,</li>
+<li>
+<code>pch</code> will change the type of point used (you can use triangles, squares, or diamonds, among others),</li>
+<li>
+<code>col</code> changes the color of the point (or its border), and</li>
+<li>
+<code>bg</code> changes the color of the point fill (depending on the type of point it is)</li>
 </ul>
 <p>For instance, try running this code:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  cars,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"darkorange"</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="dv">2</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cars</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  bg <span class="op">=</span> <span class="st">"darkorange"</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="01-intro-lab_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="exercises-1" class="level3">
-<h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+</section><section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
 <ol type="1">
 <li>Complete the following line of code to preview only the first three rows of the <code>cars</code> table.</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cars, <span class="at">n =</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">cars</span>, n <span class="op">=</span> <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="2" type="1">
 <li>Modify the code below to change the size (<code>cex</code>) of the points from 2 to 1.5.</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  cars,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"darkorange"</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="dv">2</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cars</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  bg <span class="op">=</span> <span class="st">"darkorange"</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="3" type="1">
 <li><p>What does this plot tell us about the relationship between car speed and stopping distance? Is it positive or negative? Or is there no relationship at all? If there is a relationship, what might explain it?</p></li>
 <li><p>Complete the code below to add “Stopping distance for cars” as the <code>main</code> title.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  cars,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"darkorange"</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="dv">1</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> </span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cars</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  bg <span class="op">=</span> <span class="st">"darkorange"</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  main <span class="op">=</span> </span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="5" type="1">
 <li>Complete the code below to add “Speed (mph)” as the x-axis label and “Distance (ft)” as the y-axis label.</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  cars,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="st">"darkorange"</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="dv">2</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Stopping distance for cars"</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> ,</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> </span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cars</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  bg <span class="op">=</span> <span class="st">"darkorange"</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  main <span class="op">=</span> <span class="st">"Stopping distance for cars"</span>,</span>
+<span>  xlab <span class="op">=</span> ,</span>
+<span>  ylab <span class="op">=</span> </span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-</section>
-<section id="r-basics" class="level2">
-<h2 class="anchored" data-anchor-id="r-basics">R Basics</h2>
+</section></section><section id="r-basics" class="level2"><h2 class="anchored" data-anchor-id="r-basics">R Basics</h2>
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/r-stuff.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<figure class="figure"><p><img src="images/r-stuff.png" class="img-fluid figure-img" style="width:75.0%"></p>
 </figure>
 </div>
-<section id="r-is-a-calculator" class="level3">
-<h3 class="anchored" data-anchor-id="r-is-a-calculator">R is a calculator</h3>
+<section id="r-is-a-calculator" class="level3"><h3 class="anchored" data-anchor-id="r-is-a-calculator">R is a calculator</h3>
 <p>You can just do math with it:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dv">300</span> <span class="sc">*</span> (<span class="dv">2</span><span class="sc">/</span><span class="dv">25</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">300</span> <span class="op">*</span> <span class="op">(</span><span class="fl">2</span><span class="op">/</span><span class="fl">25</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 24</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">42</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">3</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">42</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 51</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sin</span>(<span class="dv">17</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="fl">17</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.9613975</code></pre>
 </div>
 </div>
-</section>
-<section id="objects-and-functions" class="level3">
-<h3 class="anchored" data-anchor-id="objects-and-functions">Objects and Functions</h3>
+</section><section id="objects-and-functions" class="level3"><h3 class="anchored" data-anchor-id="objects-and-functions">Objects and Functions</h3>
 <p>But, R is more than just a calculator. There are a lot of things you can <em>make</em> with R, and a lot of things you can <em>do</em> with it. The things that you make are called <strong>objects</strong> and the things that you do things with are called <strong>functions</strong>. Any complex statistical operation you want to conduct in R will almost certainly involve the use of one or more functions.</p>
-<section id="calling-functions" class="level4">
-<h4 class="anchored" data-anchor-id="calling-functions">Calling functions</h4>
+<section id="calling-functions" class="level4"><h4 class="anchored" data-anchor-id="calling-functions">Calling functions</h4>
 <p>To use a function, we <em>call</em> it like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">function_name</span>(<span class="at">arg1 =</span> value1, <span class="at">arg2 =</span> value2, ...)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">function_name</span><span class="op">(</span>arg1 <span class="op">=</span> <span class="va">value1</span>, arg2 <span class="op">=</span> <span class="va">value2</span>, <span class="va">...</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Try calling the <code>seq()</code> function.</p>
+<p>Try calling the <code><a href="https://rdrr.io/r/base/seq.html">seq()</a></code> function.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1 2 3 4 5</code></pre>
 </div>
 </div>
 <p>As you can see, this generates a sequence of numbers starting at 1 and ending at 5. There are two things to note about this. First, we do not have to specify the <strong>arguments</strong> explicitly, but they must be in the correct order:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1 2 3 4 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5 4 3 2 1</code></pre>
 </div>
 </div>
-<p>Second, the <code>seq()</code> function has additional arguments you can specify, like <code>by</code> and <code>length</code>. We did not have to specify these because they have default values, in this case, <code>by = 1</code>, which entails the length. You can change one or the other of these (but not both):</p>
+<p>Second, the <code><a href="https://rdrr.io/r/base/seq.html">seq()</a></code> function has additional arguments you can specify, like <code>by</code> and <code>length</code>. While we do not have to specify these because they have default values, you can change one or the other (but not at the same time!):</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="at">by =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, by <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1 3 5</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="at">length =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 1.000000 1.444444 1.888889 2.333333 2.777778 3.222222 3.666667 4.111111
- [9] 4.555556 5.000000</code></pre>
+<pre><code>[1] 1 3 5</code></pre>
 </div>
 </div>
-</section>
-<section id="creating-objects" class="level4">
-<h4 class="anchored" data-anchor-id="creating-objects">Creating objects</h4>
+</section><section id="creating-objects" class="level4"><h4 class="anchored" data-anchor-id="creating-objects">Creating objects</h4>
 <p>To make an object in R, you use the arrow, <code>&lt;-</code>, like so:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>object_name <span class="ot">&lt;-</span> value</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">object_name</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Try creating an object with value 5.137 and assigning it to the name <code>bob</code>, like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>bob <span class="ot">&lt;-</span> <span class="fl">5.137</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bob</span> <span class="op">&lt;-</span> <span class="fl">5.137</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There are three things to note here. First, names in R must start with a letter and can only contain letters, numbers, underscores, and periods.</p>
 <div class="cell">
@@ -493,26 +468,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Second, when you create an object with <code>&lt;-</code>, it ends up in your <em>workspace</em> or <em>environment</em> (you can see it in the RStudio environment pane). Finally, it is worth noting that the advantage of creating objects is that we can take the output of one function and pass it to another.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="at">length =</span> <span class="dv">3</span>)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>logx <span class="ot">&lt;-</span> <span class="fu">log</span>(x)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(logx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">logx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">logx</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1 3 5</code></pre>
 </div>
 </div>
-</section>
-</section>
-<section id="exercises-2" class="level3">
-<h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
+</section></section><section id="exercises-2" class="level3"><h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
 <ol type="1">
-<li><p>Use <code>seq()</code> to generate a sequence of numbers from 3 to 12.</p></li>
-<li><p>Use <code>seq()</code> to generate a sequence of numbers from 3 to 12 with length 25.</p></li>
+<li><p>Use <code><a href="https://rdrr.io/r/base/seq.html">seq()</a></code> to generate a sequence of numbers from 3 to 12.</p></li>
+<li><p>Use <code><a href="https://rdrr.io/r/base/seq.html">seq()</a></code> to generate a sequence of numbers from 3 to 12 with length 25.</p></li>
 <li><p>Why doesn’t this code work?</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="at">by =</span> <span class="dv">2</span>, <span class="at">length =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, by <span class="op">=</span> <span class="fl">2</span>, length <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="4" type="1">
 <li><p>Use <code>&lt;-</code> to create an object with value 25 and assign it to a name of your choice.</p></li>
@@ -522,86 +494,81 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>2bob <span class="ot">&lt;-</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-</section>
-<section id="workflow" class="level2">
-<h2 class="anchored" data-anchor-id="workflow">Workflow</h2>
+</section></section><section id="workflow" class="level2"><h2 class="anchored" data-anchor-id="workflow">Workflow</h2>
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/r-workflow.png" class="img-fluid figure-img" style="width:60.0%"></p>
+<figure class="figure"><p><img src="images/r-workflow.png" class="img-fluid figure-img" style="width:60.0%"></p>
 </figure>
 </div>
 <p>As you work more and more in R, you will learn that statistical analyses tend to involve the same basic set of tasks:</p>
 <ul>
-<li><strong>importing</strong> data,</li>
-<li><strong>wrangling</strong> data to get it into a format necessary for analysis,</li>
-<li><strong>exploring</strong> data with some simple descriptive statistics,<br>
+<li>
+<strong>importing</strong> data,</li>
+<li>
+<strong>wrangling</strong> data to get it into a format necessary for analysis,</li>
+<li>
+<strong>exploring</strong> data with some simple descriptive statistics,<br>
 </li>
-<li><strong>analyzing</strong> data with models to investigate potential trends or relationships, and</li>
-<li><strong>summarizing</strong> the results.</li>
+<li>
+<strong>analyzing</strong> data with models to investigate potential trends or relationships, and</li>
+<li>
+<strong>summarizing</strong> the results.</li>
 </ul>
 <p>At various stages, you will also spend considerable time</p>
 <ul>
-<li><strong>visualizing</strong> the data and the results, either to explore the data further or to help communicate the results to others.</li>
+<li>
+<strong>visualizing</strong> the data and the results, either to explore the data further or to help communicate the results to others.</li>
 </ul>
 <p>A lot of the output of this process, we will also want to save for later, perhaps to include in a publication (like a figure or model summary), but maybe also to avoid repetition of difficult and time-consuming tasks, so the workflow will also involve</p>
 <ul>
-<li><strong>exporting</strong> refined data and models.</li>
+<li>
+<strong>exporting</strong> refined data and models.</li>
 </ul>
 <p>To make this more concrete, let’s try out an example, working with the <code>cars</code> data again. As we go through this, try running all the code in the console.</p>
-<section id="an-example" class="level3">
-<h3 class="anchored" data-anchor-id="an-example">An Example</h3>
+<section id="an-example" class="level3"><h3 class="anchored" data-anchor-id="an-example">An Example</h3>
 <p>Suppose we return to the question we asked in the plotting section: Does the speed a car is going when it applies its brakes determine the distance it takes the car to stop? Obviously, the answer is Yes, but let’s pretend we don’t know the answer, so we can walk through the process of answering the question anyway.</p>
-<section id="import" class="level4">
-<h4 class="anchored" data-anchor-id="import">Import</h4>
+<section id="import" class="level4"><h4 class="anchored" data-anchor-id="import">Import</h4>
 <p>First, we need some data. In this case, we do not actually need to import the <code>cars</code> dataset because it is already available to us in R, so let’s just pretend like we did.</p>
-</section>
-<section id="explore" class="level4">
-<h4 class="anchored" data-anchor-id="explore">Explore</h4>
+</section><section id="explore" class="level4"><h4 class="anchored" data-anchor-id="explore">Explore</h4>
 <p>Now, let’s explore the data. Always, always, always, the best way to explore data is to visualize data! We already did this once, but it can’t hurt to try it again!</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  cars,</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="fu">adjustcolor</span>(<span class="st">"gray"</span>, <span class="fl">0.75</span>),</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"gray25"</span>,</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="fl">1.5</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cars</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  bg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/adjustcolor.html">adjustcolor</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="fl">0.75</span><span class="op">)</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"gray25"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">1.5</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="01-intro-lab_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>Then, we can do things like calculate the mean stopping distance.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(cars<span class="sc">$</span>dist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 42.98</code></pre>
 </div>
 </div>
-<p>Note that we use the <code>$</code> operator to pull the distance (<code>dist</code>) values from the <code>cars</code> table and supply it to the <code>mean()</code> function. Don’t worry too much about wrapping your head around that idea as we will talk about it more in another lab. We can also make a histogram to explore the distribution of stopping distances:</p>
+<p>Note that we use the <code>$</code> operator to pull the distance (<code>dist</code>) values from the <code>cars</code> table and supply it to the <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> function. Don’t worry too much about wrapping your head around that idea as we will talk about it more in another lab. We can also make a histogram to explore the distribution of stopping distances:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(cars<span class="sc">$</span>dist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="01-intro-lab_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>What does this tell you about car stopping distances? Is it clustered? Random?</p>
-</section>
-<section id="wrangle" class="level4">
-<h4 class="anchored" data-anchor-id="wrangle">Wrangle</h4>
+</section><section id="wrangle" class="level4"><h4 class="anchored" data-anchor-id="wrangle">Wrangle</h4>
 <p>Maybe we think that one really long distance is exceptional, perhaps owing to measurement error, and we want to remove it from our analysis. In that case, we want to <em>subset</em> the data, including only distance values less than some amount, say 100 ft.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>cars <span class="ot">&lt;-</span> <span class="fu">subset</span>(cars, dist <span class="sc">&lt;</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">cars</span>, <span class="va">dist</span> <span class="op">&lt;</span> <span class="fl">100</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This is data wrangling, preparing the data for analysis.</p>
-</section>
-<section id="analyze" class="level4">
-<h4 class="anchored" data-anchor-id="analyze">Analyze</h4>
+</section><section id="analyze" class="level4"><h4 class="anchored" data-anchor-id="analyze">Analyze</h4>
 <p>Now, finally, we might want to answer our question directly by modeling the relationship between car speeds and stopping distances. Here, our hypothesis is that there is <em>no</em> relationship. This is called the <strong>null hypothesis</strong>. If we can show that this hypothesis is very likely false, then we can with some confidence accept the <strong>alternative hypothesis</strong>, namely, that there <em>is</em> a relationship. To test the null hypothesis, we can construct a simple linear model. In R, we do this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>distance_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(dist <span class="sc">~</span> speed, <span class="at">data =</span> cars)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(distance_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">distance_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">dist</span> <span class="op">~</span> <span class="va">speed</span>, data <span class="op">=</span> <span class="va">cars</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">distance_model</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -625,54 +592,46 @@ F-statistic: 86.31 on 1 and 47 DF,  p-value: 3.262e-12</code></pre>
 </div>
 <p>Woah! That’s a lot to digest. For now, just note that the asterisks (*) imply that that there is very likely a relationship between speed and distance. But, what is that relationship? Or, what does it look like? Well, let’s try to visualize that in R, too.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  cars,</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bg =</span> <span class="fu">adjustcolor</span>(<span class="st">"gray"</span>, <span class="fl">0.75</span>),</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"gray25"</span>,</span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="fl">1.5</span>,</span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Speed (mph)"</span>,</span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="st">"Distance (ft)"</span></span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(</span>
-<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>  distance_model, </span>
-<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">"#A20000"</span>,</span>
-<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span></span>
-<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(</span>
-<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Distance Model"</span>,</span>
-<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> <span class="fl">0.3</span>, </span>
-<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">adj =</span> <span class="dv">0</span>, </span>
-<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex =</span> <span class="fl">1.5</span></span>
-<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cars</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>  bg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/adjustcolor.html">adjustcolor</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="fl">0.75</span><span class="op">)</span>,</span>
+<span>  col <span class="op">=</span> <span class="st">"gray25"</span>,</span>
+<span>  cex <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  xlab <span class="op">=</span> <span class="st">"Speed (mph)"</span>,</span>
+<span>  ylab <span class="op">=</span> <span class="st">"Distance (ft)"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span></span>
+<span>  <span class="va">distance_model</span>, </span>
+<span>  col <span class="op">=</span> <span class="st">"#A20000"</span>,</span>
+<span>  lwd <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html">title</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Distance Model"</span>,</span>
+<span>  line <span class="op">=</span> <span class="fl">0.3</span>, </span>
+<span>  adj <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>  cex <span class="op">=</span> <span class="fl">1.5</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="01-intro-lab_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="export" class="level4">
-<h4 class="anchored" data-anchor-id="export">Export</h4>
+</section><section id="export" class="level4"><h4 class="anchored" data-anchor-id="export">Export</h4>
 <p>Now, if we feel it necessary, we can save our model, so we can inspect it again later.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(distance_model, <span class="at">file =</span> <span class="st">"distance_model.Rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html">save</a></span><span class="op">(</span><span class="va">distance_model</span>, file <span class="op">=</span> <span class="st">"distance_model.Rds"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And that’s it! Now, all we have to do is write this up and publish it! Easy peasy.</p>
-</section>
-</section>
-</section>
-<section id="r-projects" class="level2">
-<h2 class="anchored" data-anchor-id="r-projects">R Projects</h2>
+</section></section></section><section id="r-projects" class="level2"><h2 class="anchored" data-anchor-id="r-projects">R Projects</h2>
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://github.com/allisonhorst/stats-illustrations"><img src="https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/cracked_setwd.png" class="img-fluid figure-img"></a></p>
+<figure class="figure"><p><a href="https://github.com/allisonhorst/stats-illustrations"><img src="https://raw.githubusercontent.com/allisonhorst/stats-illustrations/master/rstats-artwork/cracked_setwd.png" class="img-fluid figure-img"></a></p>
 </figure>
 </div>
 <p>YOU CANNOT EAT R CODE. Believe me. You can’t. Eventually, you’ll have to close out of R, turn off your computer, walk away, and do whatever it is that you do to maintain your existence. That means you need some way to save your progress and you need some place to save it. R has a few built-in tools for this, and they are really convenient, at least early on. However, you will be much better off if you get into the habit of using RStudio <a href="https://support.rstudio.com/hc/en-us/articles/200526207-Using-RStudio-Projects">Projects</a>. What is an R Project? Basically, it’s a folder on your computer that you can use to organize all the data, code, figures, texts, and analyses associated with a single scientific research project.</p>
 <p>When you open your project in RStudio, it will establish your project folder as your working directory by default. The advantage of this is that you can access R scripts and data using relative file paths rather than specifying the full path from your computer’s root directory. Why is this advantageous? Because you can copy the project folder to any computer you want and your relative file paths will just work!</p>
-<section id="exercises-3" class="level3">
-<h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
+<section id="exercises-3" class="level3"><h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
 <ol type="1">
 <li>Before we setup your project, let’s turn off some of R’s default settings.
 <ul>
@@ -681,7 +640,8 @@ F-statistic: 86.31 on 1 and 47 DF,  p-value: 3.262e-12</code></pre>
 <li>Then, for “Save workspace to .Rdata on exit”, select <em>Never</em>.</li>
 <li>Hit “Apply”, then hit “OK.”<br>
 </li>
-</ul></li>
+</ul>
+</li>
 <li>Now, we are going to create a new project for you for this class. You will use this folder to save all your lab and homework exercises, required datasets, and figures. To do that, follow these steps:
 <ul>
 <li>In RStudio, go to <strong>File &gt; New Project…</strong>.</li>
@@ -691,19 +651,14 @@ F-statistic: 86.31 on 1 and 47 DF,  p-value: 3.262e-12</code></pre>
 <li>Make sure “Create a git repository” and “Use renv with this project” are unchecked.<br>
 </li>
 <li>Then click “Create Project.” This will restart RStudio with your project loaded. You can confirm this by looking at the top left of the RStudio window. It should say “qaad - RStudio” now. If you look in the File pane (bottom-right), you will also see a file called “qaad.Rproj.”</li>
-</ul></li>
+</ul>
+</li>
 <li>Once you have your project folder setup, have a look at the Files pane again. You should see a button that says “New Folder.” Click that, and in the dialog box that appears, enter “R” and hit “OK.” You should now see a folder in your project directory called “R.” This is where you will keep all the files with your R code in it. Repeat this process to add “data”, “figures”, and “_misc” folders to your project. The “_misc” folder is short for miscellaneous. This folder is not strictly necessary but I find it helpful. It’s like that drawer in the kitchen where random stuff goes. It might not be clean or orderly, but at least your kitchen is!</li>
 <li>Just to check that everything is working, minimize RStudio and navigate to the location of your R Project on your computer. Do you see the folders you have created and the “qaad.Rproj” file?</li>
-</ol>
-</section>
-</section>
-<section id="quarto" class="level2">
-<h2 class="anchored" data-anchor-id="quarto">Quarto</h2>
+</ol></section></section><section id="quarto" class="level2"><h2 class="anchored" data-anchor-id="quarto">Quarto</h2>
 <div id="fig-quarto" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><a href="https://allisonhorst.com/allison-horst"><img src="https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/c2ef45f1-4a68-4c7a-a43f-bdcf0f90e104_rw_1920.png?h=89c4f4138772e8b374e21a814cc91b2f" class="img-fluid figure-img"></a></p>
+<figure class="figure"><div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><a href="https://allisonhorst.com/allison-horst"><img src="https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/c2ef45f1-4a68-4c7a-a43f-bdcf0f90e104_rw_1920.png?h=89c4f4138772e8b374e21a814cc91b2f" class="img-fluid figure-img"></a></p>
 </figure>
 </div>
 <p></p><figcaption class="figure-caption">Figure&nbsp;1: Artwork from “Hello, Quarto” keynote by Julia Lowndes and Mine Çetinkaya-Rundel, presented at RStudio Conference 2022. Illustrated by Allison Horst.</figcaption><p></p>
@@ -743,8 +698,7 @@ F-statistic: 86.31 on 1 and 47 DF,  p-value: 3.262e-12</code></pre>
 <span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Let’s start with some simple markdown formatting and work our way back to the YAML.</p>
-<section id="markdown-formatting" class="level3">
-<h3 class="anchored" data-anchor-id="markdown-formatting">Markdown formatting</h3>
+<section id="markdown-formatting" class="level3"><h3 class="anchored" data-anchor-id="markdown-formatting">Markdown formatting</h3>
 <p>Markdown is a lightweight markup language for formatting plain text and is designed to be easy to read and write. The markdown you will use most often includes all of the following (borrowed from <a href="https://r4ds.had.co.nz/r-markdown.html#text-formatting-with-markdown">here</a>:</p>
 <pre><code>Text formatting 
 ------------------------------------------------------------
@@ -788,9 +742,7 @@ Links and images
 [linked phrase](http://example.com)
 
 ![optional caption text](path/to/img.png)</code></pre>
-</section>
-<section id="yaml" class="level3">
-<h3 class="anchored" data-anchor-id="yaml">YAML</h3>
+</section><section id="yaml" class="level3"><h3 class="anchored" data-anchor-id="yaml">YAML</h3>
 <p>‘YAML’ is a recursive acronym that means “YAML Ain’t Markup Language.” You don’t actually need to know that. I just think it’s funny. The YAML controls features of the whole document, specifying, for instance, the title and author. It looks like this:</p>
 <pre><code>---
 title: "Week 01"
@@ -800,9 +752,7 @@ format: html
 ---</code></pre>
 <p>Notice the three dashes <code>---</code> at the top and bottom. These must be there in order for Quarto to recognize it as the YAML. You should always include this at the beginning of the document. There’s A LOT you can specify in the YAML. In fact, you can specify basically anything you want, but being quite new to Quarto, I don’t think that would be helpful. For now, let me draw your attention to the <code>format</code> field. Quarto (with the power of a utility known as Pandoc) can generate a wide variety of output formats, including Word documents, PDFs, revealjs slides (presentations, what the slides in tihs class are built with), and even Powerpoint (if you really insist on it). In this class, we’ll stick with the default HTML output, so the only thing you will need to specify in the YAML is the title, author, and date.</p>
 <p>By the way, the HTML output is the same stuff that a website is built on. In fact, when you open the resulting HTML file, it will open in your browser.</p>
-</section>
-<section id="r-code-chunks" class="level3">
-<h3 class="anchored" data-anchor-id="r-code-chunks">R code chunks</h3>
+</section><section id="r-code-chunks" class="level3"><h3 class="anchored" data-anchor-id="r-code-chunks">R code chunks</h3>
 <p>All R code that you want to run needs to be “fenced” by three back ticks <code>```</code>. You also need to tell Quarto that it’s R code and not, say, Python or SQL. To do that, you add <code>{r}</code> after the first set of back ticks. Altogether, it should look like this:</p>
 <div class="sourceCode" id="cb46"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -811,9 +761,12 @@ format: html
 <span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Instead of typing this every time, you can use <code>Ctrl + Alt + I</code> (or <code>CMD</code>) in RStudio, and it will automatically generate a code chunk in your qmd document. You can run the code in these chunks like you would code in an R script, by placing the cursor over it and hitting <code>Ctrl + Enter</code>. You can specify options for code chunks in R Markdown that will affect the way that they behave or are displayed. You can find a complete list of chunk options at <a href="http://yihui.name/knitr/options/" class="uri">http://yihui.name/knitr/options/</a>. Here are a few examples:</p>
 <ul>
-<li><code>eval: false</code> prevents code from being evaluated.</li>
-<li><code>echo: false</code> hides the code but not the results of running the code.</li>
-<li><code>warning: false</code> prevents R messages and warnings from appearing in the knitted document.</li>
+<li>
+<code>eval: false</code> prevents code from being evaluated.</li>
+<li>
+<code>echo: false</code> hides the code but not the results of running the code.</li>
+<li>
+<code>warning: false</code> prevents R messages and warnings from appearing in the knitted document.</li>
 </ul>
 <p>Here is how it would look to specify these in a code chunk:</p>
 <div class="sourceCode" id="cb47"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -834,9 +787,7 @@ execute:
   warning: false
 ---</code></pre>
 <p>There are loads more of these options, some of the more important ones involve figures you generate with these documents. Rather than overload you with all of those now, we’ll try to go over some of those here or there in future labs and homework exercises.</p>
-</section>
-<section id="exercises-4" class="level3">
-<h3 class="anchored" data-anchor-id="exercises-4">Exercises</h3>
+</section><section id="exercises-4" class="level3"><h3 class="anchored" data-anchor-id="exercises-4">Exercises</h3>
 <ol type="1">
 <li>Let’s create a new qmd document in RStudio. To do that, follow these steps:
 <ul>
@@ -845,25 +796,20 @@ execute:
 <li>Put your name as <strong>Author</strong>.</li>
 <li>Hit “OK”.<br>
 </li>
-</ul></li>
+</ul>
+</li>
 <li>RStudio will open a new qmd document for you. Notice that it sets up the YAML for you. Let’s copy the template we will use for these course assignments. To do that, follow these steps:
 <ul>
 <li>Scroll up to the section above with the example of a qmd document. You can now copy and paste this into your qmd document (I recommend typing it out by hand, so you can get a feel for it, but that’s not necessary).</li>
-</ul></li>
+</ul>
+</li>
 <li>Notice that this template has two level two headers, “Lab Exercises” and “Homework Exercises.” These are the two major assignments you will have to complete each week. You will enter all your answers in a qmd document with this format and submit it via Canvas. To make sure your code is actually working, you can “render” the document and see if it completes without error. This is partly what I will do each week when grading your assignments. To keep these things organized, each exercise section in the lab should have its own level three header, like <code>### Plot</code> for this week. Since there is no R related homework assignment for this week, you can just delete that section from this qmd document. Before continuing, save your qmd document to the R folder in your course project directory.</li>
 <li>Now, go back through this lab and re-do the exercises by adding them to this qmd document. Make sure to save that again, then submit it on the Canvas course page. Again, go ahead and render the document, too, just to make sure everything is working. This is the process that you will go through each week!</li>
-</ol>
-</section>
-</section>
-<section id="homework" class="level2">
-<h2 class="anchored" data-anchor-id="homework">Homework</h2>
+</ol></section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
 <p>There is no R related homework assignment for this week. Please fill out the pre-course self-assessment survey on Canvas.</p>
 
 
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -997,13 +943,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<footer class="footer">
-  <div class="nav-footer">
+<footer class="footer"><div class="nav-footer">
       <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
 The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
   </div>
 </footer>
-
 
 
 <script src="../site_libs/quarto-html/zenscroll-min.js"></script>

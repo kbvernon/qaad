@@ -1,0 +1,15 @@
+---
+title: "Week 02: Probability as a Model"
+description: "A simple experiment. Random variables. Probability distributions. Probability as a model."
+date: 2023-01-17
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/02-probability-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 02 Lab](../labs/02-probability-lab.qmd)
+

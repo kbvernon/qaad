@@ -4,15 +4,21 @@ $eerieblack:    #171614 !default;
 $bluesapphire:  #0C556D !default;
 $blue-ncs:      #0094C6 !default;
 $wintergreen:   #6B8F7E !default;
+$old-gold:      #D1B817 !default;
 $bronze:        #D58936 !default;
 $outerspace:    #37423D !default;
 $kobe:          #942911 !default;
 
 $primary: $eerieblack !default;
-$success: $lincolng-green !default;
+$success: $lincoln-green !default;
 $info:    $blue-ncs !default;
 $warning: $bronze !default;
 $danger:  $kobe !default;
+
+$callout-color-important: $primary !default;
+$callout-color-note: $info !default;
+$callout-color-tip: $lincoln-green !default;
+$callout-color-warning: $warning !default;
 
 /*-- scss:rules --*/
 :root {
@@ -26,6 +32,13 @@ h1, h2, h3, h4, h5 {
 
 strong, b, a {
   color: $kobe;  
+}
+
+.quarto-figure .figure-caption {
+  font-size: 0.8rem;
+  width: 75%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #quarto-header nav {
@@ -61,7 +74,7 @@ code {
   color: $bluesapphire;
 }
 
-td.listing-description {
+.listing-description {
   width: 55%;
 }
 
@@ -70,8 +83,14 @@ td.listing-description {
   font-size: 0.9em;
 }
 
-.listing-date, .listing-title {
+.listing-date {
   color: $kobe;
+  width: 15%;
+}
+
+.listing-title {
+  color: $kobe;
+  width:30%;
 }
 
 #title-block-header .description {
@@ -112,4 +131,88 @@ a[data-scroll-target="#homework"]:before {
 h3[data-anchor-id^="exercises"]:before,
 a[data-scroll-target^="#exercises"]:before {
   content: "\01F3CB  \00a0";
+}
+
+.lincoln {
+  color: $lincoln-green;
+}
+
+.lincoln-bg {
+  background-color: $lincoln-green;
+}
+
+.eerie {
+  color: $eerieblack;
+}
+
+.eerie-bg {
+  background-color: $eerieblack;
+}
+
+.sapphire {
+  color: $bluesapphire;
+}
+
+.sapphire-bg {
+  background-color: $bluesapphire;
+}
+
+.blue-ncs {
+  color: $blue-ncs;
+}
+
+.blue-ncs-bg {
+  background-color: $blue-ncs;
+}
+
+.winter {
+  color: $wintergreen;
+}
+
+.winter-bg {
+  background-color: $wintergreen;
+}
+
+.gold {
+  color: $old-gold;
+}
+
+.gold-bg {
+  background-color: $old-gold;
+}
+
+.bronze {
+  color: $bronze;
+}
+
+.bronze-bg {
+  background-color: $bronze;
+}
+
+.outerspace {
+  color: $outerspace;
+}
+
+.outerspace-bg {
+  background-color: $outerspace;
+}
+
+.kobe {
+  color: $kobe;
+}
+
+.kobe-bg {
+  background-color: $kobe;
+}
+
+.skim-table table {
+  font-size: 0.8rem;
+}
+
+.skim-table table:first-child {
+  width: 50%;
+}
+
+.skim-table table:not(:first-child) {
+  width: 100%;
 }

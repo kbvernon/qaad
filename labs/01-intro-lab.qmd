@@ -1,5 +1,7 @@
 ---
-title: "Week 01: Introduction"
+title: "Lab 01: Introduction"
+description: an introduction to R, RStudio, and Quarto
+date: today
 ---
 
 ## Outline
@@ -232,13 +234,13 @@ seq(5, 1)
 
 ```
 
-Second, the `seq()` function has additional arguments you can specify, like `by` and `length`. We did not have to specify these because they have default values, in this case, `by = 1`, which entails the length. You can change one or the other of these (but not both):
+Second, the `seq()` function has additional arguments you can specify, like `by` and `length`. While we do not have to specify these because they have default values, you can change one or the other (but not at the same time!):
 
 ```{r}
 
 seq(1, 5, by = 2)
 
-seq(1, 5, length = 10)
+seq(1, 5, length = 3)
 
 ```
 

@@ -1,0 +1,14 @@
+{
+  "hash": "e05d71151dd0a41c0d83ab7afb3f9eaf",
+  "result": {
+    "markdown": "---\ntitle: \"Lecture 03: Statistical Inference\"  \ndate: 'Last updated: 2023-01-16'\n---\n\n\n\n\n\n\n\n\n\n\n\n\n\n## 📋 Lecture Outline\n\n- Why statistics?\n- Statistical Inference\n- Simple Example\n- Hypotheses\n- Tests\n- Rejecting the null hypothesis\n- Student's t-test\n- ANOVA\n\n## Why statistics?\n\n::::: {.columns}\n:::: {.column width=\"60%\"}\n::: {.r-stack}\n::: {.r-stack}\n![](images/samples_and_populations-0.png)\n\n![](images/samples_and_populations-1.png)\n\n![](images/samples_and_populations-2.png)\n\n![](images/samples_and_populations-3.png)\n:::\n\n![](images/samples_and_populations-highlight_inference.png){.fragment fragment-index=0}\n:::\n::::\n:::: {.column width=\"40%\"}\n<br>\n\n::: {.r-stack}\n\n::: {.fragment .fade-out fragment-index=0}\n\nWe want to understand something about a __population__.\n\nWe can never observe the entire population, so we draw a __sample__.  \n\nWe then use a model to __describe__ the sample.  \n\nBy comparing that model to a null model, we can __infer__ something about the population. \n\n:::\n::: {.fragment fragment-index=0 style=\"margin:0;\"}\n\nHere, we're going to focus on statistical inference.\n\n:::\n:::\n::::\n:::::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

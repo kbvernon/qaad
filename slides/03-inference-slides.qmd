@@ -1,0 +1,93 @@
+---
+title: "Lecture 03: Statistical Inference"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+{{< include _setup.qmd >}}
+
+```{r}
+#| include: false
+
+set.seed(12345)
+
+library(archdata)
+
+data(DartPoints)
+
+n <- 300
+
+darts <- DartPoints |> 
+  rename_with(tolower) |> 
+  filter(name %in% c("Travis", "Wells")) |>
+  mutate(
+    sample = ifelse(name == "Travis", "Sample 1", "Sample 2")
+  ) |> 
+  group_by(sample) |> 
+  summarize(
+    mean = mean(length),
+    sd = sd(length)
+  ) |> 
+  rowwise() |> 
+  mutate(
+    length = list(rnorm(n, mean = mean, sd = sd))
+  ) |> 
+  unnest(length) |> 
+  select(sample, length)
+  
+remove(n)
+
+```
+
+## 📋 Lecture Outline
+
+- Why statistics?
+- Statistical Inference
+- Simple Example
+- Hypotheses
+- Tests
+- Rejecting the null hypothesis
+- Student's t-test
+- ANOVA
+
+## Why statistics?
+
+::::: {.columns}
+:::: {.column width="60%"}
+::: {.r-stack}
+::: {.r-stack}
+![](images/samples_and_populations-0.png)
+
+![](images/samples_and_populations-1.png)
+
+![](images/samples_and_populations-2.png)
+
+![](images/samples_and_populations-3.png)
+:::
+
+![](images/samples_and_populations-highlight_inference.png){.fragment fragment-index=0}
+:::
+::::
+:::: {.column width="40%"}
+<br>
+
+::: {.r-stack}
+
+::: {.fragment .fade-out fragment-index=0}
+
+We want to understand something about a __population__.
+
+We can never observe the entire population, so we draw a __sample__.  
+
+We then use a model to __describe__ the sample.  
+
+By comparing that model to a null model, we can __infer__ something about the population. 
+
+:::
+::: {.fragment fragment-index=0 style="margin:0;"}
+
+Here, we're going to focus on statistical inference.
+
+:::
+:::
+::::
+:::::

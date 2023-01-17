@@ -1,7 +1,7 @@
 ---
 title: "Week 01: Introduction"
 description: "Why statistics? Why R? Why Quarto? Making a webpage and a plot in just seconds!"
-date: today
+date: 2023-01-10
 toc: false
 ---
 

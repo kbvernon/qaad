@@ -1,0 +1,21 @@
+
+```{r}
+#| include: false
+
+library(here)
+library(ggtext)
+library(tidyverse)
+
+```
+
+```{r}
+#| include: false
+
+options(
+  digits = 3,
+  htmltools.dir.version = FALSE,
+  str = strOptions(vec.len = 3),
+  knitr.kable.NA = ''
+)
+
+```

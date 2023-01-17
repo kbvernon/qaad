@@ -3,6 +3,8 @@ title: "Lecture 01: Introduction"
 date: 'Last updated: `r Sys.Date()`'
 ---
 
+{{< include _setup.qmd >}}
+
 ```{r}
 #| include: false
 
@@ -101,40 +103,47 @@ We will go over how to install each of these during our first lab.
 
 ## Why statistics?
 
-::: {.columns}
+::::: {.columns}
+:::: {.column width="60%"}
+::: {.r-stack}
+![](images/samples_and_populations-0.png)
 
-::: {.column width="50%"}
+![](images/samples_and_populations-1.png){.fragment fragment-index=1}
 
-![](images/samples_and_populations-1.png){.absolute width="50%" style="z-index: 0; "}
-![](images/samples_and_populations-2.png){.fragment .absolute fragment-index=1 width="50%" style="z-index: 1; "}
-![](images/samples_and_populations-3.png){.fragment .absolute fragment-index=2 width="50%" style="z-index: 2; "}
+![](images/samples_and_populations-2.png){.fragment fragment-index=2}
+
+![](images/samples_and_populations-3.png){.fragment fragment-index=3}
 :::
-
-::: {.column width="40%"}
-
+::::
+:::: {.column width="40%"}
 <br>
-We want to understand something about a __population__.  
-<br>
-We can never observe the entire population, so we draw a __sample__.  
+We want to understand something about a __population__.
 
 ::: {.fragment fragment-index=1}
-<br>
-We then use a model to __describe__ the sample.  
-:::
 
+We can never observe the entire population, so we draw a __sample__.  
+
+:::
 ::: {.fragment fragment-index=2}
-<br>
+
+We then use a model to __describe__ the sample.  
+
+:::
+::: {.fragment fragment-index=3}
+
 By comparing that model to a null model, we can __infer__ something about the population.  
-:::
 
 :::
-
-:::
+::::
+:::::
 
 ## What population does archaeology study?
 
-![](images/anthropological-population-0.png){.absolute left=90 width="75%" style="z-index: 0; "}
-![](images/anthropological-population-1.png){.fragment .absolute left=90 width="75%" style="z-index: 1; "}
+::: {.r-stack}
+![](images/anthropological-population-0.png){.fragment .fade-out fragment-index=0}
+
+![](images/anthropological-population-1.png){.fragment fragment-index=0}
+:::
 
 ## A note on terminology and notation
 
@@ -189,6 +198,8 @@ tibble(
 ::::
 
 ## Why {{< fa brands r-project color=steelblue >}}?
+
+[Why R?]{.menu-title style="display:none"}
 
 ```{css}
 
@@ -420,8 +431,8 @@ __INPUT__
 ***
 
 ````
-This is an example of Quarto, with markdown __syntax__ 
-and __R code__ that gets run.
+This is an example of Quarto with markdown __syntax__ 
+and __R code__.
 
 ```{{r}}
 #| fig-width: 4
@@ -446,7 +457,7 @@ __OUTPUT__
 
 ***
 
-This is an example of rmarkdown, with markdown __syntax__ and __R code__ that gets run.
+This is an example of Quarto with markdown __syntax__ and __R code__.
 
 ```{r}
 #| echo: false
@@ -465,8 +476,3 @@ abline(fit, lwd = 2)
 :::
 
 ::::
-
-## &#x1F4C3; This Week's Assignments
-
-- Lab 01 - Introduction to R, RStudio, and Quarto
-- Pre-course self-assessment
