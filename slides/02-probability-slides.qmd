@@ -491,8 +491,8 @@ Df. distribution of a random variable whose value is equal to the number of even
 
 $$f(x,\lambda) = \frac{\lambda^{x}e^{-\lambda}}{x!}$$
 
-Mean: $np$  
-Variance: $np(1-p)$
+Mean: $\lambda$  
+Variance: $\lambda$
 
 :::
 :::

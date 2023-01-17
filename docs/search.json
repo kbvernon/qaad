@@ -375,7 +375,7 @@
     "href": "slides/02-probability-slides.html#poisson",
     "title": "Lecture 02: Probability as a Model",
     "section": "Poisson",
-    "text": "Poisson\n\n\n\nDf. distribution of a random variable whose value is equal to the number of events occurring in a fixed interval of time or space. E.g., number of orcs passing through the Black Gates in an hour.\n\\[f(x,\\lambda) = \\frac{\\lambda^{x}e^{-\\lambda}}{x!}\\]\nMean: \\(np\\)\nVariance: \\(np(1-p)\\)"
+    "text": "Poisson\n\n\n\nDf. distribution of a random variable whose value is equal to the number of events occurring in a fixed interval of time or space. E.g., number of orcs passing through the Black Gates in an hour.\n\\[f(x,\\lambda) = \\frac{\\lambda^{x}e^{-\\lambda}}{x!}\\]\nMean: \\(\\lambda\\)\nVariance: \\(\\lambda\\)"
   },
   {
     "objectID": "slides/02-probability-slides.html#normal-gaussian",
@@ -425,5 +425,12 @@
     "title": "Lecture 03: Statistical Inference",
     "section": "Why statistics?",
     "text": "Why statistics?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWe want to understand something about a population.\nWe can never observe the entire population, so we draw a sample.\nWe then use a model to describe the sample.\nBy comparing that model to a null model, we can infer something about the population.\n\n\nHere, we’re going to focus on statistical inference."
+  },
+  {
+    "objectID": "slides/02-probability-slides.html",
+    "href": "slides/02-probability-slides.html",
+    "title": "Lecture 02: Probability as a Model",
+    "section": "",
+    "text": "Why statistics?\n🧪 A simple experiment\nSome terminology\n🎰 Random variables\n🎲 Probability\n📊 Probability Distribution\nProbability Distribution as a Model\nProbability Distribution as a Function\nProbability Mass Functions\nProbability Density Functions\n🚗 Cars Model\nBrief Review\nA Simple Formula\nA Note About Complexity"
   }
 ]
