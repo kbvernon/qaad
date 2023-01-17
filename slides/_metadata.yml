@@ -7,3 +7,4 @@ format:
     code-overflow: wrap
 execute:
   freeze: auto
+fig-asp: 0.7
