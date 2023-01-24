@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-01-24">
+<meta name="description" content="Testing hypotheses, visualizing distributions, and some fundamentals of tidy data.">
+<title>Quantitative Analysis of Archaeological Data - Lab 03: Statistical Inference</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+</head>
+<body class="floating nav-fixed slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.html">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#data-frames" id="toc-data-frames" class="nav-link" data-scroll-target="#data-frames">Data Frames</a>
+  <ul class="collapse">
+<li><a href="#creating-tables" id="toc-creating-tables" class="nav-link" data-scroll-target="#creating-tables">Creating tables</a></li>
+  <li><a href="#getting-basic-meta-data-from-tables" id="toc-getting-basic-meta-data-from-tables" class="nav-link" data-scroll-target="#getting-basic-meta-data-from-tables">Getting basic meta-data from tables</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#histograms" id="toc-histograms" class="nav-link" data-scroll-target="#histograms">Histograms</a>
+  <ul class="collapse">
+<li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#t-test" id="toc-t-test" class="nav-link" data-scroll-target="#t-test">t-test</a>
+  <ul class="collapse">
+<li><a href="#exercises-2" id="toc-exercises-2" class="nav-link" data-scroll-target="#exercises-2">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#anova" id="toc-anova" class="nav-link" data-scroll-target="#anova">ANOVA</a>
+  <ul class="collapse">
+<li><a href="#anova-table" id="toc-anova-table" class="nav-link" data-scroll-target="#anova-table">ANOVA Table</a></li>
+  <li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
+  </ul>
+</li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 03: Statistical Inference</h1>
+</div>
+
+<div>
+  <div class="description">
+    Testing hypotheses, visualizing distributions, and some fundamentals of tidy data.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 24, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol type="1">
+<li>making a <em>tidy</em> data.frame</li>
+<li>visualizing distributions with histograms</li>
+<li>running a t-test</li>
+<li>performing an ANOVA</li>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></li>
+<li><a href="https://docs.ropensci.org/skimr/">skimr</a></li>
+</ul>
+<p>Make sure to load these into your R session with <code><a href="https://rdrr.io/r/base/library.html">library()</a></code>. This should always go at the start of your document!</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/skimr/">skimr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code>
+</li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a>
+</li>
+</ul>
+</li>
+<li>
+<code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>titanic</code>
+<ul>
+<li>Provides information on the fate of passengers of the Titanic, including economic status, sex, age, and survival.</li>
+<li>package: none</li>
+<li>reference: <a href="https://wilkelab.org/SDS375/" class="uri">https://wilkelab.org/SDS375/</a>
+</li>
+<li>note: we’re going to download this one rather than get it from a package</li>
+</ul>
+</li>
+<li>
+<code>Snodgrass</code>
+<ul>
+<li>Includes measurements of size, location, and contents of 91 pit houses at the Snodgrass site in Butler County, Missouri.</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+</ul></section></section><section id="data-frames" class="level2"><h2 class="anchored" data-anchor-id="data-frames">Data Frames</h2>
+<div id="fig-table" class="quarto-figure quarto-figure-center anchored" style="text-align:center;">
+<figure class="figure"><div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/r-tables.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Elements of a Data Frame.</figcaption><p></p>
+</figure>
+</div>
+<p>Consider this research scenario: you have a museum collection of projectile points that you want to use for an analysis, maybe you want to know whether East Gate and Rose Spring points are actually the same type of point, commonly referred to using the portmanteau <em>Rosegate</em>. Following tradition, you think maybe it’s the size and shape that will you help finally put this old question to rest, so for each individual point, you set about measuring its length, width, and height.</p>
+<p>In this course, we’ll refer to each individual measure that you make as a <em>value</em>, each set of such measures for an individual point we will call (somewhat awkwardly) an <em>observation</em>, and each individual type of measurement will be a <em>variable</em>. It is almost certainly the case that you will be collecting this data and storing it in something like a spreadsheet or table, like that shown in <a href="#fig-table">Figure&nbsp;1</a>. You will sometimes hear data scientists refer to data stored in this way as <em>rectangular</em> data. All they mean by that is that the data come as collections of values organized into rows and columns of equal length. While data may admit of many different ways of being organized into rows and columns, here we will focus on a rectangular format known as tidy data. As defined by Hadley Wickham in <a href="https://r4ds.hadley.nz/">R for Data Science (2e)</a>, tidy data must follow three simple rules:</p>
+<ol type="1">
+<li>Each variable must have its own column,</li>
+<li>Each observation must have its own row, and</li>
+<li>Each value must have its own cell.</li>
+</ol>
+<p>It is important to note, as Wickham cautions, that the opposite of tidy data is not necessarily messy data, for data can come in many formats (sound and video, for example). However, when we want to conduct some statistical analysis, and especially when we want to conduct such an analysis in R, we will almost certainly want our data to be tidy.</p>
+<section id="creating-tables" class="level3"><h3 class="anchored" data-anchor-id="creating-tables">Creating tables</h3>
+<p>In R, tabular datasets are known as <em>data frames</em>. To create a data frame, we use the eponymous <code><a href="https://rdrr.io/r/base/data.frame.html">data.frame()</a></code> function. Here, for example, is how we would create the table in <a href="#fig-table">Figure&nbsp;1</a> above:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Elko"</span>, <span class="st">"Rosegate"</span>, <span class="st">"DSN"</span>, <span class="st">"Elko"</span>, <span class="st">"Clovis"</span><span class="op">)</span>,</span>
+<span>  length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.03</span>, <span class="fl">1.4</span>, <span class="fl">1.9</span>, <span class="fl">2.1</span>, <span class="fl">3.3</span><span class="op">)</span>,</span>
+<span>  width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.23</span>, <span class="fl">2.4</span>, <span class="fl">1.29</span>, <span class="fl">2.7</span>, <span class="fl">4.15</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">projectiles</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length width height
+1     Elko   2.03  0.80   3.23
+2 Rosegate   1.40  0.40   2.40
+3      DSN   1.90  0.30   1.29
+4     Elko   2.10  0.70   2.70
+5   Clovis   3.30  0.95   4.15</code></pre>
+</div>
+</div>
+<p>Note that the values (or measurements) contained in each variable are wrapped in the <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> function (short for <em>concatenate</em>). This variable tells R that all these values belong to this one variable. Each variable in turn is an argument to <code><a href="https://rdrr.io/r/base/data.frame.html">data.frame()</a></code> having the form <code>&lt;variable&gt; = c(&lt;value-1&gt;, &lt;value-2&gt;, ..., &lt;value-n&gt;)</code>.</p>
+</section><section id="getting-basic-meta-data-from-tables" class="level3"><h3 class="anchored" data-anchor-id="getting-basic-meta-data-from-tables">Getting basic meta-data from tables</h3>
+<p>When you want to know what variables a table includes, you can use the <code><a href="https://rdrr.io/r/base/names.html">names()</a></code> function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">projectiles</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "type"   "length" "width"  "height"</code></pre>
+</div>
+</div>
+<p>If you want to know how many variables or observations the table has, you can use <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> and <code><a href="https://rdrr.io/r/base/nrow.html">ncol()</a></code> respectively.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># number of observations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">projectiles</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># number of variables</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">projectiles</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+</section><section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+<ol type="1">
+<li>Get the names of the variables in the <code>penguins</code> table with <code><a href="https://rdrr.io/r/base/names.html">names()</a></code>.</li>
+<li>How many observations and variables are in this dataset? Hint: use <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> and <code><a href="https://rdrr.io/r/base/nrow.html">ncol()</a></code>.</li>
+<li>Extract the <code>bill_length_mm</code> variable from this table and assign it to an object called <code>bill_length</code>. Do the same for <code>bill_depth_mm</code> and call it <code>bill_depth</code>. You can use either <code>&lt;table&gt;[[&lt;variable&gt;]]</code> or <code>&lt;table&gt;$&lt;variable&gt;</code>.</li>
+</ol></section></section><section id="histograms" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="histograms">Histograms</h2>
+<div class="page-columns page-full"><p>A histogram is an excellent aid for visualizing the distribution of numerical data. Making one involves “binning” a continuous variable, counting the number of its values that fall into each bin, then drawing a rectangle for each bin whose height is proportional to the count for that bin. A good example of this is the distribution of a population over age ranges, like the age distribution of the passengers on the ill-fated voyage of the Titanic. Before we get to what the histogram looks like for this macabre example, let’s first have a look at the raw data:<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p><div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;These data come from Claus Wilke’s <a href="https://clauswilke.com/dataviz/">Fundamentals of Data Visualization</a>.</p></li></div></div>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>To be able to work through the examples in this section, you need to run the code below. We’ll explain what this code does in another lab.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">titanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/wilkelab/SDS375/master/datasets/titanic.csv"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  class   age    sex survived
+1   1st 29.00 female survived
+2   1st  2.00 female     died
+3   1st 30.00   male     died
+4   1st 25.00 female     died
+5   1st  0.92   male survived
+6   1st 47.00   male survived</code></pre>
+</div>
+</div>
+<p>You see that our data has an age for each individual passenger. If we bin those ages into 5 year intervals (0-5, 5-10, 10-15, and so on) and count the number of passengers that fall into each bin or age range, we get a summary table that looks like this.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="lywyzcolte" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  <table class="gt_table" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
+<thead class="gt_col_headings" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;"><tr>
+<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Age Range" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left">Age Range</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Count" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">Count</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id=" " style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right"> </th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Age Range" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left">Age Range</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Count" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" bgcolor="#FFFFFF" valign="bottom" align="right">Count</th>
+    </tr></thead>
+<tbody class="gt_table_body" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
+<tr>
+<td headers="ages" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">0–5</td>
+<td headers="count" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">36</td>
+<td headers="separator" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">41–45</td>
+<td headers="count2" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">54</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">6–10</td>
+<td headers="count" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">19</td>
+<td headers="separator" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">46–50</td>
+<td headers="count2" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">50</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">11–15</td>
+<td headers="count" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">18</td>
+<td headers="separator" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">51–55</td>
+<td headers="count2" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">26</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">16–20</td>
+<td headers="count" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">99</td>
+<td headers="separator" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">56–60</td>
+<td headers="count2" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">22</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">21–25</td>
+<td headers="count" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">139</td>
+<td headers="separator" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">61–65</td>
+<td headers="count2" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">16</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">26–30</td>
+<td headers="count" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">121</td>
+<td headers="separator" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">66–70</td>
+<td headers="count2" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">3</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">31–35</td>
+<td headers="count" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">76</td>
+<td headers="separator" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">71–75</td>
+<td headers="count2" class="gt_row gt_right" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: right; font-variant-numeric: tabular-nums;" valign="middle" align="right">3</td>
+</tr>
+<tr>
+<td headers="ages" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">36–40</td>
+<td headers="count" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">74</td>
+<td headers="separator" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">   </td>
+<td headers="ages2" class="gt_row gt_left gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: left;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="left">76–80</td>
+<td headers="count2" class="gt_row gt_right gt_striped" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; background-color: rgba(128, 128, 128, 0.05); text-align: right; font-variant-numeric: tabular-nums;" valign="middle" bgcolor="rgba(128, 128, 128, 0.05)" align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>We can actually visualize this distribution with a histogram using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram()</a></code>. Importantly, we pass <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> the raw tidy data, not the summary table. Here is how that looks:</p>
+<div class="cell" data-layout-align="center" data-fig.asp="0.7">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="03-inference-lab_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice that <code>ggplot2</code> provides an informative message that the default number of bins used in this plot is 30, which makes the age interval for each bin about 2.5 years. We can (and SHOULD!) change this by specifying a different number of bins with <code>bins</code>, as the number of bins can dramatically change the interpretation of the distribution.</p>
+<div class="cell" data-layout-align="center" data-fig.asp="0.7">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    bins <span class="op">=</span> <span class="fl">10</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="03-inference-lab_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Unfortunately, the default histogram produced by ggplot2 doesn’t do a great job of conveying the relationship between the axis text and the ranges represented by the widths of the rectangles. For instance, zero falls at the center of the first histogram, which would seem to suggest that the range of values represented by that rectangle includes negative ages. What it is really saying is that zero falls in the range of that bin, but that is not obvious. One solution to this issue is to set the <code>binwidth</code> (or bin width, as in the range of values for that bin) and the bin <code>boundary</code> (or where the left side of the rectangle is positioned relative to the bin range). That’s a tad confusing, I know, but the basic idea is that if you set the width to 5 and the boundary to 0, then the bin for the range 0-5 will start at 0, and the bin for the range 5-10 will start at 5, and the bin for 10-15 will start at 10, and so on. Finding the best options for visualizing your data will, of course, involve some trial and error.</p>
+<div class="cell" data-layout-align="center" data-fig.asp="0.7">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    binwidth <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>    boundary <span class="op">=</span> <span class="fl">0</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="03-inference-lab_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As always, you can change the <code>fill</code> and outline <code>color</code> for these plots by supplying those parameters to the geometry. We can also clean up the labels with <code><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs()</a></code> and change the theme if we like (and we do). And since the heights of these bars are what we care about, we can turn off the light vertical grid lines that <code>ggplot2</code> adds by default by specifying this as a <code><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme()</a></code> option.</p>
+<div class="cell" data-layout-align="center" data-fig.asp="0.7">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    binwidth <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>    boundary <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#01587A"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age (years)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span></span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="03-inference-lab_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>One last point before moving on. You may have noticed that the data contains a binary variable <code>survived</code>. Do you think maybe the age distribution of those that survived differs from the distribution for those that did not survive? Do you think maybe they were older? Younger? Or is there no difference? Let’s explore this a little by visualizing the different distributions using <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap()</a></code>.</p>
+<div class="cell" data-layout-align="center" data-fig.asp="0.7">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    binwidth <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>    boundary <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"#56B4E9"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#01587A"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age (years)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">survived</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># &lt;----- adding facets here</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span></span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="03-inference-lab_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Hmmmm 🤔. What do you think this means? And how might it help to compare this to the total distribution?</p>
+<section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+<ol type="1">
+<li>Create a histogram of penguin bill length using the <code>penguins</code> dataset. Then do all of the following:
+<ul>
+<li>Change the number of bins (try two different options).</li>
+<li>Try specifying the bin width and boundary.</li>
+<li>Change the fill and outline color.</li>
+<li>Reset the labels to be more informative.</li>
+<li>Change the theme and remove the vertical grid lines.</li>
+<li>Facet the distributions by penguin species.</li>
+</ul>
+</li>
+<li>Repeat (1), but use the <code>DartPoints</code> dataset from the <code>archdata</code> package, creating a histogram of dart length (<code>Length</code> in the table) and facet by dart type (<code>Name</code>).
+<ul>
+<li>Does it look like the dart types might differ in length? Or maybe they’re all basically the same?</li>
+</ul>
+</li>
+</ol></section></section><section id="t-test" class="level2"><h2 class="anchored" data-anchor-id="t-test">t-test</h2>
+<p>We use a t-test (technically, Welch’s two-sample t-test) to evaluate whether two samples come from the same population. This test starts by computing the <span class="math inline">\(t\)</span> statistic, or the standardized difference in sample means:</p>
+<p><span class="math display">\[t = \frac{\bar{x}_1 - \bar{x}_2}{s_{\bar{x}}}\]</span></p>
+<p>where <span class="math inline">\(s_{\bar{x}}\)</span> is the standard error of the sample mean. This is then compared to a t-distribution to determine the probability of that difference - the more improbable, the less likely the samples come from the same distribution. Why is that? Well, if you think about it, we are starting from the assumption that the null hypothesis is true. Then we are asking, if the null hypothesis is true, how likely is that we would get this difference in sample means? And, if it’s extremely unlikely, that would presumably count against the null model being true.</p>
+<p>To perform this test in R, we use the <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code> function, providing it with two samples. Suppose, for example, that we have two samples of projectile points, namely their lengths in millimeters, and we want to answer this <strong>question:</strong> Are these samples of the same point type (the same population)? Here are our two samples:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sample1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">59.10</span>, <span class="fl">61.97</span>, <span class="fl">56.23</span>, <span class="fl">53.83</span>, <span class="fl">60.24</span>, <span class="fl">44.27</span>, <span class="fl">61.41</span>, <span class="fl">55.07</span>, <span class="fl">55.01</span>, <span class="fl">50.56</span><span class="op">)</span></span>
+<span><span class="va">sample2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">58.42</span>, <span class="fl">68.09</span>, <span class="fl">60.85</span>, <span class="fl">61.60</span>, <span class="fl">57.25</span>, <span class="fl">63.08</span>, <span class="fl">58.57</span>, <span class="fl">57.34</span>, <span class="fl">64.60</span>, <span class="fl">60.49</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sample1</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">sample2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -5.26</code></pre>
+</div>
+</div>
+<p>Before we run the test, let’s make sure we have our hypotheses clear.</p>
+<ul>
+<li>
+<span class="math inline">\(H_0\)</span>: There is NO difference in mean length (<span class="math inline">\(\bar{x}_1 = \bar{x}_2\)</span>)</li>
+<li>
+<span class="math inline">\(H_1\)</span>: There is a difference in mean length (<span class="math inline">\(\bar{x}_1 \neq \bar{x}_2\)</span>)</li>
+</ul>
+<p>We also need to specify our critical value. Here, we’ll stick with a common standard of 0.05:</p>
+<ul>
+<li><span class="math inline">\(\alpha = 0.05\)</span></li>
+</ul>
+<p>Now, we can run our test!</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">sample1</span>, <span class="va">sample2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  sample1 and sample2
+t = -3, df = 15, p-value = 0.02
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -9.598 -0.922
+sample estimates:
+mean of x mean of y 
+     55.8      61.0 </code></pre>
+</div>
+</div>
+<p>Notice the output that R has provided here. You have the name of the test: Welch Two Sample t-test (this is a version of Student’s t-test for two independent samples). It gives you the t-statistic, the degrees of freedom (<code>df</code>), and the p-value. It also states the alternative hypothesis and gives you the mean of each sample. In this case, <span class="math inline">\(p &lt; \alpha\)</span>. Hence, we reject the null. A significant difference exists between the means of these two samples.</p>
+<p>If your samples are in a data.frame, you can also call <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code> using R’s formula syntax. So, assume your data above are in a table like so:</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">sample1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  sample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">n</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">sample1</span>, <span class="va">sample2</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  sample length
+1      1   59.1
+2      1   62.0
+3      1   56.2
+4      1   53.8
+5      1   60.2
+6      1   44.3</code></pre>
+</div>
+</div>
+<p>Then you would run the <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code> this way:</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">length</span> <span class="op">~</span> <span class="va">sample</span>, data <span class="op">=</span> <span class="va">samples</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  length by sample
+t = -3, df = 15, p-value = 0.02
+alternative hypothesis: true difference in means between group 1 and group 2 is not equal to 0
+95 percent confidence interval:
+ -9.598 -0.922
+sample estimates:
+mean in group 1 mean in group 2 
+           55.8            61.0 </code></pre>
+</div>
+</div>
+<p>The formula in this example is <code>length ~ sample</code>. The tilde expresses a relation of <em>dependence</em>. In this case, we want to know whether the length of a point differs in some meaningful way between samples. So, here we are, in effect, asking R to run a t-test comparing the mean length in each sample using the <code>samples</code> dataset. You will notice that the results are the same, we just called the function in a slightly different way because of how we had the data stored.</p>
+<section id="exercises-2" class="level3"><h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
+<ol type="1">
+<li>Perform a t-test on these two samples of dart length (drawn from the <code>DartPoints</code> dataset).
+<ul>
+<li>Calculate the mean for each sample.<br>
+</li>
+<li>Be sure to specify the null and alternate hypotheses.<br>
+</li>
+<li>State the critical value.<br>
+</li>
+<li>Run the test and print the results.</li>
+</ul>
+</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">darl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">42.8</span>,<span class="fl">40.5</span>,<span class="fl">37.5</span>,<span class="fl">40.3</span>,<span class="fl">30.6</span>,<span class="fl">41.8</span>,<span class="fl">40.3</span>,<span class="fl">48.5</span>,<span class="fl">47.7</span>,<span class="fl">33.6</span>,<span class="fl">32.4</span>,<span class="fl">42.2</span>,<span class="fl">33.5</span>,</span>
+<span>          <span class="fl">41.8</span>,<span class="fl">38</span>,<span class="fl">35.5</span>,<span class="fl">31.2</span>,<span class="fl">34.5</span>,<span class="fl">33.1</span>,<span class="fl">32</span>,<span class="fl">38.1</span>,<span class="fl">47.6</span>,<span class="fl">42.3</span>,<span class="fl">38.3</span>,<span class="fl">50.6</span>,<span class="fl">54.2</span>,<span class="fl">44.2</span>,<span class="fl">40</span><span class="op">)</span></span>
+<span><span class="va">travis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">56.5</span>,<span class="fl">54.6</span>,<span class="fl">46.3</span>,<span class="fl">57.6</span>,<span class="fl">49.1</span>,<span class="fl">64.6</span>,<span class="fl">69</span>,<span class="fl">40.1</span>,<span class="fl">41.5</span>,<span class="fl">46.3</span>,<span class="fl">39.6</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>Based on the test, do you accept or reject the null hypothesis? Why?</li>
+</ol></section></section><section id="anova" class="level2"><h2 class="anchored" data-anchor-id="anova">ANOVA</h2>
+<p>Like the t-test, the ANOVA is used to test for a difference between samples, to see whether they come from the same population. Unlike the t-test, however, the ANOVA can be used on more than two samples. It does that by decomposing the total variance into within and between group variance. The ratio of those standardized variances defines the F-statistic:</p>
+<p><span class="math display">\[F = \frac{\text{between-group variance}}{\text{within-group variance}}\]</span></p>
+<p>By comparing the value of <span class="math inline">\(F\)</span> to the F-distribution, we can evaluate the probability of getting that value. A highly improbable F-statistic means that at least one group or sample comes from a different population. To perform this test in R, we use the <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code> function.</p>
+<p>To illustrate this method, let’s return to the DartPoints dataset, which contains various measures for five different dart point types (Darl, Ensor, Pedernales, Travis, and Wells). We’ll try to answer the <strong>question:</strong> Are these samples from the same dart point type (the same population)? Less formally, we want to know whether the types we have lumped these darts into are really all that different. As always, we first specify our null and alternate hypotheses and the critical value we will use to determine whether to reject the null.</p>
+<ul>
+<li>
+<span class="math inline">\(H_0\)</span>: There is no difference in length between groups.</li>
+<li>
+<span class="math inline">\(H_1\)</span>: At least one group differs in length.</li>
+</ul>
+<p>And our critical value, again, will be 0.05.</p>
+<ul>
+<li><span class="math inline">\(\alpha = 0.05\)</span></li>
+</ul>
+<p>Now, we can conduct our test.</p>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">DartPoints</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">aov_test</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">Length</span> <span class="op">~</span> <span class="va">Name</span>, data <span class="op">=</span> <span class="va">DartPoints</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are two things to note here. First, we are assigning the output of this ANOVA test to an object. Second, we call the test using a formula, in this case <code>Length ~ Name</code>. The full call to <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code> you can read as saying, “Perform an analysis of variance comparing the lengths for each sample in this dataset.”</p>
+<section id="anova-table" class="level3"><h3 class="anchored" data-anchor-id="anova-table">ANOVA Table</h3>
+<p>If we print out the result of the <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code> call, it looks like this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aov_test</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+   aov(formula = Length ~ Name, data = DartPoints)
+
+Terms:
+                Name Residuals
+Sum of Squares  5532      9067
+Deg. of Freedom    4        86
+
+Residual standard error: 10.3
+Estimated effects may be unbalanced</code></pre>
+</div>
+</div>
+<p>While this printout offers some important information, a much more useful ummary of the test is provided by an <strong>ANOVA table</strong>. We can generate one of these by running the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function on our test.</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">aov_test</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Df Sum Sq Mean Sq F value      Pr(&gt;F)    
+Name         4   5532    1383    13.1 0.000000022 ***
+Residuals   86   9067     105                        
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>This table has two rows, one for the between-group variance and one for the within-group variance respectively. As you can see, R refers to these, somewhat cryptically, as the <em>Name</em> (the grouping variable in the data) and <em>Residuals</em>. The reason for this concerns the fact that the <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code> function is actually fitting a linear model, but let’s leave that detail to the side. For now, just note that the columns are, in order,</p>
+<ol type="1">
+<li>
+<code>Df</code> = the degrees of freedom,<br>
+</li>
+<li>
+<code>Sum Sq</code> = the sum of squares,<br>
+</li>
+<li>
+<code>Mean Sq</code> = the mean sum of squares (the sum of squares divided by the degrees of freedom),<br>
+</li>
+<li>
+<code>F value</code> = the F-statistic (the ratio of the mean sum of squares), and<br>
+</li>
+<li>
+<code>Pr(&gt;F)</code> = the p-value, formally the probability of getting a value of the statistic greater than observed (determined by comparing the F-statistic to the F-distribution).</li>
+</ol>
+<p>In this case, <span class="math inline">\(p &lt; \alpha\)</span>, so we reject the null hypothesis, meaning that at least one of these groups is different.</p>
+</section><section id="exercises-3" class="level3"><h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
+<ol type="1">
+<li>Perform an ANOVA on the <code>DartPoints</code> dataset to see if at least one dart type differs signficantly in its <code>Width</code>.
+<ul>
+<li>Be sure to specify the null and alternate hypotheses.</li>
+<li>State the critical value.</li>
+<li>Run the test and print the results.</li>
+<li>Be sure to assign the test to an object.</li>
+<li>Provide a <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> of the test.</li>
+</ul>
+</li>
+<li>Based on the test, do you accept or reject the null hypothesis? Why?</li>
+</ol></section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
+<ol type="1">
+<li>Load the <code>Snodgrass</code> dataset from the <code>archdata</code> package using <code>data(Snodgrass)</code>. This dataset includes measurements of pithouses found in a small village affiliated with maize farmers in Missouri about 650 years ago.</li>
+<li>Generate a summary table using the <code><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim()</a></code> function from <code>skimr</code>.</li>
+<li>For practice, let’s get some of those summary statistics manually. Calculate the mean and standard deviation of the inside floor area of each pithouse using <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> and <code><a href="https://rdrr.io/r/stats/sd.html">sd()</a></code>. You’ll need to pull the <code>Area</code> variable out of the table with <code>Snodgrass$Area</code>. Hint: if you were to calculate the variance, you would use <code>var(Snodgrass$Area)</code>.</li>
+<li>Use <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram()</a></code> to plot a histogram showing the distribution of floor area. Make sure to do all of the following (only need to make one graph):
+<ul>
+<li>Change the default number of bins (or optionally, you can specify the breaks).</li>
+<li>Change the fill and outline color.</li>
+<li>Update the labels and the plot title.</li>
+<li>Choose an appropriate theme and remove the vertical grid lines.</li>
+<li>Facet by the <code>Inside</code> variable. Then try faceting using the <code>Segment</code> variable.</li>
+<li>Do the distributions look different?</li>
+</ul>
+</li>
+<li>Some of these pithouses occur inside a walled-in portion of the village. This information is provided by the <code>Inside</code> variable in the dataset. Run a t-test to determine whether the mean floor area of pithouses inside the walled-in area differs significantly from the mean floor area of pithouses outside the wall.
+<ul>
+<li>These data are in a table, so make sure to use the formula notation.</li>
+<li>State the null and alternative hypotheses.</li>
+<li>Specify the critical value.</li>
+<li>Run the test and print the result.</li>
+<li>Does the test confirm or refute the null hypothesis? Why?</li>
+<li>How would you interpret this result?</li>
+</ul>
+</li>
+<li>The pithouses were initially divided into three groups or “segments” (<code>Segment</code> in the table) based on their location: segment one includes those inside the wall, segment two those to the north and west of the wall, and segment three those to the east and south of the wall. Run an ANOVA test to determine whether mean floor area for these groups is significantly different.
+<ul>
+<li>State the null and alternative hypotheses.</li>
+<li>Specify the critical value.</li>
+<li>Run the test and print the result.</li>
+<li>Be sure to assign the result to an object.</li>
+<li>Provide a <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> of the test.</li>
+<li>Does the test confirm or refute the null hypothesis? Why?</li>
+<li>How would you interpret this result?</li>
+</ul>
+</li>
+</ol>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

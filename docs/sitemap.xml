@@ -2,42 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>kbvernon.github.io/qaad/classes.html</loc>
-    <lastmod>2023-01-17T22:32:22.068Z</lastmod>
+    <lastmod>2023-01-24T19:23:07.283Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/01-intro.html</loc>
-    <lastmod>2023-01-17T22:32:22.983Z</lastmod>
+    <lastmod>2023-01-24T19:23:08.030Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/02-probability.html</loc>
-    <lastmod>2023-01-17T22:32:24.035Z</lastmod>
+    <lastmod>2023-01-24T19:23:08.779Z</lastmod>
+  </url>
+  <url>
+    <loc>kbvernon.github.io/qaad/classes/03-inference.html</loc>
+    <lastmod>2023-01-24T19:23:09.402Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/help.html</loc>
-    <lastmod>2023-01-17T22:32:27.676Z</lastmod>
+    <lastmod>2023-01-24T19:23:11.621Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/index.html</loc>
-    <lastmod>2023-01-17T22:32:28.808Z</lastmod>
+    <lastmod>2023-01-24T19:23:12.244Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/01-intro-lab.html</loc>
-    <lastmod>2023-01-17T22:32:42.717Z</lastmod>
+    <lastmod>2023-01-24T19:23:23.184Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/02-probability-lab.html</loc>
-    <lastmod>2023-01-17T22:42:41.026Z</lastmod>
+    <lastmod>2023-01-24T19:23:27.388Z</lastmod>
+  </url>
+  <url>
+    <loc>kbvernon.github.io/qaad/labs/03-inference-lab.html</loc>
+    <lastmod>2023-01-24T19:23:32.104Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/01-intro-slides.html</loc>
-    <lastmod>2023-01-17T22:33:14.912Z</lastmod>
+    <lastmod>2023-01-24T19:23:35.470Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/02-probability-slides.html</loc>
-    <lastmod>2023-01-17T22:48:38.020Z</lastmod>
+    <lastmod>2023-01-24T19:28:51.675Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/03-inference-slides.html</loc>
-    <lastmod>2023-01-17T22:34:09.854Z</lastmod>
+    <lastmod>2023-01-24T19:24:14.728Z</lastmod>
   </url>
 </urlset>

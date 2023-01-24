@@ -3,14 +3,10 @@ title: "Lecture 02: Probability as a Model"
 date: 'Last updated: `r Sys.Date()`'
 ---
 
-{{< include _setup.qmd >}}
-
-```{r}
+```{r setup}
 #| include: false
 
-library(gt)
-library(glue)
-library(htmltools)
+here::here("slides", "_setup.R") |> source()
 
 ```
 
@@ -176,7 +172,7 @@ Here, we're going to focus on statistical __description__, aka models.
 ## 🧪 A simple experiment
 
 :::::: {.columns}
-:::: {.column width="63%"}
+:::: {.column width="58%"}
 
 ::: {.r-stack}
 ::: {.fragment .fade-out fragment-index=0}
@@ -217,7 +213,7 @@ gg_cars +
 
 ::::
 
-:::: {.column width="37%"}
+:::: {.column width="42%"}
 
 ::: {style="padding-top:2.5rem"}
 We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.  

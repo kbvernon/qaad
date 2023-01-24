@@ -36,9 +36,7 @@ strong, b, a {
 
 .quarto-figure .figure-caption {
   font-size: 0.8rem;
-  width: 75%;
-  margin-left: auto;
-  margin-right: auto;
+  
 }
 
 #quarto-header nav {
@@ -203,16 +201,4 @@ a[data-scroll-target^="#exercises"]:before {
 
 .kobe-bg {
   background-color: $kobe;
-}
-
-.skim-table table {
-  font-size: 0.8rem;
-}
-
-.skim-table table:first-child {
-  width: 50%;
-}
-
-.skim-table table:not(:first-child) {
-  width: 100%;
 }

@@ -4,6 +4,13 @@ description: an introduction to R, RStudio, and Quarto
 date: today
 ---
 
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
 ## Outline
 
 ### Objectives

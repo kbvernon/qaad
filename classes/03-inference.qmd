@@ -1,0 +1,15 @@
+---
+title: "Week 03: Statistical Inference"
+description: "Testing hypotheses, visualizing distributions, reading and writing tabular data, and learning how to work with it in R."
+date: 2023-01-24
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/03-inference-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 03 Lab](../labs/03-inference-lab.qmd)
+

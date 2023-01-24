@@ -1,12 +1,14 @@
 date: today
-toc-location: left
-reference-location: margin
-citation-location: margin
-code-overflow: wrap
-fig-align: center
-format:
-  html:
+format: 
+  html: 
+    fig-align: center
+    fig-width: 5
+    fig-asp: 0.8
     code-link: true
+    code-overflow: wrap
+    toc-location: left
+    reference-location: margin
+    citation-location: margin
 execute: 
   echo: true
   freeze: auto

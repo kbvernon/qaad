@@ -3,16 +3,10 @@ title: "Lecture 01: Introduction"
 date: 'Last updated: `r Sys.Date()`'
 ---
 
-{{< include _setup.qmd >}}
-
-```{r}
+```{r setup}
 #| include: false
 
-library(gt)
-library(glue)
-library(here)
-library(htmltools)
-library(tidyverse)
+here::here("slides", "_setup.R") |> source()
 
 ```
 

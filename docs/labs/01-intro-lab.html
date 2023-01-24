@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.313">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="dcterms.date" content="2023-01-17">
+<meta name="dcterms.date" content="2023-01-24">
 <meta name="description" content="an introduction to R, RStudio, and Quarto">
 <title>Quantitative Analysis of Archaeological Data - Lab 01: Introduction</title>
 <style>
@@ -214,7 +214,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 17, 2023</p>
+      <p class="date">January 24, 2023</p>
     </div>
   </div>
   
@@ -308,7 +308,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </section><section id="customizing-your-plot" class="level3"><h3 class="anchored" data-anchor-id="customizing-your-plot">Customizing your plot</h3>
@@ -339,7 +339,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  cex <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </section><section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
@@ -408,7 +408,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="fl">17</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] -0.9613975</code></pre>
+<pre><code>[1] -0.961</code></pre>
 </div>
 </div>
 </section><section id="objects-and-functions" class="level3"><h3 class="anchored" data-anchor-id="objects-and-functions">Objects and Functions</h3>
@@ -539,21 +539,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  cex <span class="op">=</span> <span class="fl">1.5</span></span>
 <span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Then, we can do things like calculate the mean stopping distance.</p>
 <div class="cell">
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 42.98</code></pre>
+<pre><code>[1] 43</code></pre>
 </div>
 </div>
 <p>Note that we use the <code>$</code> operator to pull the distance (<code>dist</code>) values from the <code>cars</code> table and supply it to the <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> function. Don’t worry too much about wrapping your head around that idea as we will talk about it more in another lab. We can also make a histogram to explore the distribution of stopping distances:</p>
 <div class="cell">
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>What does this tell you about car stopping distances? Is it clustered? Random?</p>
@@ -575,19 +575,19 @@ Call:
 lm(formula = dist ~ speed, data = cars)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--26.789  -9.149  -1.672   8.013  43.048 
+   Min     1Q Median     3Q    Max 
+-26.79  -9.15  -1.67   8.01  43.05 
 
 Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) -14.0021     6.2951  -2.224    0.031 *  
-speed         3.6396     0.3918   9.290 3.26e-12 ***
+            Estimate Std. Error t value        Pr(&gt;|t|)    
+(Intercept)  -14.002      6.295   -2.22           0.031 *  
+speed          3.640      0.392    9.29 0.0000000000033 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 14.1 on 47 degrees of freedom
-Multiple R-squared:  0.6474,    Adjusted R-squared:  0.6399 
-F-statistic: 86.31 on 1 and 47 DF,  p-value: 3.262e-12</code></pre>
+Multiple R-squared:  0.647, Adjusted R-squared:  0.64 
+F-statistic: 86.3 on 1 and 47 DF,  p-value: 0.00000000000326</code></pre>
 </div>
 </div>
 <p>Woah! That’s a lot to digest. For now, just note that the asterisks (*) imply that that there is very likely a relationship between speed and distance. But, what is that relationship? Or, what does it look like? Well, let’s try to visualize that in R, too.</p>
@@ -615,7 +615,7 @@ F-statistic: 86.31 on 1 and 47 DF,  p-value: 3.262e-12</code></pre>
 <span>  cex <span class="op">=</span> <span class="fl">1.5</span></span>
 <span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-intro-lab_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </section><section id="export" class="level4"><h4 class="anchored" data-anchor-id="export">Export</h4>

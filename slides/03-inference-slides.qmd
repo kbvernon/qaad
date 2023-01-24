@@ -3,29 +3,26 @@ title: "Lecture 03: Statistical Inference"
 date: 'Last updated: `r Sys.Date()`'
 ---
 
-{{< include _setup.qmd >}}
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+```
 
 ```{r}
 #| include: false
 
-set.seed(12345)
-
 library(archdata)
 
-data(DartPoints)
+set.seed(12345)
 
 n <- 300
 
-darts <- DartPoints |> 
-  rename_with(tolower) |> 
-  filter(name %in% c("Travis", "Wells")) |>
-  mutate(
-    sample = ifelse(name == "Travis", "Sample 1", "Sample 2")
-  ) |> 
-  group_by(sample) |> 
-  summarize(
-    mean = mean(length),
-    sd = sd(length)
+darts <- tibble(
+    sample = paste("Sample", 1:2),
+    mean = c(57,59),
+    sd = c(7,5)
   ) |> 
   rowwise() |> 
   mutate(
@@ -85,9 +82,924 @@ By comparing that model to a null model, we can __infer__ something about the po
 :::
 ::: {.fragment fragment-index=0 style="margin:0;"}
 
-Here, we're going to focus on statistical inference.
+Here, we're going to focus on statistical __inference__.
 
 :::
 :::
 ::::
 :::::
+
+## Simple Example
+
+::::: {.columns}
+:::: {.column}
+
+![](images/projectile_points.png){fig-width="100%"}
+
+::::
+:::: {.column}
+
+<br>
+
+Two samples of length (mm, n=300).  
+
+<br>
+
+__Question:__ Are these samples of the same __type__? The same __population__? 
+
+::::
+:::::
+
+## Sample Distribution
+
+Do these really represent different types?  
+
+::::: {.columns}
+::: {.column}
+
+```{r}
+#| fig-asp: 0.9
+
+# bindwidth is 2, so we want to get the left side of the bin of the smallest value
+# hence ceiling(x/2)*2-2
+labels <- tibble(
+  x = ceiling(min(darts$length)/2)*2-2, 
+  y = Inf,
+  sample = c("Sample 1", "Sample 2")
+)
+
+dart_hists <- ggplot() +
+  geom_histogram(
+    data = darts, 
+    aes(length, y = after_stat(density), fill = sample, color = sample), 
+    binwidth = 2,
+    center = 1
+  ) + 
+  geom_text(
+    data = labels,
+    aes(x, y, label = sample, color = sample),
+    size = 14/.pt,
+    hjust = 0,
+    vjust = 2
+  ) +
+  scale_color_manual(
+    name = "sample", 
+    values = c("#F15A29", "#0F0326"), 
+    guide = "none"
+  ) +
+  scale_fill_manual(
+    name = "sample", 
+    values = c("#FACC4E", "#477998"), 
+    guide = "none"
+  ) +
+  facet_wrap(~sample, nrow = 2) +
+  labs(
+    x = "Length (mm)",
+    y = "Density"
+  ) +
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_blank()
+  )
+
+dart_hists
+
+```
+
+:::
+::: {.column}
+
+Two models:    
+
+- same type (same population)  
+- different types (different populations)  
+
+Note that:  
+
+- these models are mutually exclusive and  
+- the second model is more complex.  
+
+:::
+:::::
+
+## Hypotheses
+
+The two models represent our hypotheses.
+
+::: {style="width:65%;margin:1em auto 0 auto;"}
+![](images/hypothesis_null.png)
+
+![](images/hypothesis_alternate.png)
+:::
+
+## Testing Method
+
+```{r}
+
+population <- darts |> 
+  filter(sample == "Sample 2") |> 
+  summarize(
+    mean = mean(length),
+    sd = sd(length)
+  ) |> 
+  mutate(
+    y = list(rnorm(10000, mean = mean, sd = sd))
+  ) |> 
+  unnest(y) |> 
+  select(y) |> 
+  mutate(
+    x = 1:n()
+  )
+
+samples <- bind_rows(
+  population |> slice_sample(n = 100) |> mutate(sample = "Sample 1"),
+  population |> slice_sample(n = 100) |> mutate(sample = "Sample 2")
+)
+
+```
+
+:::: {.columns}
+::: {.column}
+
+<br>
+
+Procedure:
+
+1. Take sample(s).
+2. Calculate test __statistic__.  
+3. Compare to test __probability__ distribution.
+4. Get __p-value__.
+5. Compare to __critical value__. 
+6. Accept (or reject) null hypothesis.
+
+:::
+::: {.column}
+
+```{r}
+
+ggplot() +
+  with_blur(
+    geom_point(
+      data = population,
+      aes(x,y),
+      color = qcolors("eerie"),
+      alpha = 0.2
+    ),
+    sigma = 0.8
+  ) +
+  geom_point(
+    data = samples,
+    aes(x, y, fill = sample, color = sample),
+    size = 4.5,
+    shape = 21,
+    stroke = 1,
+    color = "black"
+  ) + 
+  scale_fill_manual(
+    values = qcolors("gold", "blue"), 
+    guide = "none"
+  ) +
+  labs(
+    x = "One Population of Dart Points",
+    y = "Length (mm)",
+    title = "Two Samples"
+  )
+
+```
+
+:::
+::::
+
+## Average of differences
+
+```{r}
+
+iterations <- 1000
+
+get_difference <- function(x) {
+  
+  s1 <- sample(x, size = 100)
+  s2 <- sample(x, size = 100)
+  
+  mean(s1) - mean(s2)
+  
+}
+
+y <- replicate(
+  iterations,
+  get_difference(population$y),
+  simplify = FALSE
+)
+
+differences <- tibble(
+  x = 1:iterations,
+  y = unlist(y)
+)
+
+```
+
+:::: {.columns}
+::: {.column}
+
+<br>
+
+Suppose we take two samples from the same population, calculate the difference in their means, and repeat this 1,000 times.  
+
+__Question__: What will the average difference be between the sample means?
+
+:::
+::: {.column}
+
+```{r}
+
+ggplot(differences) +
+  geom_segment(
+    aes(x, y, xend = x, yend = mean(y)),
+    color = "gray55",
+    alpha = 0.5
+  ) + 
+  geom_hline(
+    aes(yintercept = mean(y)),
+    color = qcolors("kobe"),
+    linewidth = 1.5
+  ) +
+  with_outer_glow(
+    geom_point(
+      aes(x, y),
+      color = qcolors("eerie"),
+      size = 2
+    ),
+    colour = "white",
+    sigma = 1,
+    expand = 2
+  ) +
+  labs(
+    x = "Iterations",
+    y = "Length (mm)",
+    title = "Differences in Mean Length"
+  )
+
+```
+
+:::
+::::
+
+## Probability of differences
+
+:::: {.columns}
+::: {.column}
+
+<br>
+
+If we convert these differences into a probability distribution, we can estimate the probability of any given difference.  
+
+The __p-value__ represents _how likely it is that the difference we see arises by chance_.
+
+:::
+::: {.column}
+
+```{r}
+
+xrng <- range(differences$y) |> abs() |> max() |> ceiling()
+
+ggplot(differences) +
+  geom_histogram(
+    aes(y, y = after_stat(density)),
+    color = "white",
+    binwidth = 0.25,
+    center = 0.125
+  ) +
+  labs(
+    x = "Length (mm)",
+    y = "Density",
+    title = "Distribution of Differences"
+  ) +
+  xlim(-xrng, xrng)
+
+```
+
+:::
+::::
+
+## Model of Differences
+
+```{r}
+
+s <- sd(differences$y)
+
+a <- 1.96 * s
+
+```
+
+
+:::: {.columns}
+::: {.column}
+
+<br>
+
+In classical statistics, we use a model of that distribution to estimate the probability of a given difference. Here we are using $N(0,$ `r round(s, digits = 2)`$)$, where the probability of getting a difference $\pm$ `r round(a)` mm ($\pm2s$) or greater is 0.05.  
+
+:::
+::: {.column}
+
+```{r}
+
+r <- 4.5
+
+distribution <- tibble(
+  x = seq(-r, r, length = 300),
+  y = dnorm(x, sd = s)
+)
+
+n <- 100
+x <- seq(a, r, length = n)
+y <- dnorm(x, sd = s)
+
+tails <- tibble(
+  x = c(rev(-x), -a, a, x),
+  y = c(rev(y), 0, 0, y),
+  z = rep(c("lower", "upper"), each = n+1)
+)
+
+dist_model <- ggplot() +
+  geom_polygon(
+    data = distribution,
+    aes(x, y),
+    fill = qcolors("gold"),
+    color = qcolors("kobe"),
+    linewidth = 1
+  ) +
+  geom_polygon(
+    data = tails,
+    aes(x,y, group = z),
+    fill = alpha(qcolors("kobe"), 0.8),
+    color = qcolors("kobe"),
+    linewidth = 1
+  ) +
+  labs(
+    x = "Length (mm)",
+    y = "Density",
+    title = "Model of Differences"
+  ) +
+  xlim(-xrng, xrng)
+
+dist_model
+
+```
+
+:::
+::::
+
+## Rejecting the Null Hypothesis
+
+:::: {.columns}
+::: {.column}
+
+<br>
+
+__Question:__ How do we decide?  
+
+Define a __critical limit__ ($\alpha$)  
+
+- Must be determined prior to the test!
+- If $p < \alpha$, reject. __&larr; THIS IS THE RULE!__
+- Generally, $\alpha = 0.05$ 
+
+:::
+::: {.column}
+
+```{r}
+
+dist_model
+
+```
+
+:::
+::::
+
+## Why the critical limit?
+
+Because we might be wrong! But what _kind_ of wrong?
+
+::: {style="width:50%;margin:0 auto;"}
+![](images/error_table.png)
+:::
+
+With $\alpha=0.05$, we are saying, "If we run this test 100 times, only 5 of those tests should result in a Type 1 Error."
+
+## Student's t-test
+
+::::::::: {.panel-tabset}
+
+### Problem
+
+:::::: {.columns}
+::: {.column}
+
+![](images/projectile_points-2.png)
+
+:::
+::: {.column}
+
+<br>
+
+We have two samples of projectile points, each consisting of 300 measurements of length (mm).  
+
+__Question:__ Are these samples of the same point __type__? The same __population__?
+
+:::
+::::::
+
+### Hypotheses
+
+The __null__ hypothesis: 
+
+[$H_0: \mu_1 = \mu_2$]{style="padding-left:35px;font-size:100%"}
+
+The __alternate__ hypothesis: 
+
+[$H_1: \mu_1 \neq \mu_2$]{style="padding-left:35px;font-size:100%"}
+
+This is a __two-sided__ t-test as the difference can be positive or negative. 
+
+### Difference
+
+:::::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+
+sample_means <- darts |> 
+  group_by(sample) |> 
+  summarize(mu = mean(length)) |> 
+  mutate(
+    x = labels$x,
+    y = Inf,
+    mu = round(mu, 2),
+    label = paste0("μ=", mu)
+  )
+
+dart_hists +
+  geom_vline(
+    data = sample_means,
+    aes(xintercept = mu),
+    color = qcolors("kobe"),
+    linewidth = 2.3
+  ) +
+  geom_vline(
+    data = sample_means,
+    aes(xintercept = mu),
+    color = "white",
+    linewidth = 1.3
+  ) +
+  geom_text(
+    data = sample_means,
+    aes(x, y, label = label),
+    color = "gray40",
+    size = 11/.pt,
+    hjust = 0,
+    vjust = 4.5
+  )
+
+```
+
+:::
+::: {.column width="40%"}
+
+<br>
+
+```{r}
+
+s1 <- darts |> filter(sample == "Sample 1") |> pull(length)
+s2 <- darts |> filter(sample == "Sample 2") |> pull(length)
+
+```
+
+__Question:__ Is this difference (`r round(mean(s1)-mean(s2), 2)`) big enough to reject the null?
+
+:::
+::::::
+
+### t-statistic
+
+A t-statistic standardizes the difference in means using the standard error of the sample mean.  
+
+$$t = \frac{\bar{x}_1 - \bar{x}_2}{s_{\bar{x}}}$$  
+
+```{r}
+
+tt <- t.test(s1, s2)
+
+t.value <- unname(tt$statistic) |> round(2)
+
+t.df <- unname(tt$parameter)
+
+t.p <- unname(tt$p.value)
+
+```
+
+For our samples, $t =$ `r t.value`. This is a model of our data! 
+
+__Question:__ How probable is this estimate?  
+
+We can answer this by comparing the t-statistic to the t-distribution. 
+
+### Complexity
+
+But first, we need to evaluate how complex the t-statistic is. We do this by estimating the __degrees of freedom__, or the number of values that are free to vary after calculating a statistic. In this case, we have two samples with 300 observations each, hence:  
+
+::: {style="width:10%;margin:0 auto;"}
+__df = `r round(t.df, 0)`__
+:::
+
+Crucially, this affects the shape of the t-distribution and, thus, determines the location of the critical value we use to evaluate the null hypothesis.
+
+### t-distribution
+
+:::::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+
+r <- 5
+
+a <- qt(0.025, df = t.df, lower.tail = FALSE)
+
+distribution <- tibble(
+  x = seq(-r, r, length = 300),
+  y = dt(x, df = t.df)
+)
+
+n <- 100
+x <- seq(a, r, length = n)
+y <- dt(x, df = t.df)
+
+tails <- tibble(
+  x = c(rev(-x), -a, a, x),
+  y = c(rev(y), 0, 0, y),
+  z = rep(c("lower", "upper"), each = n+1)
+)
+
+ggplot() +
+  geom_polygon(
+    data = distribution,
+    aes(x, y),
+    fill = qcolors("gold"),
+    color = qcolors("bronze"),
+    linewidth = 1
+  ) +
+  geom_polygon(
+    data = tails,
+    aes(x,y, group = z),
+    fill = alpha(qcolors("kobe"), 0.8),
+    color = qcolors("kobe"),
+    linewidth = 1
+  ) +
+  annotate(
+    "segment",
+    x = t.value,
+    y = 0,
+    xend = t.value,
+    yend = 0.2,
+    linetype = "dashed",
+    linewidth = 0.9
+  ) +
+  annotate(
+    "text",
+    x = t.value,
+    y = 0.2 + 0.01,
+    label = paste0("t = ", round(t.value, 2)),
+    hjust = 0.8,
+    vjust = 0,
+    size = 13/.pt
+  ) +
+  labs(
+    x = "t-statistic",
+    y = "Density",
+    title = paste0("t-distribution (df = ", round(t.df, 0), ")")
+  )
+
+```
+
+:::
+::: {.column width="40%"}
+
+<br>
+
+Summary:  
+
+- $\alpha = 0.05$  
+- $H_{0}: \mu_1 = \mu_2$  
+- $p =$ `r t.p`  
+
+__Translation:__ the null hypothesis is really, really unlikely. So, there must be some difference in the mean!
+
+:::
+::::::
+
+:::::::::
+
+## ANOVA
+
+```{r}
+
+data(DartPoints)
+
+set.seed(130)
+
+darts <- DartPoints |> 
+  rename_with(tolower) |> 
+  rename("samples" = name) |> 
+  select(samples, length) |>
+  mutate(
+    samples = case_when(
+      samples == "Darl" ~ "Sample 1",
+      samples == "Ensor" ~ "Sample 2",
+      samples == "Pedernales" ~ "Sample 3",
+      samples == "Travis" ~ "Sample 4",
+      TRUE ~ "Sample 5"
+    )
+  ) |> 
+  arrange(samples) |> 
+  group_by(samples) |> 
+  slice_sample(n = 5) |> 
+  ungroup() |> 
+  mutate(
+    id = n():1,
+    gmean = mean(length)
+  )
+
+```
+
+::::::::: {.panel-tabset}
+
+### Problem
+
+:::::: {.columns}
+::: {.column}
+
+![](images/projectile_points.png){width=85%}
+
+:::
+::: {.column}
+
+<br>
+
+We have five samples of points, each consisting of 100 measurements of length (mm).  
+
+__Question:__ Are these samples of the same point __type__? The same __population__?
+
+Analysis of Variance (ANOVA) is like a t-test but for more than two samples.
+
+:::
+::::::
+
+### Hypotheses
+
+The __null__ hypothesis: 
+
+[$H_0:$ no difference between groups]{style="padding-left:35px;font-size:100%"}
+
+The __alternate__ hypothesis: 
+
+[$H_1:$ at least one group is different]{style="padding-left:35px;font-size:100%"}
+
+### Strategy
+
+:::::: {.columns}
+::: {.column width=48%}
+
+__Variance Decomposition__. When group membership is known, the contribution of any value $x_{ij}$ to the variance can be split into two parts:  
+
+$$(x_{ij} - \bar{x}) = (\bar{x}_{j} - \bar{x}) + (x_{ij} - \bar{x}_{j})$$
+
+where
+
+- $i$ is the $i$th observation,  
+- $j$ is the $j$th group,  
+- $\bar{x}$ is the between-group mean, and  
+- $\bar{x_{j}}$ is the within-group mean (of group $j$).
+
+:::
+::: {.column width=52%}
+
+```{r}
+#| fig-asp: 0.85
+
+dart_sum <-
+  darts |> 
+  group_by(samples) |> 
+  summarize(
+    wmean = mean(length),
+    start = min(id),
+    end = max(id)
+  )
+
+dart_grp <- 
+  darts |> 
+  group_by(samples) |> 
+  mutate(wmean = mean(length)) |> 
+  ungroup()
+
+var_decomp <- ggplot() +
+  geom_segment(
+    data = darts, 
+    aes(x = length, y = id, xend = gmean, yend = id),
+    color = "gray85",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  annotate(
+    "segment", 
+    x = mean(darts$length), 
+    y = 1,
+    xend = mean(darts$length), 
+    yend = 25,
+    color = qcolors("kobe"),
+    linewidth = 1.2
+  ) +
+  geom_segment(
+    data = dart_grp,
+    aes(x = length, y = id, xend = wmean, yend = id),
+    color = "gray45",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  geom_segment(
+    data = dart_sum,
+    aes(x = wmean, y = start, xend = wmean, yend = end, color = samples),
+    linewidth = 1.2
+  ) +
+  geom_point(
+    data = darts,
+    aes(x = length, y = id, color = samples, shape = samples),
+    size = 4
+  ) + 
+  scale_color_viridis(
+    name = NULL, 
+    option = "inferno", 
+    discrete = TRUE,
+    direction = -1,
+    end = 0.8
+  ) +
+  scale_shape_manual(
+    name = NULL, 
+    values = c(19, 18, 17, 20, 15)
+  ) +
+  labs(
+    x = "Length (mm)", 
+    y = "Dart ID"
+  )
+
+var_decomp
+
+```
+
+:::
+::::::
+
+### Sum of Squares
+
+:::::: {.columns}
+::: {.column width=48%}
+
+Sum and square the differences for all $n$ observation and $m$ groups gives us:
+
+$$SS_{T} = SS_{B} + SS_{W}$$
+
+where 
+
+- $SS_{T}$: Total Sum of Squares
+- $SS_{B}$: Between-group Sum of Squares
+- $SS_{W}$: Within-group Sum of Squares 
+
+:::
+::: {.column width=52%}
+
+```{r}
+#| fig-asp: 0.85
+
+var_decomp
+
+```
+
+:::
+::::::
+
+### F-statistic
+
+```{r}
+
+darts_anova <- aov(length ~ samples, data = darts)
+
+f.value <- summary(darts_anova)[[1]][1,4]
+f.p <- summary(darts_anova)[[1]][1,5]
+
+between_group_variance <- darts_anova$assign |> sum()
+within_group_variance <- darts_anova$df.residual |> unname()
+
+```
+
+Ratio of variances:
+
+$$F = \frac{\text{between-group variance}}{\text{within-group variance}}$$
+
+where
+
+- Between-group variance = $SS_{B}/df_{B}$ and $df_{B}=m-1$.
+- Within-group variance = $SS_{W}/df_{W}$ and $df_{W}=m(n-1)$.
+
+__Question:__ Here, $F=$ `r round(f.value, 2)`. How probable is this estimate?  
+
+We can answer this question by comparing the F-statistic to the F-distribution.  
+
+### F-distribution
+
+:::::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+
+r <- 8
+
+distribution <- tibble(
+  x = seq(0, r, length = 300),
+  y = df(x, df1 = between_group_variance, df2 = within_group_variance)
+)
+
+a <- qf(
+  0.05,
+  df1 = between_group_variance,
+  df2 = within_group_variance,
+  lower.tail = FALSE
+)
+
+n <- 100
+x <- seq(a, r, length = n)
+y <- df(x, df1 = between_group_variance, df2 = within_group_variance)
+
+tails <- tibble(
+  x = c(a, x),
+  y = c(0, y)
+)
+
+ggplot() +
+  geom_polygon(
+    data = distribution,
+    aes(x, y),
+    fill = qcolors("gold"),
+    color = qcolors("bronze"),
+    linewidth = 1
+  ) +
+  geom_polygon(
+    data = tails,
+    aes(x,y),
+    fill = alpha(qcolors("kobe"), 0.65),
+    color = qcolors("kobe"),
+    linewidth = 1
+  ) +
+  annotate(
+    "segment",
+    x = f.value,
+    y = 0, 
+    xend = f.value,
+    yend = 0.4,
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  annotate(
+    "text",
+    x = f.value,
+    y = 0.4 + 0.01,
+    label = paste0("F = ", round(f.value, 2)),
+    size = 13/.pt,
+    hjust= 0.1, 
+    vjust = 0
+  ) +
+  labs(
+    x = "F-statistic",
+    y = "Density",
+    title = paste0(
+      "F-distribution (df = ", between_group_variance, ", ", within_group_variance, ")"
+    )
+  )
+
+```
+
+:::
+::: {.column width="40%"}
+
+<br>
+
+Summary:  
+
+- $\alpha = 0.05$
+- $H_{0}:$ no difference
+- $p=$ `r round(f.p, 3)`
+
+__Translation:__ the null hypothesis is really, really unlikely, so there must be some difference between groups!
+
+:::
+::::::
+
+:::::::::

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.313">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="dcterms.date" content="2023-01-17">
+<meta name="dcterms.date" content="2023-01-24">
 <meta name="description" content="summary statistics and statistical graphics">
 <title>Quantitative Analysis of Archaeological Data - Lab 02: Statistical Graphics</title>
 <style>
@@ -218,7 +218,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 17, 2023</p>
+      <p class="date">January 24, 2023</p>
     </div>
   </div>
   
@@ -288,7 +288,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Of course, these aren’t just automatically on your computer, so you have to install the packages first. Then you can open them in R. To do that, you use the function <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code>. For the packages used today, you can use this call just once like so:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"archdata"</span>, <span class="st">"ggplot2"</span>, <span class="st">"palmerpenguins"</span>, <span class="st">"skimr"</span>, <span class="st">"viridis"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"archdata"</span>, <span class="st">"ggplot2"</span>, <span class="st">"palmerpenguins"</span>, <span class="st">"skimr"</span>, <span class="st">"viridis"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Note that you only need to run this once, so don’t put this as a line in your Quarto document, which you might render multiple times. Just run it in the console.</p>
 <section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
 <ol type="1">
@@ -671,7 +673,7 @@ Tip
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Here, we have created what is known as a <strong>scatterplot</strong>, a representation of the raw data as points on a Cartesian grid. There are several things to note about the code used to generate this plot.</p>
@@ -709,7 +711,7 @@ Tip
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Notice that ggplot2 automatically assigns a unique color to each species and adds a legend to the right that explains each color. In this way, the color doesn’t just change the look of the figure. It conveys information about the data. Rather than mapping a variable in the data to a specific aesthetic, though, we can also define an aesthetic manually for the geometry as a whole. In this case, the aesthetics do not convey information about the data. They merely change the look of the figure. The key to doing this is to move the specification outside the <code>aes()</code>, but still inside the <code>geom_point()</code> function.</p>
@@ -723,14 +725,14 @@ Tip
 <span>    fill <span class="op">=</span> <span class="st">"darkgoldenrod1"</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Notice that we specified the shape with a number. R has 25 built-in shapes that you can specify with a number, as shown in the figure below. Some important differences in these shapes concern the border and fill colors. The hollow shapes (0-14) have a border that you specify with <code>color</code>, the solid shapes (15-20) have a border and fill, both specified with <code>color</code>, and the filled shapes (21-24) have separate border and fill colors, specified with <code>color</code> and <code>fill</code> respectively.</p>
 <div class="cell" data-layout-align="center" data-fig.asp="0.4">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure"><p><img src="02-probability-lab_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="480"></p>
+<figure class="figure"><p><img src="02-probability-lab_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="480"></p>
 </figure>
 </div>
 </div>
@@ -791,10 +793,10 @@ Tip
 <div class="cell quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="480"></p>
 </div>
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </div>
@@ -817,7 +819,7 @@ Tip
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, linetype <span class="op">=</span> <span class="va">species</span><span class="op">)</span>,</span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>One really important thing to note here is that you can add multiple geometries to the same plot to represent the same data. Simply add them together with <code>+</code>.</p>
@@ -830,7 +832,7 @@ Tip
 <span>    mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span>, color <span class="op">=</span> <span class="va">species</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>That’s a hideous figure, though it should get the point across. While layering in this way is a really powerful tool for visualizing data, it does have one important drawback. Namely, it violates the DRY principle (Don’t Repeat Yourself), as it specifies the x and y variables twice. This makes it harder to make changes, forcing you to edit the same aesthetic parameters in multiple locations. To avoid this, <code>ggplot2</code> allows you to specify a common set of aesthetic mappings in the <code>ggplot()</code> function itself. These will then apply globally to all the geometries in the figure.</p>
@@ -849,7 +851,7 @@ Tip
 <span>  <span class="fu">geom_smooth</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="va">species</span> <span class="op">==</span> <span class="st">"Adelie"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu">aes</span><span class="op">(</span>color <span class="op">=</span> <span class="va">species</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Some of the more important geometries you are likely to use include:</p>
@@ -872,7 +874,7 @@ Tip
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="fu">vars</span><span class="op">(</span><span class="va">species</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Placing <code>species</code> in the <code>vars()</code> function tells <code>facet_wrap()</code> to “split the plot <em>by species</em>.” If you want to split the plot by two categorical variables, like <code>species</code> and <code>sex</code>, use the <code>facet_grid()</code> function.</p>
@@ -883,7 +885,7 @@ Tip
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">species</span><span class="op">)</span>, cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <p>Evidently, there are some penguins for whom the sex is unknown. To remove these penguins from the dataset, you can use the <code><a href="https://rdrr.io/r/stats/na.fail.html">na.omit()</a></code> function.</p>
@@ -894,7 +896,7 @@ Tip
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">species</span><span class="op">)</span>, cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">sex</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <section id="exercises-4" class="level3"><h3 class="anchored" data-anchor-id="exercises-4">Exercises</h3>
@@ -932,7 +934,7 @@ Tip
 <span>    title <span class="op">=</span> <span class="st">"Palmer Penguins"</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </section><section id="color-palettes" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="color-palettes">Color Palettes</h3>
@@ -953,10 +955,10 @@ Tip
 <div class="cell quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="480"></p>
 </div>
 <div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-24-2.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 </div>
@@ -1002,7 +1004,7 @@ Tip
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="02-probability-lab_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
 <section id="exercises-6" class="level3"><h3 class="anchored" data-anchor-id="exercises-6">Exercises</h3>
@@ -1028,7 +1030,7 @@ Tip
 </section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
 <ol type="1">
 <li>
-<strong>Load data.</strong> For this homework exercise, we’ll work with the <code>DartPoints</code> dataset from the <code>archdata</code> package. When you ran <code><a href="https://rdrr.io/r/base/library.html">library(archdata)</a></code>, this dataset should have been attached to your current R session, so don’t worry about loading it into R. It’s already there!</li>
+<strong>Load data.</strong> For this homework exercise, we’ll work with the <code>DartPoints</code> dataset from the <code>archdata</code> package. To load that dataset, use <code>data(DartPoints)</code>.</li>
 <li>
 <strong>Summary statistics.</strong> Let’s summarize these data now.
 <ul>
