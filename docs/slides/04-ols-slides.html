@@ -6,10 +6,12 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.2.329">
 
-  <title>Quantitative Analysis of Archaeological Data - Lecture 02: Probability as a Model</title>
+  <title>Quantitative Analysis of Archaeological Data - Lecture 04: Ordinary Least Squares</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -325,567 +327,360 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Lecture 02: Probability as a Model</h1>
+  <h1 class="title">Lecture 04: Ordinary Least Squares</h1>
 
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">1/24/23</p>
+  <p class="date">1/30/23</p>
 </section>
 <section id="lecture-outline" class="slide level2">
 <h2>📋 Lecture Outline</h2>
 <ul>
-<li>Why statistics?</li>
 <li>🧪 A simple experiment</li>
-<li>Some terminology</li>
-<li>🎰 Random variables</li>
-<li>🎲 Probability</li>
-<li>📊 Probability Distribution</li>
-<li>Probability Distribution as a Model</li>
-<li>Probability Distribution as a Function</li>
-<li>Probability Mass Functions</li>
-<li>Probability Density Functions</li>
-<li>🚗 Cars Model</li>
-<li>Brief Review</li>
-<li>A Simple Formula</li>
-<li>A Note About Complexity</li>
+<li>Competing Models</li>
+<li>A simple formula</li>
+<li>Bivariate statistics (covariance and correlation)</li>
+<li>A general formula</li>
+<li>Simple Linear Regression</li>
+<li>Ordinary Least Squares (OLS)</li>
+<li>Multiple Linear Regression</li>
+<li>🚗 Cars Model, again</li>
+<li>Regression assumptions</li>
 </ul>
-</section>
-<section>
-<section id="setup" class="title-slide slide level1 center" data-visibility="uncounted">
-<h1>Setup</h1>
-
-</section>
-<section id="why-statistics" class="slide level2">
-<h2>Why statistics?</h2>
-<div class="columns">
-<div class="column" style="width:60%;">
-<div class="r-stack">
-<div class="r-stack">
-<p><img data-src="images/samples_and_populations-0.png"></p>
-<p><img data-src="images/samples_and_populations-1.png"></p>
-<p><img data-src="images/samples_and_populations-2.png"></p>
-<p><img data-src="images/samples_and_populations-3.png"></p>
-</div>
-<p><img data-src="images/samples_and_populations-highlight_description.png" class="fragment" data-fragment-index="0"></p>
-</div>
-</div><div class="column" style="width:40%;">
-<p><br></p>
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<p>We want to understand something about a <strong>population</strong>.</p>
-<p>We can never observe the entire population, so we draw a <strong>sample</strong>.</p>
-<p>We then use a model to <strong>describe</strong> the sample.</p>
-<p>By comparing that model to a null model, we can <strong>infer</strong> something about the population.</p>
-</div>
-<div class="fragment" data-fragment-index="0" style="margin:0;">
-<p>Here, we’re going to focus on statistical <strong>description</strong>, aka models.</p>
-</div>
-</div>
-</div>
-</div>
 </section>
 <section id="a-simple-experiment" class="slide level2">
 <h2>🧪 A simple experiment</h2>
 <div class="columns">
-<div class="column" style="width:58%;">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:42%;">
-<div style="padding-top:2.5rem">
-<p>We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.</p>
-<div class="r-stack">
-<div class="fragment fade-in-then-out" data-fragment-index="0" style="margin-top:0;margin-left:0">
-<p><strong>Question:</strong> how far do you think it will take the next car to stop?</p>
-</div>
-<div class="fragment" data-fragment-index="1" style="margin-top:0;margin-left:0">
-<p><strong>Question:</strong> what distance is the most <strong>probable</strong>?</p>
-<p>But, how do we determine this?</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="some-terminology" class="slide level2">
-<h2>Some terminology</h2>
-<div class="r-stack">
-<p><img data-src="images/random_variable-coins.png"></p>
-<p><img data-src="images/random_variable-outcome.png" class="fragment"></p>
-<p><img data-src="images/random_variable-space.png" class="fragment"></p>
-<p><img data-src="images/random_variable-variable.png" class="fragment"></p>
-</div>
-</section>
-<section id="random-variables" class="slide level2">
-<h2>🎰 Random Variables</h2>
-<p>Two types of random variable:</p>
-<!---
-https://github.com/allisonhorst/stats-illustrations/blob/master/other-stats-artwork/continuous_discrete.png?raw=true
---->
-<ol type="1">
-<li><strong>Discrete</strong> random variables often take only <em>integer</em> (non-decimal) values.
-<ul>
-<li>Examples: number of heads in 10 tosses of a fair coin, number of victims of the Thanos snap, number of projectile points in a stratigraphic level, number of archaeological sites in a watershed.</li>
-</ul></li>
-<li><strong>Continuous</strong> random variables take <em>real</em> (decimal) values.
-<ul>
-<li>Examples: cost in property damage of a superhero fight, kilocalories per kilogram, kilocalories per hour, ratio of isotopes<br>
-</li>
-<li>Note: for continuous random variables, the sample space is infinite!</li>
-</ul></li>
-</ol>
-</section></section>
-<section>
-<section id="probability-distributions" class="title-slide slide level1 center" data-visibility="uncounted">
-<h1>Probability Distributions</h1>
-
-</section>
-<section id="probability" class="slide level2">
-<h2>🎲 Probability</h2>
-<p>Let <span class="math inline">\(X\)</span> be the number of heads in two tosses of a fair coin. What is the probability that <span class="math inline">\(X=1\)</span>?</p>
-<div class="columns">
 <div class="column">
-<div class="r-stack">
-<p><img data-src="images/probability-distribution-01.png" class="fragment fade-out" data-fragment-index="0"></p>
-<p><img data-src="images/probability-distribution-02.png" class="fragment fade-in" data-fragment-index="0"></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
+</div>
 </div>
 </div><div class="column">
-<div class="fragment fade-in" data-fragment-index="1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-</div>
-</div>
-</div>
+<p><br> We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.</p>
+<p><strong>Question:</strong> how far do you think it will take the next car to stop?</p>
 </div>
 </div>
 </section>
-<section id="probability-distribution-as-a-model" class="slide level2">
-<h2>Probability Distribution as a Model</h2>
+<section id="competing-models" class="slide level2">
+<h2>Competing Models</h2>
+<div class="columns" style="text-align:right;">
+<div class="column">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960"></p>
+</div>
+</div>
+<p>E[Y]: mean distance</p>
+</div><div class="column">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+</div>
+</div>
+<p>E[Y]: some function of speed</p>
+</div>
+</div>
+</section>
+<section id="model-complexity" class="slide level2">
+<h2>Model Complexity</h2>
+<div class="columns">
+<div class="column">
+<div class="cell" data-fig.asp="0.7">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-5-1.png" style="width:100.0%"></p>
+</div>
+</div>
+</div><div class="column">
+<p><br></p>
+<p>⚖️ <strong>The error is smaller</strong> for the more complex model. This is a good thing, <strong>but what did it cost us</strong>? Need to weigh this against the increased complexity!</p>
+</div>
+</div>
+</section>
+<section id="bivariate-statistics" class="slide level2">
+<h2>Bivariate statistics</h2>
 <div class="cell">
 <style type="text/css">
 
-/* setting this here until I figure out how to get utility classes until reveal */
-.gray-panel {
-  background-image: linear-gradient(to bottom right, white, #f1f1f1);
-  border: 1px solid #666666;
-  border-radius: 5px;
-  margin: 1rem 0;
-  padding: 0.2em 0.5em;
+.no-p-margins p {
+  margin: 0;
 }
 
 </style>
 </div>
-<p>Has two components:</p>
-<div class="gray-panel">
-<p><strong>Central-tendency</strong> or “first moment”</p>
-<ul>
-<li>Population mean (<span class="math inline">\(\mu\)</span>). Gives the expected value of an experiment, <span class="math inline">\(E[X] = \mu\)</span>.<br>
-</li>
-<li>Sample mean (<span class="math inline">\(\bar{x}\)</span>). Estimate of <span class="math inline">\(\mu\)</span> based on a sample from <span class="math inline">\(X\)</span> of size <span class="math inline">\(n\)</span>.<br>
-</li>
-</ul>
+<div class="no-p-margins" style="width:65%;margin-top:1em;">
+<p>Explore the relationship between two variables:</p>
+<div class="cell" data-fig.asp="0.33">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-7-1.png" style="width:100.0%"></p>
 </div>
-<div class="gray-panel">
-<p><strong>Dispersion</strong> or “second moment”</p>
-<ul>
-<li>Population variance (<span class="math inline">\(\sigma^2\)</span>). The expected value of the squared difference from the mean.<br>
-</li>
-<li>Sample variance (<span class="math inline">\(s^2\)</span>). Estimate of <span class="math inline">\(\sigma^2\)</span> based on a sample from <span class="math inline">\(X\)</span> of size <span class="math inline">\(n\)</span>.<br>
-</li>
-<li>Standard deviation (<span class="math inline">\(\sigma\)</span>) or <span class="math inline">\(s\)</span> is the square root of the variance.<br>
-</li>
-</ul>
+</div>
 </div>
 </section>
-<section id="probability-distribution-as-a-function" class="slide level2">
-<h2>Probability Distribution as a Function</h2>
-<p>These can be defined using precise mathematical functions:</p>
-<div class="gray-panel">
-<p>A <strong>probability mass function</strong> (PMF) for <strong>discrete</strong> random variables.</p>
+<section id="covariance" class="slide level2">
+<h2>Covariance</h2>
+<div class="columns">
+<div class="column" style="width:47%;">
+<p>The extent to which two variables vary together.</p>
+<p><span class="math display">\[cov(x, y) = \frac{1}{n-1} \sum_{i=1}^{n}  (x_i - \bar{x})(y_i - \bar{y})\]</span></p>
 <ul>
-<li>Examples: Bernoulli, Binomial, Negative Binomial, Poisson<br>
+<li>Sign reflects positive or negative trend, but magnitude depends on units (e.g., <span class="math inline">\(cm\)</span> vs <span class="math inline">\(km\)</span>).<br>
 </li>
-<li>Straightforward probability interpretation.<br>
-</li>
+<li>Variance is the covariance of a variable with itself.</li>
 </ul>
+</div><div class="column" style="width:53%;">
+<div class="cell" data-fig.asp="0.85">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
 </div>
-<div class="gray-panel">
-<p>A <strong>probability density function</strong> (PDF) for <strong>continuous</strong> random variables.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation" class="slide level2">
+<h2>Correlation</h2>
+<div class="columns">
+<div class="column" style="width:47%;">
+<p>Pearson’s Correlation Coefficient</p>
+<p><span class="math display">\[r = \frac{cov(x,y)}{s_{x}s_y}\]</span></p>
 <ul>
-<li>Examples: Normal, Chi-squared, Student’s t, and F<br>
-</li>
-<li>Harder to interpret probability:
-<ul>
-<li>What is the probability that a car takes 10.317 m to stop? What about 10.31742 m?<br>
-</li>
-<li>Better to consider probability across an interval.<br>
-</li>
-</ul></li>
-<li>Requires that the function integrate to one (probability is the area under the curve).<br>
-</li>
+<li><p>Scales covariance (from -1 to 1) using standard deviations, <span class="math inline">\(s\)</span>, thus making magnitude independent of units.</p></li>
+<li><p>Significance can be tested by converting to a <em>t</em>-statistic and comparing to a <em>t</em>-distribution with <span class="math inline">\(df=n-2\)</span>.</p></li>
 </ul>
+</div><div class="column" style="width:53%;">
+<div class="cell" data-fig.asp="0.85">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
 </div>
-</section></section>
-<section>
-<section id="probability-mass-functions-pmf" class="title-slide slide level1 center" data-visibility="uncounted">
-<h1>Probability Mass Functions (PMF)</h1>
+</div>
+</div>
+</div>
+</section>
+<section id="non-linear-correlation" class="slide level2">
+<h2>Non-linear correlation</h2>
+<div class="columns">
+<div class="column" style="width:47%;">
+<p>Spearman’s Rank Correlation Coefficient</p>
+<p><span class="math display">\[\rho = \frac{cov\left(R(x),\; R(y) \right)}{s_{R(x)}s_{R(y)}}\]</span></p>
+<ul>
+<li>Pearson’s correlation but with ranks (R).<br>
+</li>
+<li>This makes it a <em>robust</em> estimate, less sensitive to outliers.</li>
+</ul>
+</div><div class="column" style="width:53%;">
+<div class="cell" data-fig.asp="0.85">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation-between-categories" class="slide level2">
+<h2>Correlation between categories</h2>
+<div class="columns">
+<div class="column" style="width:47%;">
+<p>For counts or frequencies</p>
+<p><span class="math display">\[\chi^2 = \sum \frac{(O_{ij}-E_{ij})^2}{E_{ij}}\]</span></p>
+<ul>
+<li>Analysis of contingency table</li>
+<li><span class="math inline">\(O_{ij}\)</span> is observed count in row <span class="math inline">\(i\)</span>, column <span class="math inline">\(j\)</span></li>
+<li><span class="math inline">\(E_{ij}\)</span> is expected count in row <span class="math inline">\(i\)</span>, column <span class="math inline">\(j\)</span></li>
+<li>Significance can be tested by comparing to a <span class="math inline">\(\chi^2\)</span>-distribution with <span class="math inline">\(df=k-1\)</span> (<span class="math inline">\(k\)</span> being the number of categories).</li>
+</ul>
+</div><div class="column" style="width:53%;">
+<div class="cell" data-fig.asp="0.9">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation-is-not-causation" class="slide level2">
+<h2>Correlation is not causation!</h2>
+<div style="text-align:center">
+<div class="cell" data-fig.asp="0.4">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-12-1.png" style="width:75.0%"></p>
+</div>
+</div>
+<p>Adapted from <a href="https://www.tylervigen.com/spurious-correlations" class="uri">https://www.tylervigen.com/spurious-correlations</a></p>
+</div>
+</section>
+<section id="a-general-formula" class="slide level2">
+<h2>A general formula</h2>
+<div class="cell">
+<style type="text/css">
 
-</section>
-<section id="bernoulli" class="slide level2">
-<h2>Bernoulli</h2>
-<div class="columns">
-<div class="column">
-<div style="padding-top:2.5rem">
-<p>Df. distribution of a binary random variable (“Bernoulli trial”) with two possible values, 1 (success) and 0 (failure), with <span class="math inline">\(p\)</span> being the probability of success. E.g., a single coin flip.</p>
-<p><span class="math display">\[f(x,p) = p^{x}(1-p)^{1-x}\]</span></p>
-<p>Mean: <span class="math inline">\(p\)</span><br>
-Variance: <span class="math inline">\(p(1-p)\)</span></p>
-</div>
-</div><div class="column">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="binomial" class="slide level2">
-<h2>Binomial</h2>
-<div class="columns">
-<div class="column">
-<div style="padding-top:2.5rem">
-<p>Df. distribution of a random variable whose value is equal to the number of successes in <span class="math inline">\(n\)</span> independent Bernoulli trials. E.g., number of heads in ten coin flips.</p>
-<p><span class="math display">\[f(x,p,n) = \binom{n}{x}p^{x}(1-p)^{1-x}\]</span></p>
-<p>Mean: <span class="math inline">\(np\)</span><br>
-Variance: <span class="math inline">\(np(1-p)\)</span></p>
-</div>
-</div><div class="column">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="poisson" class="slide level2">
-<h2>Poisson</h2>
-<div class="columns">
-<div class="column">
-<div style="padding-top:2.5rem">
-<p>Df. distribution of a random variable whose value is equal to the number of events occurring in a fixed interval of time or space. E.g., number of orcs passing through the Black Gates in an hour.</p>
-<p><span class="math display">\[f(x,\lambda) = \frac{\lambda^{x}e^{-\lambda}}{x!}\]</span></p>
-<p>Mean: <span class="math inline">\(\lambda\)</span><br>
-Variance: <span class="math inline">\(\lambda\)</span></p>
-</div>
-</div><div class="column">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section></section>
-<section>
-<section id="probability-density-functions-pdf" class="title-slide slide level1 center" data-visibility="uncounted">
-<h1>Probability Density Functions (PDF)</h1>
+.gray-panel {
+  background-image: linear-gradient(to bottom right, #E1E1E1, #D5D5D5);
+}
 
-</section>
-<section id="normal-gaussian" class="slide level2">
-<h2>Normal (Gaussian)</h2>
-<div class="columns">
-<div class="column">
-<div style="padding-top:2.5rem">
-<p>Df. distribution of a continuous random variable that is symmetric from positive to negative infinity. E.g., the height of actors who auditioned for the role of Aragorn.</p>
-<p><span class="math display">\[f(x,\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\;exp\left[-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2\right]\]</span></p>
-<p>Mean: <span class="math inline">\(\mu\)</span><br>
-Variance: <span class="math inline">\(\sigma^2\)</span></p>
-</div>
-</div><div class="column">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section></section>
-<section>
-<section id="bringing-it-all-together" class="title-slide slide level1 center" data-visibility="uncounted">
-<h1>Bringing it all together</h1>
+.blue-panel {
+  background-image: linear-gradient(to bottom right, #42758D, #0C556D);
+  color: white;
+}
 
-</section>
-<section id="cars-model" class="slide level2">
-<h2>🚗 Cars Model</h2>
-<div class="columns">
-<div class="column">
-<div style="margin-top:2.5rem;">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0" style="margin:0;">
-<p>Let’s use the Normal distribution to describe the cars data.</p>
-<ul>
-<li><span class="math inline">\(Y\)</span> is stopping distance for population</li>
-<li><span class="math inline">\(Y\)</span> is normally distributed, <span class="math inline">\(Y \sim N(\mu, \sigma)\)</span></li>
-<li>Experiment is a random sample of size <span class="math inline">\(n\)</span> from <span class="math inline">\(Y\)</span> with <span class="math inline">\(y_1, y_2, ..., y_n\)</span> observations.</li>
-<li>Sample <em>statistics</em> (<span class="math inline">\(\bar{y}, s\)</span>) approximate population <em>parameters</em> (<span class="math inline">\(\mu, \sigma\)</span>).</li>
-</ul>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="0" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-</ul>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="2" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-</ul>
-<p>This is our approximate expectation</p>
-<ul>
-<li><span class="math inline">\(E[Y] = \mu \approx \bar{y}\)</span></li>
-</ul>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="3" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-</ul>
-<p>But, there’s error, <span class="math inline">\(\epsilon\)</span>, in this estimate.</p>
-<ul>
-<li><span class="math inline">\(\epsilon_i = y_i - \bar{y}\)</span></li>
-</ul>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="4" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-</ul>
-<p>The average squared error is the variance:</p>
-<ul>
-<li><span class="math inline">\(s^2 = \frac{1}{n-1}\sum \epsilon_{i}^{2}\)</span></li>
-</ul>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="5" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-<li>S.D. (<span class="math inline">\(s\)</span>) = 5.353 m</li>
-</ul>
-<p>This is our uncertainty, how big we think any given error will be.</p>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="6" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-<li>S.D. (<span class="math inline">\(s\)</span>) = 5.353 m</li>
-</ul>
-<p>So, here is our probability model.</p>
-<p><span class="math display">\[Y \sim N(\bar{y}, s)\]</span> This is only an estimate of <span class="math inline">\(N(\mu, \sigma)\)</span>!</p>
-</div>
-<div class="fragment" data-fragment-index="7" style="margin:0;">
-<p>Sample statistics:</p>
-<ul>
-<li>Mean (<span class="math inline">\(\bar{y}\)</span>) = 10.54 m</li>
-<li>S.D. (<span class="math inline">\(s\)</span>) = 5.353 m</li>
-</ul>
-<p>With it, we can say, for example, that the probability that a random draw from this distribution falls within one standard deviation (dashed lines) of the mean (solid line) is 68.3%.</p>
-</div>
-</div>
-</div>
-</div><div class="column">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="2">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-16-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="3">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="4">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="5">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-19-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="6">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-20-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment" data-fragment-index="7">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-21-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="a-simple-formula" class="slide level2">
-<h2>A Simple Formula</h2>
-<div class="columns">
-<div class="column">
-<div style="margin-top:2.5rem;">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0" style="margin:0;">
-<p>This gives us a simple formula</p>
-<p><span class="math display">\[y_i = \bar{y} + \epsilon_i\]</span> where</p>
-<ul>
-<li><span class="math inline">\(y_i\)</span>: stopping distance for car <span class="math inline">\(i\)</span>, <strong>data</strong></li>
-<li><span class="math inline">\(\bar{y} \approx E[Y]\)</span>: expectation, <strong>predictable</strong></li>
-<li><span class="math inline">\(\epsilon_i\)</span>: error, <strong>unpredictable</strong></li>
-</ul>
-</div>
-<div class="fragment fade-in-then-out" data-fragment-index="0" style="margin:0;">
-<p>This gives us a simple formula</p>
-<p><span class="math display">\[y_i = \bar{y} + \epsilon_i\]</span></p>
-<p>If we subtract the mean, we have a model of the errors centered on zero:</p>
-<p><span class="math display">\[\epsilon_i = 0 + (y_i - \bar{y})\]</span></p>
-</div>
-<div class="fragment" data-fragment-index="1" style="margin:0;">
-<p>This gives us a simple formula</p>
-<p><span class="math display">\[y_i = \bar{y} + \epsilon_i\]</span></p>
-<p>If we subtract the mean, we have a model of the errors centered on zero:</p>
-<p><span class="math display">\[\epsilon_i = 0 + (y_i - \bar{y})\]</span></p>
-<p>This means we can construct a probability model of the errors centered on zero.</p>
-</div>
-</div>
-</div>
-</div><div class="column">
-<div class="r-stack">
-<div class="fragment fade-out" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-22-1.png" width="672"></p>
-</div>
-</div>
-</div>
-<div class="fragment" data-fragment-index="0">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="02-probability-slides_files/figure-html/unnamed-chunk-23-1.png" width="672"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="probability-model-of-errors" class="slide level2">
-<h2>Probability Model of Errors</h2>
+.yellow-panel {
+  background-image: linear-gradient(to bottom right, #DFC638, #D1B817);
+}
 
-<img data-src="02-probability-slides_files/figure-html/unnamed-chunk-24-1.png" width="1056" class="r-stretch"><div style="text-align: center;">
-<p>Note that the mean changes, but the variance stays the same.</p>
+.panel {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 0.2em;
+  padding: 0.3em;
+}
+
+.panel p {
+  margin: 0 auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.align-center {
+  align-items: center;
+}
+
+</style>
 </div>
-</section>
-<section id="summary" class="slide level2">
-<h2>Summary</h2>
-<p>Now our simple formula is this:</p>
-<p><span class="math display">\[y_i = \bar{y} + \epsilon_i\]</span> <span class="math display">\[\epsilon \sim N(0, s) \]</span></p>
+<div class="flex align-center">
+<div class="gray-panel panel flex align-center" style="width:23%;height:175px;">
+<p><span class="math display">\[
+Y = E[Y] + \epsilon \\[6pt]
+E[Y] = \beta X
+\]</span></p>
+</div>
+<p><span style="margin:0 0.5em;"><i class="fa-solid fa-circle-arrow-right fa-2xl" title="" aria-label="" style="color:"></i></span></p>
+<div class="yellow-panel panel flex align-center" style="width:23%;height:175px;">
+<p><span class="math display">\[y_i = \hat\beta X + \epsilon_i\]</span></p>
+</div>
+<p><span style="margin:0 0.5em;"><i class="fa-solid fa-circle-arrow-right fa-2xl" title="" aria-label="" style="color:"></i></span></p>
+<div class="blue-panel panel flex align-center" style="width:50%;height:175px;">
+<p><span class="math display">\[y_i = \hat\beta_0 + \hat\beta_1 x_i + \ldots +  \hat\beta_n x_i + \epsilon_i\]</span></p>
+</div>
+</div>
+<p><br></p>
 <ul>
-<li>Again, <span class="math inline">\(\bar{y} \approx E[Y] = \mu\)</span>.</li>
-<li>For any future outcome:
-<ul>
-<li>The expected value is deterministic</li>
-<li>The error is stochastic<br>
+<li><span class="math inline">\(y_i\)</span> is the <strong>dependent variable</strong>, a sample from the population <span class="math inline">\(Y\)</span><br>
 </li>
-</ul></li>
-<li>Must assume that the errors are <strong>iid</strong>!
-<ul>
-<li><strong>i</strong>ndependent = they do not affect each other</li>
-<li><strong>i</strong>dentically <strong>d</strong>istributed = they are from the same probability distribution</li>
-</ul></li>
-<li>The distribution is now a model of the errors!</li>
+<li><span class="math inline">\(X\)</span> is a set of <strong>independent variables</strong> <span class="math inline">\(x_i, \ldots, x_n\)</span>, sometimes called the design matrix</li>
+<li><span class="math inline">\(\hat\beta\)</span> is a set of <strong>coefficients of relationship</strong> that estimate the true relationship <span class="math inline">\(\beta\)</span></li>
+<li><span class="math inline">\(\epsilon_i\)</span> is the <strong>residuals</strong> or errors</li>
 </ul>
+</section>
+<section id="simple-linear-regression" class="slide level2">
+<h2>Simple Linear Regression</h2>
+<div class="columns">
+<div class="column">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
+</div>
+</div>
+</div><div class="column">
+<p><br></p>
+<p>‘Simple’ means one explanatory variable (speed)</p>
+<p><span class="math display">\[y_i = \hat\beta_0 + \hat\beta_1 speed_i + \epsilon_i\]</span></p>
+<ul>
+<li><span class="math inline">\(\hat\beta_0\)</span> = -2.0107</li>
+<li><span class="math inline">\(\hat\beta_1\)</span> = 1.9362</li>
+</ul>
+<p><strong>Question:</strong> How did we get these values?</p>
+</div>
+</div>
+</section>
+<section id="ordinary-least-squares" class="slide level2">
+<h2>Ordinary Least Squares</h2>
+<div class="columns">
+<div class="column">
+<div class="r-stack">
+<div class="fragment fade-out" data-fragment-index="0">
+<p>A method for estimating the coefficients, <span class="math inline">\(\beta\)</span>, in a linear regression model by minimizing the <strong>Residual Sum of Squares</strong>, <span class="math inline">\(SS_{R}\)</span>.</p>
+<p><span class="math display">\[SS_{R} = \sum_{i=1}^{n} (y_{i}-\hat{y}_i)^2\]</span></p>
+<p>where <span class="math inline">\(\hat{y} \approx E[Y]\)</span>. To minimize this, we take its derivative with respect to <span class="math inline">\(\beta\)</span> and set it equal to zero.</p>
+<p><span class="math display">\[\frac{d\, SS_{R}}{d\, \beta} = 0\]</span></p>
+</div>
+<div class="fragment fade-in" data-fragment-index="0">
+<p>Simple estimators for coefficients:</p>
+<hr>
+<p><strong>Slope</strong> <span style="color:#777;">Ratio of covariance to variance</span> <span class="math display">\[\beta_{1} = \frac{cov(x, y)}{var(x)}\]</span></p>
+<hr>
+<p><strong>Intercept</strong> <span style="color:#777;">Conditional difference in means</span> <span class="math display">\[\beta_{0} = \bar{y} - \beta_1 \bar{x}\]</span></p>
+<p>If <span class="math inline">\(\beta_{1} = 0\)</span>, then <span class="math inline">\(\beta_{0} = \bar{y}\)</span>.</p>
+</div>
+</div>
+</div><div class="column">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-15-1.png" style="width:100.0%"></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="cars-model-again" class="slide level2">
+<h2>🚗 Cars Model, again</h2>
+<div class="columns">
+<div class="column">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="04-ols-slides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
+</div>
+</div>
+</div><div class="column">
+<div class="cell">
+
+</div>
+<p><br></p>
+<p><strong>Slope</strong></p>
+<p><span class="math display">\[\hat\beta_{1} = \frac{cov(x,y)}{var(x)} = \frac{10.426}{5.3847} = 1.9362\]</span></p>
+<hr>
+<p><strong>Intercept</strong></p>
+<p><span class="math display">\[
+\begin{align}
+\hat\beta_{0} &amp;= \bar{y} - \hat\beta_{1}\bar{x} \\[6pt]
+              &amp;= 10.54 - 1.9362 * 6.4821 \\[6pt]
+              &amp;= -2.0107
+\end{align}
+\]</span></p>
+</div>
+</div>
+</section>
+<section id="multiple-linear-regression" class="slide level2">
+<h2>Multiple Linear Regression</h2>
+<p>OLS can be extended to models containing multiple explanatory variables using matrix algebra. Then the coefficient estimator is:</p>
+<p><span class="math display">\[\hat\beta = (X^{T}X)^{-1}X^{T}y\]</span></p>
+<p><br></p>
+<p>Where, <em>if you squint a little</em></p>
+<ul>
+<li><span class="math inline">\(X^{T}X\)</span> ⇨ variance.</li>
+<li><span class="math inline">\(X^{T}y\)</span> ⇨ covariance.</li>
+</ul>
+</section>
+<section id="regression-assumptions" class="slide level2">
+<h2>Regression assumptions</h2>
+<ol type="1">
+<li><strong>Weak Exogeneity</strong>: the predictor variables have fixed values and are known.<br>
+</li>
+<li><strong>Linearity</strong>: the relationship between the predictor variables and the response variable is linear.<br>
+</li>
+<li><strong>Constant Variance</strong>: the variance of the errors does not depend on the values of the predictor variables. Also known as <em>homoskedasticity</em>.<br>
+</li>
+<li><strong>Independence of errors</strong>: the errors are uncorrelated with each other.<br>
+</li>
+<li><strong>No perfect collinearity</strong>: the predictors are not linearly correlated with each other.</li>
+</ol>
 
 <div class="footer footer-default">
 
 </div>
-</section></section>
+</section>
     </div>
   </div>
 
@@ -1099,6 +894,44 @@ Variance: <span class="math inline">\(\sigma^2\)</span></p>
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

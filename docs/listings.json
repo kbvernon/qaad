@@ -4,7 +4,8 @@
     "items": [
       "/classes/01-intro.html",
       "/classes/02-probability.html",
-      "/classes/03-inference.html"
+      "/classes/03-inference.html",
+      "/classes/04-ols.html"
     ]
   }
 ]

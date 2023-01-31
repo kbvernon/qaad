@@ -1,0 +1,15 @@
+---
+title: "Week 04: Ordinary Least Squares"
+description: "Bivariate statistics. Correlation and covariance. Ordinary Least Squares."
+date: 2023-01-31
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/04-ols-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 03 Lab](../labs/04-ols-lab.qmd)
+

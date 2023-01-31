@@ -4,7 +4,7 @@
     "href": "classes.html",
     "title": "Classes",
     "section": "",
-    "text": "Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\nTitle\n\n\nDescription\n\n\n\n\n\n\nJan 10, 2023\n\n\nWeek 01: Introduction\n\n\nWhy statistics? Why R? Why Quarto? Making a webpage and a plot in just seconds!\n\n\n\n\nJan 17, 2023\n\n\nWeek 02: Probability as a Model\n\n\nA simple experiment. Random variables. Probability distributions. Probability as a model.\n\n\n\n\nJan 24, 2023\n\n\nWeek 03: Statistical Inference\n\n\nTesting hypotheses, visualizing distributions, reading and writing tabular data, and learning how to work with it in R.\n\n\n\n\n\n\nNo matching items"
+    "text": "Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\n\nDate\n\n\nTitle\n\n\nDescription\n\n\n\n\n\n\nJan 10, 2023\n\n\nWeek 01: Introduction\n\n\nWhy statistics? Why R? Why Quarto? Making a webpage and a plot in just seconds!\n\n\n\n\nJan 17, 2023\n\n\nWeek 02: Probability as a Model\n\n\nA simple experiment. Random variables. Probability distributions. Probability as a model.\n\n\n\n\nJan 24, 2023\n\n\nWeek 03: Statistical Inference\n\n\nTesting hypotheses, visualizing distributions, reading and writing tabular data, and learning how to work with it in R.\n\n\n\n\nJan 31, 2023\n\n\nWeek 04: Ordinary Least Squares\n\n\nBivariate statistics. Correlation and covariance. Ordinary Least Squares.\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "classes/01-intro.html#lab-exercises",
@@ -28,53 +28,11 @@
     "text": "🔬 Lab Exercises\nWeek 03 Lab"
   },
   {
-    "objectID": "help.html",
-    "href": "help.html",
-    "title": "Looking for help",
-    "section": "",
-    "text": "Wisdom of the Ancients (xkcd 979)."
-  },
-  {
-    "objectID": "help.html#the-google-search-paradox",
-    "href": "help.html#the-google-search-paradox",
-    "title": "Looking for help",
-    "section": "The Google Search Paradox",
-    "text": "The Google Search Paradox\nAs you make your first tentative forays into the R programming environment, you will on occasion experience the jarring dislocation of an R error, a typically bright red eruption of your R console, perhaps symbolic of your code exploding before your eyes. Here is one of the more infamous errors you are likely to encounter:\n\nobject of type 'closure' is not subsettable\nNever mind what this particular error means.1 The point is that it can be terribly frustrating when you encounter it or one of its kin.1 Though check out Jenny Bryan’s talk at the 2020 RStudio Conference: https://rstudio.com/resources/rstudioconf-2020/object-of-type-closure-is-not-subsettable/\nTroubleshooting these errors can often be an additional source of anxiety and frustration, especially early on, as you simply lack the words required to describe your problem accurately and, thus, to formulate the question whose answer you so desperately need. I like to refer to this unhappy circumstance as the Google Search Paradox because you will inevitably find yourself staring at an empty search bar, wondering what words to give to Google. It’s also a bit like Meno’s Paradox, or the Paradox of Inquiry. For if you could properly state your question, it’s probably the case that you already know the answer. So, you either know and thus don’t need to ask, or need to ask, but don’t know how.\nOf course, the situation is not nearly so dire as this. In truth, you always know at least a little about your problem - you do have the error itself after all! - and can thus Google your way through to an answer - eventually, anyway. But life is fleeting, as they say, and time is short, so you should probably avoid the brute force approach, relying instead on searching efficiently. To help you with that (and to help you get better with that), this page provides a brief annotated list of where to look for answers, starting from within R itself!"
-  },
-  {
-    "objectID": "help.html#r-helpers",
-    "href": "help.html#r-helpers",
-    "title": "Looking for help",
-    "section": "R helpers",
-    "text": "R helpers\nTypically, though not always, R code will have lots of supporting documentation. These come in two varieties: function help pages and vignettes. If you are having trouble a single function to work properly, you may find its help page more useful. If you are having trouble getting through some analysis and you cannot pinpoint the exact reason for your trouble, the vignettes are probably where you should look. There are a couple of ways to access this documentation.\n\nFrom within R, you can use the help() and ?... functions to access short-form documentation. Examples include help(\"plot\") and ?plot. This will call up the function’s documentation page and display it in your computer’s graphical device.\nhelp.search(...) and ??... both provide means of searching through help pages to find multiple functions with the same name (and potentially the same or similar uses). Simply replace the ellipses (three dots) with a character string and these functions will return all help pages with that string. So if you want to carry out a cluster analysis, typing ??cluster will search for any functions in your installed packages that use the word cluster.\nThe rdrr.io website provides access to all function help pages online. If you Google an R function, a link to its documentation on this website is typically the first that you will see. For the best search results, I recommend Googling “R <package name> <function name>.”\nFrom within R, you can also access the vignettes using some combination of vignette(), browseVignettes(), and RShowDoc().\n\nThe function vignette() with no argument specified will bring up a list of all available vignettes, organized by package. If you want the vignettes for a particular R package, you can also type vignette(package = ...), for example, vignette(package = \"grid\") will bring up the vignettes for the grid package.\n\nbrowseVignettes() will open a locally hosted HTML page in your browser with links to all available R vignettes. This is actually quite helpful, and you should give it a try when you get a chance. Just browsing through these vignettes will give you a great feel for all that you can do in R.\n\nRShowDoc() is mostly for opening a single vignette. This is usefully paired with vignette(), which will give you the name of the vignette and package, so that you can, for example, call RShowDoc(what = \"plotExample\", package = \"grid\"). This will bring up the “plotExample” vignette from the grid package.\n\nPackage authors have lots of resources for sharing their documentation now, including websites designed specifically to present both function help pages and vignettes. Here is an example of the website for the colorspace package.\nFinally, you can access all available documentation for official R packages by navigating the Comprehensive R Archive Network (CRAN) website, here: https://cran.r-project.org/."
-  },
-  {
-    "objectID": "help.html#rstudio-helpers",
-    "href": "help.html#rstudio-helpers",
-    "title": "Looking for help",
-    "section": "RStudio helpers",
-    "text": "RStudio helpers\nWhile RStudio provides loads of support to R users, here we mention some of the more important ones.\n\nRStudio How To Articles provide loads of how-to guides for working with R and RStudio. This is a very comprehensive suite of useful documentation.\nRStudio Cheatsheets strive to communicate package information in a single, concise poster format with lots of visual queues and simple definitions. These can be really helpful when you need a quick refresher on the use of some bit of code.\nRStudio Community is an online forum where individuals ask and answer questions about R and RStudio. They have a very strict code of conduct for their members that emphasizes mutual respect and inclusivity, so you will generally find the discussions here much more friendly and supportive. Use of this forum is highly recommended.\nRStudio Education is a very, very recent development by RStudio (it came online in 2020), and it is simply amazing as a resource for not only learning R itself, but also learning how to teach R. Please note that, with the exception of number 4, these RStudio help tools can be accessed within the RStudio IDE under the Help tab."
-  },
-  {
-    "objectID": "help.html#r-community-helpers",
-    "href": "help.html#r-community-helpers",
-    "title": "Looking for help",
-    "section": "R Community helpers",
-    "text": "R Community helpers\nThe R community refers to R users who are actively communicating with and supporting other R users. As there are lots and lots of engaged R users these days, and more and more every day, the community is definitely thriving. There is also an expanding ethos within this community driven largely by RStudio and its code of conduct, so you will generally find R users to be a friendly bunch (if a little hoity-toity). So, let’s talk about where you can engage with this community. We have already mentioned one, RStudio Community, but here we will list some more.\n\nStack Overflow is a forum for programmers in all programming languages to ask and answer questions, much like RStudio Community. It’s just been around longer (2008 to be exact), which means its code of conduct has evolved over time to address a number of unanticipated issues. The consequence is that answers to questions will run the gamut from being respectful and clear to downright insulting. Still, it is a rich resource for addressing your R coding issues. And it has gotten a lot better.\nROpenSci is an R programming community focused on promoting open and reproducible research in science. They have a forum much like RStudio Community, a blog with helpful news and overviews of the packages in their ecosystem, and a rich suite of webpages for their supported R packages, which you can explore here.\nR-bloggers is a clearinghouse for R related content, basically an aggregator of content from individual blogs. It is worth perusing every now and then to pick up the occasional gem of R understanding.\nThe #rstats Twitter community is something. Use this if you use Twitter, I guess…\nThe rstats subreddit is a helpful community of Redditors that are pretty good about answering questions you might have."
-  },
-  {
-    "objectID": "help.html#other-resources",
-    "href": "help.html#other-resources",
-    "title": "Looking for help",
-    "section": "Other resources",
-    "text": "Other resources\n\nThe UCLA Institute for Digital Research & Education offers Statistical Consulting geared toward R. This is a tremendous resource for both R and statistics and is highly recommended."
-  },
-  {
-    "objectID": "help.html#reproducible-examples",
-    "href": "help.html#reproducible-examples",
-    "title": "Looking for help",
-    "section": "Reproducible examples",
-    "text": "Reproducible examples\nOthers have likely asked the same question you want to ask, so you will not always need to make a post yourself. But, in the off chance that you do find yourself confronted with a question never asked before, you need to make sure you provide R users with all the information and resources they need to help troubleshoot your code and to do so with the least effort possible. This involves providing a “reproducible example” or reprex. There are two essential ingredients to a reprex:\n\nIt needs to be reproducible, obviously. That means you need to make sure you provide everything needed to reproduce your error as is, for instance, all library() calls in your code.\nIt needs to be minimal. In other words, do not include anything extraneous or burdensome, like a 400 MB data object. A much smaller R object should suffice.\n\nA lot has been written about how to put together a reprex, so rather than belabor the point here, it is perhaps best to direct you to Jenny Bryan’s reprex package, which will walk you through the process of submitting a help request on the various forums mentioned above."
+    "objectID": "classes/04-ols.html#lab-exercises",
+    "href": "classes/04-ols.html#lab-exercises",
+    "title": "Week 04: Ordinary Least Squares",
+    "section": "🔬 Lab Exercises",
+    "text": "🔬 Lab Exercises\nWeek 03 Lab"
   },
   {
     "objectID": "index.html",
@@ -553,10 +511,115 @@
     "text": "ANOVA\n\n\n\n\nProblemHypothesesStrategySum of SquaresF-statisticF-distribution\n\n\n\n\n\n\n\nWe have five samples of points, each consisting of 100 measurements of length (mm).\nQuestion: Are these samples of the same point type? The same population?\nAnalysis of Variance (ANOVA) is like a t-test but for more than two samples.\n\n\n\n\nThe null hypothesis:\n\\(H_0:\\) no difference between groups\nThe alternate hypothesis:\n\\(H_1:\\) at least one group is different\n\n\n\n\nVariance Decomposition. When group membership is known, the contribution of any value \\(x_{ij}\\) to the variance can be split into two parts:\n\\[(x_{ij} - \\bar{x}) = (\\bar{x}_{j} - \\bar{x}) + (x_{ij} - \\bar{x}_{j})\\]\nwhere\n\n\\(i\\) is the \\(i\\)th observation,\n\n\\(j\\) is the \\(j\\)th group,\n\n\\(\\bar{x}\\) is the between-group mean, and\n\n\\(\\bar{x_{j}}\\) is the within-group mean (of group \\(j\\)).\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum and square the differences for all \\(n\\) observation and \\(m\\) groups gives us:\n\\[SS_{T} = SS_{B} + SS_{W}\\]\nwhere\n\n\\(SS_{T}\\): Total Sum of Squares\n\\(SS_{B}\\): Between-group Sum of Squares\n\\(SS_{W}\\): Within-group Sum of Squares\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRatio of variances:\n\\[F = \\frac{\\text{between-group variance}}{\\text{within-group variance}}\\]\nwhere\n\nBetween-group variance = \\(SS_{B}/df_{B}\\) and \\(df_{B}=m-1\\).\nWithin-group variance = \\(SS_{W}/df_{W}\\) and \\(df_{W}=m(n-1)\\).\n\nQuestion: Here, \\(F=\\) 5.63. How probable is this estimate?\nWe can answer this question by comparing the F-statistic to the F-distribution.\n\n\n\n\n\n\n\n\n\n\n\nSummary:\n\n\\(\\alpha = 0.05\\)\n\\(H_{0}:\\) no difference\n\\(p=\\) 0.003\n\nTranslation: the null hypothesis is really, really unlikely, so there must be some difference between groups!"
   },
   {
-    "objectID": "slides/02-probability-slides.html",
-    "href": "slides/02-probability-slides.html",
-    "title": "Lecture 02: Probability as a Model",
-    "section": "",
-    "text": "Why statistics?\n🧪 A simple experiment\nSome terminology\n🎰 Random variables\n🎲 Probability\n📊 Probability Distribution\nProbability Distribution as a Model\nProbability Distribution as a Function\nProbability Mass Functions\nProbability Density Functions\n🚗 Cars Model\nBrief Review\nA Simple Formula\nA Note About Complexity"
+    "objectID": "slides/04-ols-slides.html#lecture-outline",
+    "href": "slides/04-ols-slides.html#lecture-outline",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "📋 Lecture Outline",
+    "text": "📋 Lecture Outline\n\n🧪 A simple experiment\nCompeting Models\nA simple formula\nBivariate statistics (covariance and correlation)\nA general formula\nSimple Linear Regression\nOrdinary Least Squares (OLS)\nMultiple Linear Regression\n🚗 Cars Model, again\nRegression assumptions"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#a-simple-experiment",
+    "href": "slides/04-ols-slides.html#a-simple-experiment",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "🧪 A simple experiment",
+    "text": "🧪 A simple experiment\n\n\n\n\n\n\n\n\n We take ten cars, send each down a track, have them brake at the same point, and measure the distance it takes them to stop.\nQuestion: how far do you think it will take the next car to stop?"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#competing-models",
+    "href": "slides/04-ols-slides.html#competing-models",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Competing Models",
+    "text": "Competing Models\n\n\n\n\n\n\n\nE[Y]: mean distance\n\n\n\n\n\n\nE[Y]: some function of speed"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#model-complexity",
+    "href": "slides/04-ols-slides.html#model-complexity",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Model Complexity",
+    "text": "Model Complexity\n\n\n\n\n\n\n\n\n\n⚖️ The error is smaller for the more complex model. This is a good thing, but what did it cost us? Need to weigh this against the increased complexity!"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#bivariate-statistics",
+    "href": "slides/04-ols-slides.html#bivariate-statistics",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Bivariate statistics",
+    "text": "Bivariate statistics\n\n\n\n\nExplore the relationship between two variables:"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#covariance",
+    "href": "slides/04-ols-slides.html#covariance",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Covariance",
+    "text": "Covariance\n\n\nThe extent to which two variables vary together.\n\\[cov(x, y) = \\frac{1}{n-1} \\sum_{i=1}^{n}  (x_i - \\bar{x})(y_i - \\bar{y})\\]\n\nSign reflects positive or negative trend, but magnitude depends on units (e.g., \\(cm\\) vs \\(km\\)).\n\nVariance is the covariance of a variable with itself."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#correlation",
+    "href": "slides/04-ols-slides.html#correlation",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Correlation",
+    "text": "Correlation\n\n\nPearson’s Correlation Coefficient\n\\[r = \\frac{cov(x,y)}{s_{x}s_y}\\]\n\nScales covariance (from -1 to 1) using standard deviations, \\(s\\), thus making magnitude independent of units.\nSignificance can be tested by converting to a t-statistic and comparing to a t-distribution with \\(df=n-2\\)."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#non-linear-correlation",
+    "href": "slides/04-ols-slides.html#non-linear-correlation",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Non-linear correlation",
+    "text": "Non-linear correlation\n\n\nSpearman’s Rank Correlation Coefficient\n\\[\\rho = \\frac{cov\\left(R(x),\\; R(y) \\right)}{s_{R(x)}s_{R(y)}}\\]\n\nPearson’s correlation but with ranks (R).\n\nThis makes it a robust estimate, less sensitive to outliers."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#correlation-between-categories",
+    "href": "slides/04-ols-slides.html#correlation-between-categories",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Correlation between categories",
+    "text": "Correlation between categories\n\n\nFor counts or frequencies\n\\[\\chi^2 = \\sum \\frac{(O_{ij}-E_{ij})^2}{E_{ij}}\\]\n\nAnalysis of contingency table\n\\(O_{ij}\\) is observed count in row \\(i\\), column \\(j\\)\n\\(E_{ij}\\) is expected count in row \\(i\\), column \\(j\\)\nSignificance can be tested by comparing to a \\(\\chi^2\\)-distribution with \\(df=k-1\\) (\\(k\\) being the number of categories)."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#correlation-is-not-causation",
+    "href": "slides/04-ols-slides.html#correlation-is-not-causation",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Correlation is not causation!",
+    "text": "Correlation is not causation!\n\n\n\n\n\n\nAdapted from https://www.tylervigen.com/spurious-correlations"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#a-general-formula",
+    "href": "slides/04-ols-slides.html#a-general-formula",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "A general formula",
+    "text": "A general formula\n\n\n\n\n\n\\[\nY = E[Y] + \\epsilon \\\\[6pt]\nE[Y] = \\beta X\n\\]\n\n\n\n\\[y_i = \\hat\\beta X + \\epsilon_i\\]\n\n\n\n\\[y_i = \\hat\\beta_0 + \\hat\\beta_1 x_i + \\ldots +  \\hat\\beta_n x_i + \\epsilon_i\\]\n\n\n\n\n\\(y_i\\) is the dependent variable, a sample from the population \\(Y\\)\n\n\\(X\\) is a set of independent variables \\(x_i, \\ldots, x_n\\), sometimes called the design matrix\n\\(\\hat\\beta\\) is a set of coefficients of relationship that estimate the true relationship \\(\\beta\\)\n\\(\\epsilon_i\\) is the residuals or errors"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#simple-linear-regression",
+    "href": "slides/04-ols-slides.html#simple-linear-regression",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Simple Linear Regression",
+    "text": "Simple Linear Regression\n\n\n\n\n\n\n\n\n\n‘Simple’ means one explanatory variable (speed)\n\\[y_i = \\hat\\beta_0 + \\hat\\beta_1 speed_i + \\epsilon_i\\]\n\n\\(\\hat\\beta_0\\) = -2.0107\n\\(\\hat\\beta_1\\) = 1.9362\n\nQuestion: How did we get these values?"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#ordinary-least-squares",
+    "href": "slides/04-ols-slides.html#ordinary-least-squares",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Ordinary Least Squares",
+    "text": "Ordinary Least Squares\n\n\n\n\nA method for estimating the coefficients, \\(\\beta\\), in a linear regression model by minimizing the Residual Sum of Squares, \\(SS_{R}\\).\n\\[SS_{R} = \\sum_{i=1}^{n} (y_{i}-\\hat{y}_i)^2\\]\nwhere \\(\\hat{y} \\approx E[Y]\\). To minimize this, we take its derivative with respect to \\(\\beta\\) and set it equal to zero.\n\\[\\frac{d\\, SS_{R}}{d\\, \\beta} = 0\\]\n\n\nSimple estimators for coefficients:\n\nSlope Ratio of covariance to variance \\[\\beta_{1} = \\frac{cov(x, y)}{var(x)}\\]\n\nIntercept Conditional difference in means \\[\\beta_{0} = \\bar{y} - \\beta_1 \\bar{x}\\]\nIf \\(\\beta_{1} = 0\\), then \\(\\beta_{0} = \\bar{y}\\)."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#cars-model-again",
+    "href": "slides/04-ols-slides.html#cars-model-again",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "🚗 Cars Model, again",
+    "text": "🚗 Cars Model, again\n\n\n\n\n\n\n\n\n\n\n\n\nSlope\n\\[\\hat\\beta_{1} = \\frac{cov(x,y)}{var(x)} = \\frac{10.426}{5.3847} = 1.9362\\]\n\nIntercept\n\\[\n\\begin{align}\n\\hat\\beta_{0} &= \\bar{y} - \\hat\\beta_{1}\\bar{x} \\\\[6pt]\n              &= 10.54 - 1.9362 * 6.4821 \\\\[6pt]\n              &= -2.0107\n\\end{align}\n\\]"
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#multiple-linear-regression",
+    "href": "slides/04-ols-slides.html#multiple-linear-regression",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Multiple Linear Regression",
+    "text": "Multiple Linear Regression\nOLS can be extended to models containing multiple explanatory variables using matrix algebra. Then the coefficient estimator is:\n\\[\\hat\\beta = (X^{T}X)^{-1}X^{T}y\\]\n\nWhere, if you squint a little\n\n\\(X^{T}X\\) ⇨ variance.\n\\(X^{T}y\\) ⇨ covariance."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html#regression-assumptions",
+    "href": "slides/04-ols-slides.html#regression-assumptions",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "Regression assumptions",
+    "text": "Regression assumptions\n\nWeak Exogeneity: the predictor variables have fixed values and are known.\n\nLinearity: the relationship between the predictor variables and the response variable is linear.\n\nConstant Variance: the variance of the errors does not depend on the values of the predictor variables. Also known as homoskedasticity.\n\nIndependence of errors: the errors are uncorrelated with each other.\n\nNo perfect collinearity: the predictors are not linearly correlated with each other."
   }
 ]
