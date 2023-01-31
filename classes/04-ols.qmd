@@ -1,6 +1,6 @@
 ---
 title: "Week 04: Ordinary Least Squares"
-description: "Bivariate statistics. Correlation and covariance. Ordinary Least Squares."
+description: "Calculating and testing bivariate statistics, including correlation and covariance. Visualizing probability densities. Fitting linear models using ordinary least squares. And some simple table indexing in R."
 date: 2023-01-31
 toc: false
 ---
@@ -11,5 +11,5 @@ toc: false
 
 ## 🔬 Lab Exercises
 
-[Week 03 Lab](../labs/04-ols-lab.qmd)
+[Week 04 Lab](../labs/04-ols-lab.qmd)
 

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-01-31">
+<meta name="description" content="Calculating and testing bivariate statistics, including correlation and covariance. Visualizing probability densities. Fitting linear models using ordinary least squares. And some simple table indexing in R.">
+<title>Quantitative Analysis of Archaeological Data - Lab 04: Ordinary Least Squares</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+</head>
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.qmd">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#indexing-tables-with-base-r" id="toc-indexing-tables-with-base-r" class="nav-link" data-scroll-target="#indexing-tables-with-base-r">Indexing tables with base R</a>
+  <ul class="collapse">
+<li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#density-plots" id="toc-density-plots" class="nav-link" data-scroll-target="#density-plots">Density Plots</a>
+  <ul class="collapse">
+<li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#bivariate-statistics" id="toc-bivariate-statistics" class="nav-link" data-scroll-target="#bivariate-statistics">Bivariate Statistics</a>
+  <ul class="collapse">
+<li><a href="#covariance" id="toc-covariance" class="nav-link" data-scroll-target="#covariance">Covariance</a></li>
+  <li><a href="#correlation" id="toc-correlation" class="nav-link" data-scroll-target="#correlation">Correlation</a></li>
+  <li><a href="#exercises-2" id="toc-exercises-2" class="nav-link" data-scroll-target="#exercises-2">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#linear-models" id="toc-linear-models" class="nav-link" data-scroll-target="#linear-models">Linear Models</a>
+  <ul class="collapse">
+<li><a href="#model-formula" id="toc-model-formula" class="nav-link" data-scroll-target="#model-formula">Model formula</a></li>
+  <li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting">Model fitting</a></li>
+  <li><a href="#model-summary" id="toc-model-summary" class="nav-link" data-scroll-target="#model-summary">Model summary</a></li>
+  <li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
+  </ul>
+</li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 04: Ordinary Least Squares</h1>
+</div>
+
+<div>
+  <div class="description">
+    Calculating and testing bivariate statistics, including correlation and covariance. Visualizing probability densities. Fitting linear models using ordinary least squares. And some simple table indexing in R.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 31, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol type="1">
+<li>indexing data.frames with base R</li>
+<li>visualizing distributions with density plots</li>
+<li>calculating covariance</li>
+<li>calculating correlation and evaluating with the t-test</li>
+<li>building a simple linear model
+<ul>
+<li>the formula notation</li>
+<li>the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function</li>
+<li>the model <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code>
+</li>
+</ul>
+</li>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></li>
+<li><a href="https://sjmgarnier.github.io/viridis/">viridis</a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/">viridis</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>cars</code>
+<ul>
+<li>Includes measurements of car speed and stopping distance.</li>
+<li>package: <code>datasets</code>
+</li>
+<li>reference: <a href="https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html</a>
+</li>
+</ul>
+</li>
+<li>
+<code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>OxfordPots</code>
+<ul>
+<li>Includes percentages of late Romano-British Oxford Pottery on 30 sites, along with their distance from Oxford.</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code>
+</li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a>
+</li>
+</ul>
+</li>
+<li>
+<code>titanic</code>
+<ul>
+<li>Provides information on the fate of passengers of the Titanic, including economic status, sex, age, and survival.</li>
+<li>package: none</li>
+<li>reference: <a href="https://wilkelab.org/SDS375/" class="uri">https://wilkelab.org/SDS375/</a>
+</li>
+<li>note: we’re going to download this one rather than get it from a package</li>
+</ul>
+</li>
+</ul></section></section><section id="indexing-tables-with-base-r" class="level2"><h2 class="anchored" data-anchor-id="indexing-tables-with-base-r">Indexing tables with base R</h2>
+<div id="fig-table" class="quarto-figure quarto-figure-center anchored" style="text-align:center;">
+<figure class="figure"><div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/r-tables.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Elements of a Data Frame.</figcaption><p></p>
+</figure>
+</div>
+<p>It will often be the case that you do not need all the data in a table, but only a subset of rows and columns. To get the rows and columns you want, though, you need to be able to, as it were, point to them or point R to them. Another word for this is <em>indexing</em>.</p>
+<p>Let’s start with the use of square brackets, <code>[,]</code>. The basic idea here is that you can take a table and index it by row and column by appending the square brackets to it. The basic syntax is this:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table</span><span class="op">[</span><span class="va">row</span>,<span class="va">column</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As an example, let’s say we are working with our simple projectile point table:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Elko"</span>, <span class="st">"Rosegate"</span>, <span class="st">"DSN"</span>, <span class="st">"Elko"</span>, <span class="st">"Clovis"</span><span class="op">)</span>,</span>
+<span>  length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.03</span>, <span class="fl">1.4</span>, <span class="fl">1.9</span>, <span class="fl">2.1</span>, <span class="fl">3.3</span><span class="op">)</span>,</span>
+<span>  width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.23</span>, <span class="fl">2.4</span>, <span class="fl">1.29</span>, <span class="fl">2.7</span>, <span class="fl">4.15</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">projectiles</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length width height
+1     Elko   2.03  0.80   3.23
+2 Rosegate   1.40  0.40   2.40
+3      DSN   1.90  0.30   1.29
+4     Elko   2.10  0.70   2.70
+5   Clovis   3.30  0.95   4.15</code></pre>
+</div>
+</div>
+<p>And maybe we want the value at the 3rd row and 2nd column, so we’re wanting the length of that particular desert side-notched (or DSN). Here is one way to do that with just the numeric position (or coordinates) of that value:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[</span><span class="fl">3</span>,<span class="fl">2</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.9</code></pre>
+</div>
+</div>
+<p>While we did specify both a row and a column in this example, that is not required.</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[</span><span class="fl">3</span>,<span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  type length width height
+3  DSN    1.9   0.3   1.29</code></pre>
+</div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.03 1.40 1.90 2.10 3.30</code></pre>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Danger
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Did you notice the different outputs? <code>projectiles[3,]</code> returns a data.frame, but <code>projectiles[,2]</code> returns a vector. This is a “gotcha” in R, a little bit of unexpected behavior. The most common situation in which indexing returns a vector from a data.frame is when a single variable is selected. Sometimes getting just the variable is intentional (see below), but other times it is not, so it’s worth being aware of.</p>
+</div>
+</div>
+</div>
+<p>We can also subset multiple rows and columns, though this requires that we use vectors of data, and not just single values. A useful tool in this regard is the colon, <code>:</code>, which allows you to create a sequence of integers, starting with the number on the left and proceeding by one to the number on the right.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3</code></pre>
+</div>
+</div>
+<p>Now, we can use this syntax to index the last four rows of our table and the first three columns.</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length width
+2 Rosegate    1.4  0.40
+3      DSN    1.9  0.30
+4     Elko    2.1  0.70
+5   Clovis    3.3  0.95</code></pre>
+</div>
+</div>
+<p>If we want to get rows or columns that are not next to each other in the table, we can use the <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> function, as in concatenate.</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 4</code></pre>
+</div>
+</div>
+<p>When applied to the projectiles table, we get the following.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length height
+2 Rosegate    1.4    2.4
+4     Elko    2.1    2.7</code></pre>
+</div>
+</div>
+<p>Importantly, you can also index columns by name.</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"type"</span>, <span class="st">"length"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length
+1     Elko   2.03
+2 Rosegate   1.40
+3      DSN   1.90</code></pre>
+</div>
+</div>
+<p>One advantage of using names rather than numbers is that it is much more readable as it is not immediately obvious with numbers what columns you are actually selecting. More importantly, though, using names is more robust. Were the length column for whatever reason to move to the right of the height column, its numeric position in the table would be 4, not 2. So, using <code>projectiles[,2]</code> will work to index the length variable only if length is at that position. Using <code>projectiles[,"length"]</code> to index it will work either way, though, regardless of the numeric position of that variable.</p>
+<p>So, that’s pretty much the basics of indexing rectangular data with base R. Before moving on, though, let’s talk about one additional thing you might want to do with a data.frame, and that’s extract an entire variable or column. There are two primary ways to achieve this. You can use double brackets, <code>&lt;table&gt;[[&lt;variable&gt;]]</code>, or you can use the dollar-sign operator, <code>&lt;table&gt;$&lt;variable&gt;</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">[[</span><span class="st">"type"</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Elko"     "Rosegate" "DSN"      "Elko"     "Clovis"  </code></pre>
+</div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">$</span><span class="va">length</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.03 1.40 1.90 2.10 3.30</code></pre>
+</div>
+</div>
+<p>Note that you can and often will want to assign these to their own objects, so you can use them again later.</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p_type</span> <span class="op">&lt;-</span> <span class="va">projectiles</span><span class="op">[[</span><span class="st">"type"</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">p_length</span> <span class="op">&lt;-</span> <span class="va">projectiles</span><span class="op">$</span><span class="va">length</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And, if you want, you can index specific values in the vector as you would rows in the table.</p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">$</span><span class="va">length</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.03 1.40 1.90 2.10 3.30</code></pre>
+</div>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles</span><span class="op">$</span><span class="va">length</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.03 1.40 2.10</code></pre>
+</div>
+</div>
+<section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+<ol type="1">
+<li>Get the names of the variables in the <code>penguins</code> table with <code><a href="https://rdrr.io/r/base/names.html">names()</a></code>.</li>
+<li>How many observations and variables are in this dataset? Hint: use <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> and <code><a href="https://rdrr.io/r/base/nrow.html">ncol()</a></code>.</li>
+<li>Try indexing multiple rows and columns of the penguins data using the square brackets with row numbers and column names, for example, <code>penguins[1:25, c("species", "island", "body_mass_g")]</code>. Try doing this a couple of different ways.</li>
+<li>Extract the <code>bill_length_mm</code> variable from this table and assign it to an object called <code>bill_length</code>. Do the same for <code>bill_depth_mm</code> and call it <code>bill_depth</code>. You can use either <code>&lt;table&gt;[[&lt;variable&gt;]]</code> or <code>&lt;table&gt;$&lt;variable&gt;</code>.</li>
+</ol></section></section><section id="density-plots" class="level2"><h2 class="anchored" data-anchor-id="density-plots">Density Plots</h2>
+<p>Here you will learn how to generate a “density” plot or a plot of the underlying probability density of a variable using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density()</a></code>. This is similar to a histogram in that it seeks to show the distribution of a continuous random variable. It differs, however, in the way it goes about doing that. To see how they differ, let’s first have a look at these two plots of the titanic data. The one on the left is a histogram, the one on the right a density plot.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>To be able to work through the examples in this section, you need to run the code below. We’ll explain what this code does in another lab.</p>
+<div class="cell">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">titanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/wilkelab/SDS375/master/datasets/titanic.csv"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="480"></p>
+</div>
+<div class="cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+</div>
+<p>The big difference here is that histograms discretize a sample using bins, counts the number of observations that fall into each bin, and then represents those counts using the heights of the rectangles. A density plot uses a method known as kernel density estimate (or KDE) to estimate the density of each observation and represents it using the height of a smooth and continuous curve. The KDE approach works like this. First, you set each data point as the mean of a distribution, typically the normal or Gaussian distribution (also called the <strong>kernel</strong>). Each distribution is assumed to have the same varianc eor standard deviation (called the <strong>bandwidth</strong>), which is set to some arbitrary value. The heights of the kernels are then summed to produce a curve like the one above.</p>
+<p>As with the histogram, we specify a density geometry for ggplot using <code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>Again, we can specify different aesthetics like <code>fill</code> and <code>color</code> and update the labels with <code><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span></span>
+<span>    fill <span class="op">=</span> <span class="st">"#A8BFF0"</span>, </span>
+<span>    color <span class="op">=</span> <span class="st">"#183C8C"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>We can also map these aesthetics to other variables like the sex of the passenger.</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>And, we can change the default fill colors using <code><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual()</a></code>, too.</p>
+<div class="cell">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual</a></span><span class="op">(</span></span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#A8BFF0"</span>, <span class="st">"#FFE66D"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>In this case, however, it’s hard to see where the two distributions overlap, which makes it hard to compare them. One way to fix this is to change the opacity of the fill color using the <code><a href="https://scales.r-lib.org/reference/alpha.html">alpha()</a></code> function (note that the alpha or transparency of a color can range from 0 to 1.).</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual</a></span><span class="op">(</span></span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/alpha.html">alpha</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#A8BFF0"</span>, <span class="st">"#FFE66D"</span><span class="op">)</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>This is still a little hard to read, so let’s try faceting instead of alpha. Let’s also drop the background vertical grid lines using the <code><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme()</a></code> function. At the same time, we’ll go ahead and drop the label “sex” from the legend as that should be obvious from the key. We do that by setting <code>name = NULL</code> in <code><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#A8BFF0"</span>, <span class="st">"#FFE66D"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">sex</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span></span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>Notice that the facet labels are redundant with the legend key here, so let’s remove those, too. We do that by setting the theme arguments <code>strip.background</code> and <code>strip.text</code> to <code><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank()</a></code>. Finally, we can move the legend to the bottom of the plot and make it horizontal with <code>legend.position</code> and <code>legend.direction</code> respectively.</p>
+<div class="cell">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#A8BFF0"</span>, <span class="st">"#FFE66D"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Age Distribution"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Passengers of the Titanic"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">sex</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span></span>
+<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>    legend.direction <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
+<span>    panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    strip.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+<ol type="1">
+<li>Make a kernel density plot of penguin bill length using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density()</a></code>. Then make all of the following changes:
+<ul>
+<li>Map penguin <code>species</code> to the <code>fill</code> aesthetic.</li>
+<li>Update the axis labels and plot title using <code><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs()</a></code>.</li>
+<li>Use <code>scale_fill_viridis</code> to use colorblind safe colors for the fill. Note! Species is a discrete or categorical variable, so make sure to set <code>discrete = TRUE</code>!</li>
+<li>Use <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap()</a></code> to facet by <code>species</code>.</li>
+<li>Choose a suitable theme, like <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal()</a></code>.</li>
+<li>Remove vertical grid lines.</li>
+<li>Change the legend position to bottom and make it horizontal.</li>
+<li>Remove strip text and background.</li>
+</ul>
+</li>
+</ol></section></section><section id="bivariate-statistics" class="level2"><h2 class="anchored" data-anchor-id="bivariate-statistics">Bivariate Statistics</h2>
+<p>Bivariate statistics provide simple measures of the relationship between two variables. Here we will learn how to calculate two such statistics in R: covariance and correlation. These allow us to describe the direction of the relationship (<em>is it positive or negative?</em>) and the strength of the relationship (<em>is it strong or weak?</em>). In this case, we’ll investigate the relationship between penguin body mass and bill length. We’ll be asking this <strong>question</strong>: Is there a relationship between bill length and body mass? Is it positive or negative?</p>
+<p>Before we do that, however, it is useful to visualize our data. Since we are concerned with a potential relationship, we will use a scatterplot, or a cloud of points arrayed along the dimensions of two variables, in this case body mass and bill length.</p>
+<div class="cell">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">body_mass_g</span>, y <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span></span>
+<span>    shape <span class="op">=</span> <span class="fl">21</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"#A8BFF0"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#15357A"</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Body Mass (g)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Bill Length (mm)"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Palmer Penguins"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-ols-lab_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>What does this tell you about the relationship between these variables?</p>
+<section id="covariance" class="level3"><h3 class="anchored" data-anchor-id="covariance">Covariance</h3>
+<p>Covariance provides a measure of the extent to which two variables vary together. The sign of the covariance reflects a positive or negative trend, but not magnitude. To calculate this value in R, use the <code><a href="https://rdrr.io/r/stats/cor.html">cov()</a></code> function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bill_length</span> <span class="op">&lt;-</span> <span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span></span>
+<span><span class="va">body_mass_g</span> <span class="op">&lt;-</span> <span class="va">penguins</span><span class="op">$</span><span class="va">body_mass_g</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span><span class="op">(</span><span class="va">bill_length</span>, <span class="va">body_mass_g</span>, use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span> <span class="co"># complete.obs means ignore NA values</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2606</code></pre>
+</div>
+</div>
+<p>This is a positive number, meaning the relationship between bill length and body mass is positive (the one tends to increase as the other increases). The size of the number by itself is unhelpful, however, and cannot be used to infer anything about the strength of the relationship. That is because covariance is sensitive to the unit of measure. If, for example, we convert <code>body_mass</code> from grams to kilograms, we will get a different covariance statistic.</p>
+<div class="cell">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># convert to kilograms by dividing by 1000</span></span>
+<span><span class="va">body_mass_kg</span> <span class="op">&lt;-</span> <span class="va">body_mass_g</span><span class="op">/</span><span class="fl">1000</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cov</a></span><span class="op">(</span><span class="va">bill_length</span>, <span class="va">body_mass_kg</span>, use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.61</code></pre>
+</div>
+</div>
+</section><section id="correlation" class="level3"><h3 class="anchored" data-anchor-id="correlation">Correlation</h3>
+<p>To remove units of measure and prevent resulting changes in the magnitude of the covariance, we can scale the covariance by the standard deviations of the samples. The resulting value is known as Pearson’s Correlation Coefficient, which ranges from -1 to 1.</p>
+<div class="cell">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">bill_length</span>, <span class="va">body_mass_g</span>, use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.595</code></pre>
+</div>
+</div>
+<p>Just to demonstrate that this isn’t sensitive to units of measure, let’s see what happens when use body mass measures in kilograms.</p>
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">bill_length</span>, <span class="va">body_mass_kg</span>, use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.595</code></pre>
+</div>
+</div>
+<p>There’s no change! In either case, the resulting coefficient is greater than zero, suggesting a positive trend, but is this value significantly different than zero? To answer that question, we can convert this coefficient to a t-statistic and compare it to a t-distribution. This is done with the <code><a href="https://rdrr.io/r/stats/cor.test.html">cor.test()</a></code> function. For this test, we have the following hypotheses:</p>
+<ul>
+<li>
+<span class="math inline">\(H_0\)</span>: the coefficient is equal to zero</li>
+<li>
+<span class="math inline">\(H_1\)</span>: the coefficient is <em>not</em> equal to zero</li>
+</ul>
+<p>And, of course, we must stipulate a critical value. In this case, we will stick with tradition:</p>
+<p><span class="math inline">\(\alpha = 0.05\)</span></p>
+<p>So, now, here is our test:</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html">cor.test</a></span><span class="op">(</span><span class="va">bill_length</span>, <span class="va">body_mass_g</span>, use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  bill_length and body_mass_g
+t = 14, df = 340, p-value &lt;0.0000000000000002
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.522 0.660
+sample estimates:
+  cor 
+0.595 </code></pre>
+</div>
+</div>
+<p>In this case, you see that <span class="math inline">\(p &lt; \alpha\)</span>, hence we reject the null hypothesis, meaning our coefficient estimate is significantly different than zero. There is, in other words, a significant positive relationship between body mass and bill length among the Palmer penguins.</p>
+</section><section id="exercises-2" class="level3"><h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
+<ol type="1">
+<li>Using the <code>penguins</code> dataset, do all of the following:
+<ul>
+<li>calculate the covariance between bill length and bill depth,</li>
+<li>calculate Pearson’s Correlation Coefficient for bill length and bill depth,</li>
+<li>do a correlation test to determine whether the coefficient is significantly different than zero, and</li>
+<li>be sure to state your null and alternative hypotheses, as well as the critical value!</li>
+</ul>
+</li>
+<li>What does the correlation test tell you about the relationship between bill length and bill depth?</li>
+</ol></section></section><section id="linear-models" class="level2"><h2 class="anchored" data-anchor-id="linear-models">Linear Models</h2>
+<p>In this section, we will learn how to fit a linear model to our data. We will look, specifically, at a scenario involving an experiment with cars recorded in the <code>cars</code> dataset. We want to know what kind of relationship there is between the distance (in feet) a car travels after the brakes are applied and the speed (in miles per hour) the car was going when the brakes were applied. We will be doing this by fitting a linear model with the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function. Here are our hypotheses:</p>
+<ul>
+<li>
+<span class="math inline">\(H_0\)</span>: there is no relationship between speed and distance.</li>
+<li>
+<span class="math inline">\(H_1\)</span>: there is a relationship between speed and distance.</li>
+</ul>
+<section id="model-formula" class="level3"><h3 class="anchored" data-anchor-id="model-formula">Model formula</h3>
+<p>First, however, let’s discuss the formula syntax that the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function uses. You were already introduced to this with the <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code>, but let’s go into a little more detail now. To fit a model, we must first specify a formula. This involves three components: a predictor variable, the tilde <code>~</code>, and a response variable. The syntax is this:</p>
+<p><code>&lt;response&gt; ~ &lt;predictor&gt;</code> or <code>&lt;dependent&gt; ~ &lt;independent&gt;</code></p>
+<p>In the case of the cars data, that’s:</p>
+<p><code>dist ~ speed</code></p>
+<p>This can be read as saying, in effect, “distance as a function of speed.” Note that you do not have to put the variables in quotes or anything like that. It’s just the names of the variables separated by a tilde.</p>
+</section><section id="model-fitting" class="level3"><h3 class="anchored" data-anchor-id="model-fitting">Model fitting</h3>
+<p>In addition to specifyfing the formula, we must also tell the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function what data set our observations are coming from. We do this by specifying the <code>data</code> argument. The whole function call looks like this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cars_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">dist</span> <span class="op">~</span> <span class="va">speed</span>, data <span class="op">=</span> <span class="va">cars</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cars_model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = dist ~ speed, data = cars)
+
+Coefficients:
+(Intercept)        speed  
+     -17.58         3.93  </code></pre>
+</div>
+</div>
+<p>Here, the model estimates a coefficient for both the intercept and the relationship between speed and distance.</p>
+</section><section id="model-summary" class="level3"><h3 class="anchored" data-anchor-id="model-summary">Model summary</h3>
+<p>A more informative report of the model is provided by the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function. In addition to reporting on the model coefficients, this will also conduct a t-test on each coefficient, evaluating whether they are significantly different than zero.</p>
+<div class="cell">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">cars_model</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = dist ~ speed, data = cars)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-29.07  -9.53  -2.27   9.21  43.20 
+
+Coefficients:
+            Estimate Std. Error t value        Pr(&gt;|t|)    
+(Intercept)  -17.579      6.758   -2.60           0.012 *  
+speed          3.932      0.416    9.46 0.0000000000015 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 15.4 on 48 degrees of freedom
+Multiple R-squared:  0.651, Adjusted R-squared:  0.644 
+F-statistic: 89.6 on 1 and 48 DF,  p-value: 0.00000000000149</code></pre>
+</div>
+</div>
+<p>We’ll go over this <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> in more detail later. For now, note that it reports the coefficient “Estimate”, the t-statistic (or “t value”) for each coefficient estimate, and the p-value for the respective t-tests. In each case, the null hypothesis is that the coefficient is zero. A small p-value then gives us reason to reject the null and accept the coefficient estimate as significant. In this case, the p-value is very small, so we can accept both the intercept and speed coefficients. This tells us (as you might expect) that there is a significant positive relationship between the speed the car was going when it applied the brakes and the distance it traveled after applying the brakes.</p>
+</section><section id="exercises-3" class="level3"><h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
+<ol type="1">
+<li>Using the <code>penguins</code> dataset, build a linear model of the relationship between bill length and bill depth.</li>
+<li>What are the coefficients reported by this model? Specifically, the intercept and the coefficient of relationship between bill length and bill depth.</li>
+<li>Apply the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> function to your model. Are the coefficients significant?</li>
+</ol></section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
+<ol type="1">
+<li>Load the following datasets from the <code>archdata</code> package using <code><a href="https://rdrr.io/r/utils/data.html">data()</a></code>.
+<ul>
+<li><code>DartPoints</code></li>
+<li><code>OxfordPots</code></li>
+</ul>
+</li>
+<li>Practice extracting variables from these tables.
+<ul>
+<li>From each, remove one variable and assign it to an object with an informative name.</li>
+<li>Calculate the mean and variance for each variable.</li>
+</ul>
+</li>
+<li>Using the <code>DartPoints</code> dataset, make a kernel density plot of dart <code>Length</code> to visualize its distribution. Make sure to do all of the following:
+<ul>
+<li>Map the dart <code>Name</code> (or type) to the <code>fill</code> aesthetic.</li>
+<li>Update the axis labels and plot title using <code><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs()</a></code>.</li>
+<li>Use <code>scale_fill_viridis</code> to use colorblind safe colors for the fill. Note! Species is a discrete or categorical variable, so make sure to set <code>discrete = TRUE</code>!</li>
+<li>Use <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap()</a></code> to facet by <code>Name</code> (or type).</li>
+<li>Choose a suitable theme, like <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal()</a></code>.</li>
+<li>Remove vertical grid lines.</li>
+<li>Change the legend position to bottom and make it horizontal.</li>
+<li>Remove strip text and background.</li>
+</ul>
+</li>
+<li>Using the <code>DartPoints</code> dataset, calculate the covariance and correlation between dart length and width.
+<ul>
+<li>Then conduct a correlation test to evaluate the significance of Pearson’s Correlation Coefficient.</li>
+<li>Be sure to state the null and alternative hypotheses, as well as the critical value.</li>
+<li>Is the coefficient significant?</li>
+<li>What does this mean about the relationship between dart length and width?</li>
+</ul>
+</li>
+<li>Using the <code>DartPoints</code> dataset, build a linear model showing the relationship (if any) between the length and width of dart points. Be sure to do all of the following:
+<ul>
+<li>To visualize the relationship, make a scatter plot of dart <code>Length</code> and <code>Width</code> using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point()</a></code>. Hint: your aesthetic mapping should be <code>aes(x = Width, y = Length)</code>.</li>
+<li>Use the correct formula syntax. In this case, the dependent variable is <code>Length</code> and the independent variable is <code>Width</code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to report the model.</li>
+<li>Are the coefficient estimates significant?</li>
+<li>What does this mean about the relationship between the length and width of dart points? Hint: it’s called allometry.</li>
+</ul>
+</li>
+<li>Using the <code>OxfordPots</code> dataset, build a linear model showing the relationship (if any) between the percentage of Oxford Pots found on an archaeological site and the distance of that site from the city of Oxford. Be sure to do all of the following:
+<ul>
+<li>To visualize the relationship, make a scatter plot of the proportion of Oxford pots and distance to Oxford using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point()</a></code>. Hint: your aesthetic mapping should be <code>aes(x = OxfordDst, y = OxfordPct)</code>.</li>
+<li>Use the correct formula syntax. In this case, the dependent variable is <code>OxfordPct</code> and the independent variable is <code>OxfordDst</code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to report the model.</li>
+<li>Are the coefficient estimates significant?</li>
+<li>What does this mean about the relationship between the proportion of Oxford pots on an archaeological site and distance from Oxford?</li>
+</ul>
+</li>
+</ol>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
