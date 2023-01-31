@@ -45,8 +45,8 @@ cars <- cars |>
 ## 📋 Lecture Outline
 
 - 🧪 A simple experiment
-- Competing Models
-- A simple formula
+- Competing models
+- Model complexity
 - Bivariate statistics (covariance and correlation)
 - A general formula
 - Simple Linear Regression
@@ -224,7 +224,6 @@ E[Y]: some function of speed
 ::: {.column}
 
 ```{r}
-#| fig-asp: 0.7
 #| out-width: "100%"
 
 dists <- tibble(
@@ -309,7 +308,7 @@ ggplot() +
 
 ```
 
-::: {.no-p-margins style="width:65%;margin-top:1em;"}
+::: {.no-p-margins style="width:80%;margin-top:1em;"}
 
 Explore the relationship between two variables:
 

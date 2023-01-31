@@ -515,7 +515,7 @@
     "href": "slides/04-ols-slides.html#lecture-outline",
     "title": "Lecture 04: Ordinary Least Squares",
     "section": "📋 Lecture Outline",
-    "text": "📋 Lecture Outline\n\n🧪 A simple experiment\nCompeting Models\nA simple formula\nBivariate statistics (covariance and correlation)\nA general formula\nSimple Linear Regression\nOrdinary Least Squares (OLS)\nMultiple Linear Regression\n🚗 Cars Model, again\nRegression assumptions"
+    "text": "📋 Lecture Outline\n\n🧪 A simple experiment\nCompeting models\nModel complexity\nBivariate statistics (covariance and correlation)\nA general formula\nSimple Linear Regression\nOrdinary Least Squares (OLS)\nMultiple Linear Regression\n🚗 Cars Model, again\nRegression assumptions"
   },
   {
     "objectID": "slides/04-ols-slides.html#a-simple-experiment",
@@ -621,5 +621,12 @@
     "title": "Lecture 04: Ordinary Least Squares",
     "section": "Regression assumptions",
     "text": "Regression assumptions\n\nWeak Exogeneity: the predictor variables have fixed values and are known.\n\nLinearity: the relationship between the predictor variables and the response variable is linear.\n\nConstant Variance: the variance of the errors does not depend on the values of the predictor variables. Also known as homoskedasticity.\n\nIndependence of errors: the errors are uncorrelated with each other.\n\nNo perfect collinearity: the predictors are not linearly correlated with each other."
+  },
+  {
+    "objectID": "slides/04-ols-slides.html",
+    "href": "slides/04-ols-slides.html",
+    "title": "Lecture 04: Ordinary Least Squares",
+    "section": "",
+    "text": "🧪 A simple experiment\nCompeting models\nModel complexity\nBivariate statistics (covariance and correlation)\nA general formula\nSimple Linear Regression\nOrdinary Least Squares (OLS)\nMultiple Linear Regression\n🚗 Cars Model, again\nRegression assumptions"
   }
 ]
