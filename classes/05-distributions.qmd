@@ -1,0 +1,14 @@
+---
+title: "Week 05: Visualizing Distributions"
+description: "A review and a deep dive into visualizing distributions in R, including bar chart, histogram, kernel density, cumulative density, and boxplot. Examples are given using base R {graphics} and {ggplot2}."
+date: 2023-02-07
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/05-distributions-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 05 Lab](../labs/05-distributions-lab.qmd)

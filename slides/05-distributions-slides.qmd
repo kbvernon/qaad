@@ -1,0 +1,651 @@
+---
+title: "Lecture 05: Visualizing Distributions"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+penguins <- palmerpenguins::penguins |> na.omit()
+
+titanic <- read_csv("https://raw.githubusercontent.com/wilkelab/SDS375/master/datasets/titanic.csv")
+
+```
+
+## 📋 Lecture Outline
+
+- Bar Chart
+- Histogram
+- Probability Density
+- Cumulative Density
+- Boxplot
+
+# Bar Chart
+
+## What's it for?
+
+Visualize the amount of some variable across categories, represented using length or height of bars. 
+
+```{r}
+#| fig-width:  6
+
+ggplot(penguins, aes(x = fct_infreq(species))) +
+  geom_bar(fill = alpha(qcolors("wintergreen"), 0.85)) +
+  labs(x = NULL, y = "Count", title = "Palmer Penguins") +
+  theme(panel.grid.major.y = element_line(color = "gray95"))
+
+```
+
+## A rule of thumb 👍
+
+Often easier to read when oriented horizontally.  
+
+```{r}
+#| fig-width:  6
+
+ggplot(penguins, aes(y = fct_infreq(species) |> fct_rev())) +
+  geom_bar(fill = alpha(qcolors("wintergreen"), 0.85)) +
+  labs(x = "Count", y = NULL, title = "Palmer Penguins") +
+  theme(panel.grid.major.x = element_line(color = "gray95"))
+
+```
+
+## Grouped data
+
+Grouped bar chart can represent higher dimensional data.
+
+```{r}
+#| fig-width:  6
+
+color_values <- c(darken(qcolors("wintergreen"), 0.85), qcolors("wintergreen"))
+
+ggplot(
+  penguins, 
+  aes(y = fct_infreq(species) |> fct_rev(), fill = sex)
+) +
+  geom_bar(position = "dodge", linewidth = 1) +
+  scale_color_manual(name = NULL, values = color_values) +
+  scale_fill_manual(name = NULL, values = alpha(color_values, 0.85)) +
+  labs(x = "Count", y = NULL, title = "Palmer Penguins") +
+  theme(
+    panel.grid.major.x = element_line(color = "gray95"),
+    legend.background = element_rect(fill = alpha("white", 0.7)),
+    legend.justification = c("right", "bottom"),
+    legend.position = c(0.99, 0.05)
+  ) +
+  guides(fill = guide_legend(reverse = TRUE))
+
+```
+
+_Although this graph is not terribly informative..._
+
+# Histogram
+
+## What's it for?
+
+Visualize the approximate distribution of a continuous random variable.
+
+```{r}
+#| fig-width:  6
+
+ggplot(titanic) +
+  geom_histogram(
+    aes(age),
+    binwidth = 5,
+    boundary = 0,
+    color = darken(qcolors("wintergreen"), 0.2),
+    fill = alpha(qcolors("wintergreen"), 0.85)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+## Bin Width
+
+Obtained by counting the number of observations that fall into each interval or "bin."
+
+```{r}
+#| fig-width:  6
+
+counts <- hist(titanic$age, breaks = seq(0, 75, by = 5), plot = FALSE)$counts
+
+ggplot(titanic) +
+  geom_histogram(
+    aes(age),
+    binwidth = 5,
+    boundary = 0,
+    color = "gray85",
+    fill = "gray95",
+    alpha = 0.5
+  ) +
+  geom_point(
+    aes(age, runif(nrow(titanic), 0, 15)),
+    color = alpha(qcolors("wintergreen"), 0.2),
+    size = 4
+  ) +
+  annotate(
+    "segment",
+    x = seq(0, 75, by = 5), 
+    y = 0,
+    xend = seq(0, 75, by = 5), 
+    yend = 15,
+    linewidth = 1.5,
+    color = "gray25"
+  ) +
+  annotate(
+    "segment",
+    x = 0, 
+    y = 0,
+    xend = 75, 
+    yend = 0,
+    linewidth = 1.5,
+    color = "gray25"
+  ) +
+  annotate(
+    "text",
+    label = counts,
+    x = seq(2.5, 72.5, by = 5),
+    y = 20,
+    vjust = 0,
+    size = 3
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+## ⚠️ Lookout!
+
+The shape of the distribution depends on the bin width.  
+
+```{r}
+#| fig-width: 9
+#| fig-asp: 0.4
+#| out-width: "100%"
+
+bw2 <- ggplot(titanic) +
+  geom_histogram(
+    aes(age),
+    binwidth = 2,
+    boundary = 0,
+    color = darken(qcolors("wintergreen"), 0.2),
+    fill = alpha(qcolors("wintergreen"), 0.85)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95"),
+    axis.title.x = element_blank()
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Binwidth = 2"
+  )
+
+bw5 <- ggplot(titanic) +
+  geom_histogram(
+    aes(age),
+    binwidth = 5,
+    boundary = 0,
+    color = darken(qcolors("wintergreen"), 0.2),
+    fill = alpha(qcolors("wintergreen"), 0.85)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95"),
+    axis.title.y = element_blank()
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Binwidth = 5"
+  )
+
+bw10 <- ggplot(titanic) +
+  geom_histogram(
+    aes(age),
+    binwidth = 10,
+    boundary = 0,
+    color = darken(qcolors("wintergreen"), 0.2),
+    fill = alpha(qcolors("wintergreen"), 0.85)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95"),
+    axis.title = element_blank()
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Binwidth = 10"
+  )
+
+bw2 + bw5 + bw10 + theme(plot.margin = margin(5,5,5,5))
+
+```
+
+## A rule of thumb 👍
+
+:::::: {.r-stack}
+::: {.fragment .fade-out fragment-index=0 style="margin: 0 auto auto 0;"}
+
+Generally, a bad idea to use stacked or dodged groupings in a single histogram.
+
+```{r}
+
+ggplot(titanic) +
+  geom_histogram(
+    aes(age, fill = sex),
+    binwidth = 5,
+    boundary = 0,
+    color = darken(qcolors("wintergreen"), 0.2)
+  ) +
+  scale_fill_manual(name = NULL, values = alpha(color_values, 0.85)) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+:::
+::: {.fragment .fade-in fragment-index=0 style="margin: 0 auto auto 0;"}
+
+Better to use facets.
+
+```{r}
+
+ggplot(titanic) +
+  geom_histogram(
+    aes(age, fill = sex),
+    binwidth = 5,
+    boundary = 0,
+    color = darken(qcolors("wintergreen"), 0.2)
+  ) +
+  scale_fill_manual(name = NULL, values = alpha(color_values, 0.85)) +
+  facet_wrap(vars(sex)) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95"),
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Count",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+:::
+::::::
+
+# Probability Density
+
+## What's it for?
+
+Visualize the approximate distribution of a continuous random variable.  
+
+```{r}
+#| fig-width:  6
+
+ggplot(titanic) +
+  geom_density(
+    aes(age),
+    color = darken(qcolors("wintergreen"), 0.2),
+    fill = alpha(qcolors("wintergreen"), 0.85)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Density",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+## Kernel Density Estimation (KDE)
+
+:::::: {.columns}
+::: {.column .mt-3 width="45%"}
+
+Procedure:
+
+1. Define a kernel, often a normal distribution with mean equal to the observation.
+2. Define bandwidth for scaling the kernel.
+2. Sum the kernels.
+
+:::
+::: {.column width="55%"}
+
+```{r}
+
+x <- c(4, 19, 24, 28, 31, 36, 58)
+
+bw <- density(titanic$age)$bw
+
+get_kernel <- function(x, bw, n, size = 50){
+  
+  kernel <- density(x, bw = bw, n = size)
+  
+  tibble(
+    barx = x,
+    x = kernel$x,
+    y = kernel$y/n
+  )
+  
+}
+
+# n should technically be the sample size, nrow(titanic), but that's harder to visualize
+xy <- lapply(x, get_kernel, bw = bw, n = 20)
+
+xy <- bind_rows(xy)
+
+ggplot() +
+  geom_density(
+    data = titanic,
+    aes(age),
+    color = "gray85",
+    fill = "gray95",
+    alpha = 0.5
+  ) +
+  geom_line(
+    data = xy,
+    aes(x, y, group = barx),
+    color = darken(qcolors("wintergreen"), 0.2),
+    linewidth = 1
+  ) +
+  geom_point(
+    aes(x = x, y = 0.0002),
+    shape = "|",
+    color = darken(qcolors("wintergreen"), 0.2),
+    size = 2
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Density",
+    title = "Passengers of the Titanic"
+  ) +
+  xlim(0, 75)
+
+```
+
+:::{style="width:85%;margin-left:auto;"}
+_The kernels in this figure are not to scale._
+:::
+
+:::
+::::::
+
+## Grouped data
+
+There's not a simple answer for how to plot multiple KDE's, but facets are your friend.
+
+```{r}
+
+ggplot(titanic) +
+  geom_density(
+    aes(age, fill = sex),
+    color = darken(qcolors("wintergreen"), 0.2)
+  ) +
+  scale_fill_manual(name = NULL, values = alpha(color_values, 0.85)) +
+  facet_wrap(vars(sex)) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95"),
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Density",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+# Cumulative Density
+
+## What's it for?
+
+Visualize the approximate distribution of a continuous random variable _without having to specify a bandwidth_.
+
+```{r}
+#| fig-width:  6
+
+ggplot(titanic) +
+  stat_ecdf(
+    aes(age),
+    color = darken(qcolors("wintergreen"), 0.2)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Probability",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+## Procedure
+
+:::::: {.columns}
+::: {.column width="45%"}
+
+Consider this sample: 
+
+`(0.3, 2.0, 3.4, 1.2, 2.2, 1.9)`. 
+
+To calculate its eCDF, we divide the number of observations that are less than or equal to each unique value by the total sample size. 
+
+```md
+0.0 -> 0/6 = 0.00
+0.3 -> 1/6 = 0.17
+1.2 -> 2/6 = 0.33 
+1.9 -> 3/6 = 0.50 
+2.0 -> 4/6 = 0.67 
+2.2 -> 5/6 = 0.83
+3.4 -> 6/6 = 1.00
+```
+
+:::
+::: {.column width="55%"}
+
+```{r}
+
+example <- tibble(
+  x = c(0, 0.3, 1.2, 1.9, 2.0, 2.2, 3.4),
+  y = c(0, 0.17, 0.33, 0.5, 0.67, 0.83, 1)
+)
+
+ggplot(example) +
+  geom_step(
+    aes(x, y),
+    color = darken(qcolors("wintergreen"), 0.2),
+    linewidth = 1
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = NULL,
+    y = "Probability"
+  )
+
+```
+
+:::
+::::::
+
+## ⚠️ Lookout!
+
+These are a little bit harder to interpret. Gives the probability of being less than or equal to x. E.g., the probability of being 28 years old or younger is 0.5.
+
+```{r}
+#| fig-width:  6
+
+titanic_ecdf <- titanic |> 
+  group_by(age) |> 
+  summarize(count = n()) |> 
+  arrange(age) |> 
+  mutate(
+    total = sum(count),
+    ecd = cumsum(count)/total
+  )
+
+ggplot() +
+  geom_rect(
+    data = titanic_ecdf |> filter(ecd <= 0.53),
+    aes(xmin = age,
+        xmax = ifelse(is.na(lead(age)), max(age), lead(age)),
+        ymin = 0,
+        ymax = ecd),
+    fill = alpha(qcolors("wintergreen"), 0.85)
+  ) +
+  geom_rect(
+    data = titanic_ecdf |> filter(ecd >= 0.51),
+    aes(xmin = age,
+        xmax = ifelse(is.na(lead(age)), max(age), lead(age)),
+        ymin = 0,
+        ymax = ecd),
+    fill = alpha("gray90", 0.85)
+  ) +
+  geom_step(
+    data = titanic_ecdf,
+    aes(age, ecd),
+    color = darken(qcolors("wintergreen"), 0.2)
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  ) +
+  labs(
+    x = "Age (years)",
+    y = "Probability",
+    title = "Passengers of the Titanic"
+  )
+
+```
+
+# Boxplot
+
+## What's it for?
+
+Visualize the approximate distribution of a continuous random variable using its quartiles.  
+
+```{r}
+#| fig-width:  6
+
+ggplot(penguins, aes(species, body_mass_g/1000)) +
+  stat_boxplot(geom ='errorbar', width = 0.33)  +
+  geom_boxplot(
+    fill = qcolors("wintergreen"), 
+    notch = TRUE,
+    notchwidth = 0.75
+  ) +
+  labs(
+    x = NULL,
+    y = "Body Mass (kg)",
+    title = "Palmer Penguins"
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "gray95")
+  )
+
+```
+
+Useful for plotting distributions across multiple groups.  
+
+## Quartiles
+
+When the data are ordered from smallest to largest, the quartiles divide them into four sets of more-or-less equal size. The second quartile is the median!
+
+```{r}
+#| fig-align: center
+
+set.seed(42)
+
+y <- rnorm(250)
+
+labels <- tibble(
+  y = c(boxplot.stats(y)$stats, max(y)),
+  x = 0.5,
+  label = c("1.5 x IQR", "first quartile", "median", "third quartile", "1.5 x IQR", "outlier")
+)
+
+ggplot(tibble(x = 0, y), aes(x, y)) + 
+  stat_boxplot(geom ='errorbar', width = 0.33) +
+  geom_boxplot(
+    fill = qcolors("wintergreen"), 
+    width = 0.6,
+    outlier.size = 4,
+    notch = TRUE,
+    notchwidth = 0.75
+  ) +
+  geom_text(
+    data = labels,
+    aes(x, y, label = label), 
+    hjust = 0,
+    size = 11/.pt
+  ) +
+  geom_point(
+    data = tibble(x = runif(length(y), -1.2, -0.5), y = y),
+    aes(x, y),
+    size = 3,
+    color = darken(qcolors("wintergreen"), 0.2),
+    alpha = 0.85
+  ) +
+  coord_cartesian(xlim = c(-2.2, 3)) +
+  theme_void()
+
+```
+
+## A rule of thumb 👍
+
+Sometimes easier to read when oriented horizontally.  
+
+```{r}
+#| fig-width:  6
+
+ggplot(penguins, aes(body_mass_g/1000, species)) +
+  stat_boxplot(geom ='errorbar', width = 0.33) +
+  geom_boxplot(
+    fill = qcolors("wintergreen"), 
+    notch = TRUE,
+    notchwidth = 0.75
+  ) +
+  labs(
+    x = "Body Mass (kg)",
+    y = NULL,
+    title = "Palmer Penguins"
+  ) +
+  theme(
+    panel.grid.major.x = element_line(color = "gray95")
+  )
+
+```

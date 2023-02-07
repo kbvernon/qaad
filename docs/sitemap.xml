@@ -2,58 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>kbvernon.github.io/qaad/classes.html</loc>
-    <lastmod>2023-01-31T19:19:49.223Z</lastmod>
+    <lastmod>2023-02-07T20:50:16.750Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/01-intro.html</loc>
-    <lastmod>2023-01-31T19:19:49.967Z</lastmod>
+    <lastmod>2023-02-07T20:48:43.576Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/02-probability.html</loc>
-    <lastmod>2023-01-31T19:19:50.642Z</lastmod>
+    <lastmod>2023-02-07T20:48:44.299Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/03-inference.html</loc>
-    <lastmod>2023-01-31T19:19:51.354Z</lastmod>
+    <lastmod>2023-02-07T20:48:45.120Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/04-ols.html</loc>
-    <lastmod>2023-01-31T19:19:52.042Z</lastmod>
+    <lastmod>2023-02-07T20:48:45.822Z</lastmod>
+  </url>
+  <url>
+    <loc>kbvernon.github.io/qaad/classes/05-distributions.html</loc>
+    <lastmod>2023-02-07T20:48:46.599Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/index.html</loc>
-    <lastmod>2023-01-31T19:19:52.759Z</lastmod>
+    <lastmod>2023-02-07T20:48:47.213Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/01-intro-lab.html</loc>
-    <lastmod>2023-01-31T19:20:04.698Z</lastmod>
+    <lastmod>2023-02-07T20:49:00.369Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/02-probability-lab.html</loc>
-    <lastmod>2023-01-31T19:20:09.760Z</lastmod>
+    <lastmod>2023-02-07T20:49:04.674Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/03-inference-lab.html</loc>
-    <lastmod>2023-01-31T19:20:14.388Z</lastmod>
+    <lastmod>2023-02-07T20:49:09.714Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/04-ols-lab.html</loc>
-    <lastmod>2023-01-31T19:20:25.644Z</lastmod>
+    <lastmod>2023-02-07T20:49:14.800Z</lastmod>
+  </url>
+  <url>
+    <loc>kbvernon.github.io/qaad/labs/05-distributions-lab.html</loc>
+    <lastmod>2023-02-07T20:49:37.706Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/01-intro-slides.html</loc>
-    <lastmod>2023-01-31T19:20:28.774Z</lastmod>
+    <lastmod>2023-02-07T20:49:41.591Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/02-probability-slides.html</loc>
-    <lastmod>2023-01-31T19:20:32.512Z</lastmod>
+    <lastmod>2023-02-07T20:49:46.130Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/03-inference-slides.html</loc>
-    <lastmod>2023-01-31T19:20:35.285Z</lastmod>
+    <lastmod>2023-02-07T20:49:49.766Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/04-ols-slides.html</loc>
-    <lastmod>2023-01-31T19:20:38.106Z</lastmod>
+    <lastmod>2023-02-07T20:49:53.100Z</lastmod>
+  </url>
+  <url>
+    <loc>kbvernon.github.io/qaad/slides/05-distributions-slides.html</loc>
+    <lastmod>2023-02-07T20:49:56.619Z</lastmod>
   </url>
 </urlset>

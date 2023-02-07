@@ -1,10 +1,12 @@
 
+library(colorspace)
 library(here)
 library(ggfx)
 library(ggtext)
 library(glue)
 library(gt)
 library(htmltools)
+library(patchwork)
 library(tidyverse)
 library(viridis)
 
