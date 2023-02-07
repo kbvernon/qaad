@@ -911,6 +911,8 @@ plot(
 
 ```
 
+Note that the `density()` function does not like missing values, so if there are any NA values in your data, you will need to include the argument `na.rm = TRUE` (this tells the function to ignore missing values).
+
 To control the fill and outline color, it's necessary to add the KDE as an additional layer to the plot with the `polygon()` function.
 
 ```{r}
@@ -1019,7 +1021,7 @@ For each of the following, make sure to change the fill (`col`) and outline (`bo
 1. Create a bar chart of the count of dart point types using `table()` and the `barplot()` function. Give the plot a horizontal orientation.
 2. Create a histogram of penguin bill length using the `hist()` function.
 2. Create a histogram of dart point length using the `hist()` function.
-2. Create a probability density plot of penguin bill length using the `density()` and `plot()` functions.
+2. Create a probability density plot of penguin bill length using the `density()` and `plot()` functions. (Note that the `density()` function does not like missing values, so if there are any NA values in your data, you will need to include the argument `na.rm = TRUE` (this tells the function to ignore missing values).)
 2. Create a probability density plot of dart point length using the `density()` and `plot()` functions.
 2. Create an eCDF plot of penguin bill length using the `ecdf()` and `plot()` functions. Add a separate color for each species. Make sure the plot is stepwise.
 2. Create an eCDF plot of dart point length using the `ecdf()` and `plot()` functions. Add a separate color for dart point type. Make sure the plot is stepwise.

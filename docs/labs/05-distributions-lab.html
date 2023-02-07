@@ -419,7 +419,7 @@ Warning
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="atzfmlfzwz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="dshqprrupd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
 <thead class="gt_col_headings" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;"><tr>
@@ -1057,6 +1057,7 @@ attr(,"class")
 <p><img src="05-distributions-lab_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="480"></p>
 </div>
 </div>
+<p>Note that the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> function does not like missing values, so if there are any NA values in your data, you will need to include the argument <code>na.rm = TRUE</code> (this tells the function to ignore missing values).</p>
 <p>To control the fill and outline color, it’s necessary to add the KDE as an additional layer to the plot with the <code><a href="https://rdrr.io/r/graphics/polygon.html">polygon()</a></code> function.</p>
 <div class="cell">
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">kde</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/density.html">density</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">$</span><span class="va">age</span><span class="op">)</span></span>
@@ -1152,7 +1153,7 @@ attr(,"class")
 <li>Create a bar chart of the count of dart point types using <code><a href="https://rdrr.io/r/base/table.html">table()</a></code> and the <code><a href="https://rdrr.io/r/graphics/barplot.html">barplot()</a></code> function. Give the plot a horizontal orientation.</li>
 <li>Create a histogram of penguin bill length using the <code><a href="https://rdrr.io/r/graphics/hist.html">hist()</a></code> function.</li>
 <li>Create a histogram of dart point length using the <code><a href="https://rdrr.io/r/graphics/hist.html">hist()</a></code> function.</li>
-<li>Create a probability density plot of penguin bill length using the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions.</li>
+<li>Create a probability density plot of penguin bill length using the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. (Note that the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> function does not like missing values, so if there are any NA values in your data, you will need to include the argument <code>na.rm = TRUE</code> (this tells the function to ignore missing values).)</li>
 <li>Create a probability density plot of dart point length using the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions.</li>
 <li>Create an eCDF plot of penguin bill length using the <code><a href="https://rdrr.io/r/stats/ecdf.html">ecdf()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. Add a separate color for each species. Make sure the plot is stepwise.</li>
 <li>Create an eCDF plot of dart point length using the <code><a href="https://rdrr.io/r/stats/ecdf.html">ecdf()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. Add a separate color for dart point type. Make sure the plot is stepwise.</li>
