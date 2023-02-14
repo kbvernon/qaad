@@ -1,0 +1,14 @@
+---
+title: "Lab 06: Working with Tables"
+description: "A review and a deep dive into working with rectangular data in R."
+date: 2023-02-14
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+No lecture this week.
+
+## 🔬 Lab Exercises
+
+[Week 06 Lab](../labs/06-dataframes-lab.qmd)

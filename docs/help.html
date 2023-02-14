@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Quantitative Analysis of Archaeological Data - Looking for help</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="floating nav-fixed slimcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./help.html" aria-current="page">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-google-search-paradox" id="toc-the-google-search-paradox" class="nav-link active" data-scroll-target="#the-google-search-paradox">The Google Search Paradox</a></li>
+  <li><a href="#r-helpers" id="toc-r-helpers" class="nav-link" data-scroll-target="#r-helpers">R helpers</a></li>
+  <li><a href="#rstudio-helpers" id="toc-rstudio-helpers" class="nav-link" data-scroll-target="#rstudio-helpers">RStudio helpers</a></li>
+  <li><a href="#r-community-helpers" id="toc-r-community-helpers" class="nav-link" data-scroll-target="#r-community-helpers">R Community helpers</a></li>
+  <li><a href="#other-resources" id="toc-other-resources" class="nav-link" data-scroll-target="#other-resources">Other resources</a></li>
+  <li><a href="#reproducible-examples" id="toc-reproducible-examples" class="nav-link" data-scroll-target="#reproducible-examples">Reproducible examples</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Looking for help</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div style="width: 75%; margin-left: auto; margin-right: auto;">
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://xkcd.com/"><img src="https://imgs.xkcd.com/comics/wisdom_of_the_ancients.png" class="img-fluid figure-img"></a></p>
+<p></p><figcaption class="figure-caption">Wisdom of the Ancients (xkcd 979).</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<section id="the-google-search-paradox" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="the-google-search-paradox">The Google Search Paradox</h2>
+<p>As you make your first tentative forays into the R programming environment, you will on occasion experience the jarring dislocation of an R error, a typically bright red eruption of your R console, perhaps symbolic of your code exploding before your eyes. Here is one of the more infamous errors you are likely to encounter:</p>
+
+<pre style="color:red">object of type 'closure' is not subsettable</pre>
+<div class="page-columns page-full"><p>Never mind what this particular error means.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The point is that it can be terribly frustrating when you encounter it or one of its kin.</p><div class="no-row-height column-margin column-container"><li id="fn1"><p><sup>1</sup>&nbsp;Though check out Jenny Bryan’s talk at the 2020 RStudio Conference: https://rstudio.com/resources/rstudioconf-2020/object-of-type-closure-is-not-subsettable/</p></li></div></div>
+<p>Troubleshooting these errors can often be an additional source of anxiety and frustration, especially early on, as you simply lack the words required to describe your problem accurately and, thus, to formulate the question whose answer you so desperately need. I like to refer to this unhappy circumstance as the <em>Google Search Paradox</em> because you will inevitably find yourself staring at an empty search bar, wondering what words to give to Google. It’s also a bit like <a href="https://plato.stanford.edu/entries/epistemic-paradoxes/#MenParInqPuzAboGaiKno">Meno’s Paradox</a>, or the Paradox of Inquiry. For if you could properly state your question, it’s probably the case that you already know the answer. So, you either know and thus don’t need to ask, or need to ask, but don’t know how.</p>
+<p>Of course, the situation is not nearly so dire as this. In truth, you always know at least a little about your problem - you do have the error itself after all! - and can thus Google your way through to an answer - eventually, anyway. But life is fleeting, as they say, and time is short, so you should probably avoid the brute force approach, relying instead on searching <em>efficiently</em>. To help you with that (and to help you get <em>better</em> with that), this page provides a brief annotated list of where to look for answers, starting from within R itself!</p>
+</section>
+<section id="r-helpers" class="level2">
+<h2 class="anchored" data-anchor-id="r-helpers">R helpers</h2>
+<p>Typically, though not always, R code will have lots of supporting documentation. These come in two varieties: function help pages and vignettes. If you are having trouble a single function to work properly, you may find its help page more useful. If you are having trouble getting through some analysis and you cannot pinpoint the exact reason for your trouble, the vignettes are probably where you should look. There are a couple of ways to access this documentation.</p>
+<ol type="1">
+<li><p>From within R, you can use the <code>help()</code> and <code>?...</code> functions to access short-form documentation. Examples include <code>help("plot")</code> and <code>?plot</code>. This will call up the function’s documentation page and display it in your computer’s graphical device.</p></li>
+<li><p><code>help.search(...)</code> and <code>??...</code> both provide means of searching through help pages to find multiple functions with the same name (and potentially the same or similar uses). Simply replace the ellipses (three dots) with a character string and these functions will return all help pages with that string. So if you want to carry out a cluster analysis, typing <code>??cluster</code> will search for any functions in your installed packages that use the word cluster.</p></li>
+<li><p>The <a href="https://rdrr.io/">rdrr.io</a> website provides access to all function help pages online. If you Google an R function, a link to its documentation on this website is typically the first that you will see. For the best search results, I recommend Googling “<em>R &lt;package name&gt; &lt;function name&gt;</em>.”</p></li>
+<li><p>From within R, you can also access the vignettes using some combination of <code>vignette()</code>, <code>browseVignettes()</code>, and <code>RShowDoc()</code>.</p>
+<ul>
+<li>The function <code>vignette()</code> with no argument specified will bring up a list of all available vignettes, organized by package. If you want the vignettes for a particular R package, you can also type <code>vignette(package = ...)</code>, for example, <code>vignette(package = "grid")</code> will bring up the vignettes for the <strong>grid</strong> package.<br>
+</li>
+<li><code>browseVignettes()</code> will open a locally hosted HTML page in your browser with links to all available R vignettes. This is actually quite helpful, and you should give it a try when you get a chance. Just browsing through these vignettes will give you a great feel for all that you can do in R.<br>
+</li>
+<li><code>RShowDoc()</code> is mostly for opening a single vignette. This is usefully paired with <code>vignette()</code>, which will give you the name of the vignette and package, so that you can, for example, call <code>RShowDoc(what = "plotExample", package = "grid")</code>. This will bring up the “plotExample” vignette from the <strong>grid</strong> package.</li>
+</ul></li>
+<li><p>Package authors have lots of resources for sharing their documentation now, including websites designed specifically to present both function help pages and vignettes. Here is an example of the <a href="http://colorspace.r-forge.r-project.org/">website for the <strong>colorspace</strong></a> package.</p></li>
+<li><p>Finally, you can access all available documentation for official R packages by navigating the Comprehensive R Archive Network (CRAN) website, here: <a href="https://cran.r-project.org/">https://cran.r-project.org/</a>.</p></li>
+</ol>
+</section>
+<section id="rstudio-helpers" class="level2">
+<h2 class="anchored" data-anchor-id="rstudio-helpers">RStudio helpers</h2>
+<p>While RStudio provides loads of support to R users, here we mention some of the more important ones.</p>
+<ol type="1">
+<li><p><a href="https://support.rstudio.com/hc/en-us/categories/200035113-Documentation">RStudio How To Articles</a> provide loads of how-to guides for working with R and RStudio. This is a very comprehensive suite of useful documentation.</p></li>
+<li><p><a href="https://rstudio.com/resources/cheatsheets/">RStudio Cheatsheets</a> strive to communicate package information in a single, concise poster format with lots of visual queues and simple definitions. These can be really helpful when you need a quick refresher on the use of some bit of code.</p></li>
+<li><p><a href="https://community.rstudio.com/">RStudio Community</a> is an online forum where individuals ask and answer questions about R and RStudio. They have a very strict code of conduct for their members that emphasizes mutual respect and inclusivity, so you will generally find the discussions here much more friendly and supportive. Use of this forum is highly recommended.</p></li>
+<li><p><a href="https://education.rstudio.com/">RStudio Education</a> is a very, very recent development by RStudio (it came online in 2020), and it is simply amazing as a resource for not only learning R itself, but also learning how to <em>teach</em> R. Please note that, with the exception of number 4, these RStudio help tools can be accessed within the RStudio IDE under the <em>Help</em> tab.</p></li>
+</ol>
+</section>
+<section id="r-community-helpers" class="level2">
+<h2 class="anchored" data-anchor-id="r-community-helpers">R Community helpers</h2>
+<p>The R community refers to R users who are actively communicating with and supporting other R users. As there are lots and lots of engaged R users these days, and more and more every day, the community is definitely thriving. There is also an expanding ethos within this community driven largely by RStudio and its code of conduct, so you will generally find R users to be a friendly bunch (if a little hoity-toity). So, let’s talk about where you can engage with this community. We have already mentioned one, RStudio Community, but here we will list some more.</p>
+<ol type="1">
+<li><p><a href="https://stackoverflow.com/">Stack Overflow</a> is a forum for programmers in all programming languages to ask and answer questions, much like RStudio Community. It’s just been around longer (2008 to be exact), which means its code of conduct has evolved over time to address a number of unanticipated issues. The consequence is that answers to questions will run the gamut from being respectful and clear to downright insulting. Still, it is a rich resource for addressing your R coding issues. And it has gotten a lot better.</p></li>
+<li><p><a href="https://ropensci.org/">ROpenSci</a> is an R programming community focused on promoting open and reproducible research in science. They have a <a href="https://discuss.ropensci.org/">forum</a> much like RStudio Community, a <a href="https://ropensci.org/blog/">blog</a> with helpful news and overviews of the packages in their ecosystem, and a rich <a href="https://docs.ropensci.org/">suite of webpages</a> for their supported R packages, which you can explore <a href="https://ropensci.org/packages/">here</a>.</p></li>
+<li><p><a href="https://www.r-bloggers.com/">R-bloggers</a> is a clearinghouse for R related content, basically an aggregator of content from individual blogs. It is worth perusing every now and then to pick up the occasional gem of R understanding.</p></li>
+<li><p>The <a href="https://twitter.com/search?q=%23rstats&amp;src=typd">#rstats Twitter community</a> is something. Use this if you use Twitter, I guess…</p></li>
+<li><p>The <a href="https://www.reddit.com/r/rstats/">rstats subreddit</a> is a helpful community of Redditors that are pretty good about answering questions you might have.</p></li>
+</ol>
+</section>
+<section id="other-resources" class="level2">
+<h2 class="anchored" data-anchor-id="other-resources">Other resources</h2>
+<ol type="1">
+<li>The UCLA Institute for Digital Research &amp; Education offers <a href="https://stats.idre.ucla.edu/r/">Statistical Consulting</a> geared toward R. This is a tremendous resource for both R and statistics and is highly recommended.</li>
+</ol>
+</section>
+<section id="reproducible-examples" class="level2">
+<h2 class="anchored" data-anchor-id="reproducible-examples">Reproducible examples</h2>
+<p>Others have likely asked the same question you want to ask, so you will not always need to make a post yourself. But, in the off chance that you do find yourself confronted with a question never asked before, you need to make sure you provide R users with all the information and resources they need to help troubleshoot your code and to do so with the least effort possible. This involves providing a “<em>repr</em>oducible <em>ex</em>ample” or <em>reprex</em>. There are two essential ingredients to a reprex:</p>
+<ol type="1">
+<li>It needs to be <strong>reproducible</strong>, obviously. That means you need to make sure you provide everything needed to reproduce your error as is, for instance, all <code>library()</code> calls in your code.</li>
+<li>It needs to be <strong>minimal</strong>. In other words, do not include anything extraneous or burdensome, like a 400 MB data object. A much smaller R object should suffice.</li>
+</ol>
+<p>A lot has been written about how to put together a reprex, so rather than belabor the point here, it is perhaps best to direct you to Jenny Bryan’s <a href="https://reprex.tidyverse.org/">reprex package</a>, which will walk you through the process of submitting a help request on the various forums mentioned above.</p>
+
+
+</section>
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

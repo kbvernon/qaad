@@ -1,0 +1,622 @@
+---
+title: "Lab 06: Working with Tables"
+description: "A review and a deep dive into working with rectangular data in R."
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+- constructing data.frames and tibbles
+- working with the pipe
+- working with columns (variables) in a table
+- working with rows (observations) in a table
+- working with grouped data in a table
+
+### R Packages
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [dplyr](https://dplyr.tidyverse.org/)
+
+```{r}
+
+library(archdata)
+library(palmerpenguins)
+library(dplyr)
+
+```
+
+### Data
+
+- `penguins` 
+  - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+  - package: `palmerpenguins`
+  - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+- `DartPoints`
+  - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+  - package: `archdata`
+  - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+
+## Tables
+
+::: {#fig-table style="text-align:center;"}
+![](images/r-tables.png){width="75%" fig-align="center"}
+
+Elements of a Data Frame.
+:::
+
+Consider this research scenario: you have a museum collection of projectile points that you want to use for an analysis, maybe you want to know whether East Gate and Rose Spring points are actually the same type of point, commonly referred to using the portmanteau _Rosegate_. Following tradition, you think maybe it's the size and shape that will you help finally put this old question to rest, so for each individual point, you set about measuring its length, width, and height. 
+
+In this course, we'll refer to each individual measure that you make as a _value_, each set of such measures for an individual point we will call (somewhat awkwardly) an _observation_, and each individual type of measurement will be a _variable_. It is almost certainly the case that you will be collecting this data and storing it in something like a spreadsheet or table, like that shown in @fig-table. You will sometimes hear data scientists refer to data stored in this way as _rectangular_ data. All they mean by that is that the data come as collections of values organized into rows and columns. Crucially, all the columns must have the same length, so you can describe the data as having dimensions, specifically length (the number of observations or rows) and width (the number of variables or columns). 
+
+### Creating tables
+
+In R, tabular datasets are known as _data frames_. To create a data frame, we use the eponymous `data.frame()` function. Here, for example, is how we would create the table in @fig-table above:  
+
+```{r}
+
+projectiles_df <- data.frame(
+  type = c("Elko", "Rosegate", "DSN", "Elko", "Clovis"),
+  length = c(2.03, 1.4, 1.9, 2.1, 3.3),
+  width = c(0.8, 0.4, 0.3, 0.7, 0.95),
+  height = c(3.23, 2.4, 1.29, 2.7, 4.15)
+)
+
+projectiles_df
+
+```
+
+Note that the values (or measurements) contained in each variable are wrapped in the `c()` function (short for _concatenate_). This variable tells R that all these values belong to this one variable. Each variable in turn is an argument to `data.frame()` having the form `<variable> = c(<value-1>, <value-2>, ..., <value-n>)`.
+
+### Getting basic meta-data from tables 
+
+When you want to know what variables a table includes, you can use the `names()` function.
+
+```{r}
+
+names(projectiles_df)
+
+```
+
+If you want to know how many variables or observations the table has, you can use `nrow()` and `ncol()` respectively.
+
+```{r}
+
+# number of observations
+nrow(projectiles_df)
+
+# number of variables
+ncol(projectiles_df)
+
+```
+
+### Pretty tibbles
+
+As an alternative to the default `data.frame`, you can also use a `tibble`, which is a standard format used by packages within the `tidyverse`, including the `tibble` package that defines it. In the grand scheme of things, the differences between tibbles and data.frames are quite small, mostly relating to their nicer (some might say prettier) print methods. It has some other nice features, but most of them are not things that should concern a beginning R user, so we won't dwell on them here.
+
+You create a tibble just like you would a data.frame, but with the `tibble()` function.
+
+```{r}
+
+projectiles_tbl <- tibble(
+  type = c("Elko", "Rosegate", "DSN", "Elko", "Clovis"),
+  length = c(2.03, 1.4, 1.9, 2.1, 3.3),
+  width = c(0.8, 0.4, 0.3, 0.7, 0.95),
+  height = c(3.23, 2.4, 1.29, 2.7, 4.15)
+)
+
+```
+
+Now you can see how the print method for tibbles differs from that of data.frames.
+
+```{r}
+
+projectiles_df
+
+projectiles_tbl
+
+```
+
+There are a few big differences here:
+
+1. By default `tibble()` will only print the first ten rows of data. This saves you from having to use the `head()` function. It will also tell you how many rows were not printed at the bottom, assuming there are more than ten. With `data.frame()`, the default print will print the maximum number of rows defined in your default options.
+2. `tibble()` will only print columns that fit on your screen. It will then tell you how many columns were not printed.
+2. `tibble()` provides information about the dimensions of your table: the number of rows and columns.
+3. `tibble()` provides information about the type of data each variable is: factor (`fct`), character, numeric (`dbl` for "double" or `int` for "integer").
+
+While the choice between `tibbles` and `data.frames` is largely a stylistic one, I would encourage you to use `tibbles` as much as possible. It'll make things easier for you in the long run. You can always convert between them if you want with `as_tibble()` and `as.data.frame()`.
+
+```{r}
+#| eval: false
+
+# turn a tibble into a data.frame
+projectiles_df <- as.data.frame(projectiles_tbl)
+
+# turn a data.frame into a tibble
+projectiles_tbl <- as_tibble(projectiles_df)
+
+```
+
+In what follows, we are going to learn how to perform some tasks that almost always arise when working with tables using a powerful set of tools provided by the `dplyr` package, which is part of the `tidyverse`.
+
+### Exercises
+
+1. Get the names of the variables in the `penguins` table with `names()`.
+2. How many observations and variables are in this dataset? Hint: use `nrow()` and `ncol()`.
+2. Load the DartPoints dataset and convert the data.frame to a tibble with `as_tibble()`. Assign it to a new object called "darts" using the arrow `<-`. Then remove the original DartPoints dataframe from your environment with `remove(DartPoints)`.
+
+## The Pipe
+
+::: {#fig-pipe}
+![](https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg)
+[The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images) (1929) by Rene Magritte.
+:::
+
+Before we get to the ways in which you can shape and otherwise manipulate tables in R, though, let's introduce a style of coding referred to as `piping` first, which allows you to express a series of operations in a clear and concise way. To motivate the use of pipes, consider this extremely common scenario: you want to select some specific variables in your table, filter the observations to include a subset based on some condition, then add a new variable by transforming or mutating another one. Your code might look like this (we will explain how to use these functions in just a moment):
+
+```{r}
+#| eval: false
+
+bob <- select(penguins, species, island, bill_length_mm, body_mass_g)
+tom <- filter(bob, sex == "male")
+sue <- mutate(tom, bill_length_cm = bill_length_mm/10)
+
+remove(bob, tom)
+
+```
+
+You will sometimes see people write the same series of function calls this way:
+
+```{r}
+#| eval: false
+
+sue <- mutate(filter(select(penguins, species, island, bill_length_mm, body_mass_g), island == "Torgersen"), bill_length_cm = bill_length_mm/10)
+
+```
+
+This is called _nesting_. It's primary advantage is that it does not require saving intermediate objects (like `bob` and `tom`) and thus polluting your R environment with unnecessary copies of your data. Nesting function calls in this way is fine as long as it remains relatively _shallow_, but the deeper the nest (like 2 or 3 functions deep), the harder it is to read, as you must follow results from the inside out and bottom up, as opposed to left to right and top down, which is more natural. 
+
+To avoid deep nests _and_ temporary assignments, you can use pipes. This involves calling the special operator, `|>`, consisting of a vertical bar and the greater-than sign that was introduced to base R in 2021 with version 4.1.0. If you squint (and depending on the font you are using), it looks a bit like an arrow pointing to the right. Using the pipe-operator looks like this:
+
+```{r}
+#| eval: false
+
+sue <- penguins |> 
+  select(species, sex, body_mass_g) |> 
+  filter(sex == "male") |> 
+  mutate(bill_length_cm = bill_length_mm/10)
+
+```
+
+If you were to transpose this code into a natural language like English, it would sound something like this,
+
+> Take the penguins table, then select the variables species, sex, and body mass, then filter the males, then create a new variable by converting bill length from millimeters to centimeters.
+
+The 'then' in each case is the pipe operator. Crucially, the pipe assumes that the data being transformed is the first argument to the function, which is true for all the functions in the `tidyverse`, as they were all designed very intentionally to work with the pipe. Unfortunately, many parts of R were written long before the pipe was ever introduced, so they may not work as easily with it. 
+
+::: {.callout-info}
+
+This is easily one of the most powerful tools for working with data in R, which is probably why it is so popular these days. RStudio gives a keyboard shortcut to make inserting this operator into your code easier. It's `Ctrl + Shift + M` on Windows and `Cmd + Shift + M` on Mac. To ensure that this keyboard shortcut inserts the base R pipe operator, go to Tools > Global Options... > Code > Editing and check that the option "Use native pipe operator, |> (requires R 4.1+)" is selected.
+
+:::
+
+## Columns
+
+Now that we have the pipe, let's look at different ways of working with variables or columns in a table. Some of the most common tasks involve selecting a subset of variables, relocating them, renaming them, and creating new variables. As mentioned before, the focus here will be on `dplyr` functions, but we will also take some time to introduce base R methods where appropriate.
+
+### `pull()`
+
+To pull a variable out of a table and return it as a vector, you can pass the table along with the name of the target variable to the `pull()` function from `dplyr`.
+
+```{r}
+
+penguins |> pull(bill_length_mm)
+penguins |> pull(bill_depth_mm)
+
+```
+
+The base R way of doing this relies on double brackets or the dollar sign, as in `<table>[["<variable>"]]` and `<table>$<variable>`.
+
+```{r}
+
+penguins$bill_length_mm
+penguins[["bill_depth_mm"]]
+
+```
+
+As you can see, using the `dplyr` function is quite a bit easier to read and intuit what you are doing. It also plays nice with the pipe. 
+
+### `select()`
+
+If you want to select one or more variables but return the result as a table, pass the table along with the names of the desired variables to `select()`. As an example, suppose (for reasons) that we want a smaller table that only has the `species` and `bill_length_mm` variables. To get that from the larger table, I simply do this
+
+```{r}
+
+penguins |> select(species, bill_length_mm)
+
+```
+
+### `rename()`
+
+To rename variables in a table, use the `rename()` function. This is similar to `pull()` and `select()` in that you pass it column names, but you are also going to signal new names for those columns using the equal sign. The idea here is to do `rename(<new name> = <old name>)`. Here, for example, is how you might remove the units of measure from the variable names in the penguins table.  
+
+```{r}
+
+penguins |> names()
+
+penguins |> 
+  rename(
+    bill_length = bill_length_mm,
+    bill_depth = bill_depth_mm,
+    flipper_length = flipper_length_mm,
+    body_mass = body_mass_g
+  ) |> 
+  names()
+
+```
+
+::: {.callout-info}
+
+Here are a few good rules of thumb for variable names in tables (and for all names in R!).
+
+1. Use all lower-case characters. This makes them easier to type.
+2. Avoid special characters. They require special treatment when included.
+2. Use underscores `_` instead of spaces for similar reasons.
+2. Try to keep the names as simple as possible but...
+2. Air on the side of longer names that clearly communicate the meaning of each variable.
+
+:::
+
+Here is one trick you might find useful. Sometimes you will find yourself wanting to rename all the variables in a consistent way, for instance, by making them all lower case. This is something I find myself doing quite often actually. Base R has this nice function called `tolower()` that converts capitalized letters to lowercase. For instance, `tolower("ABC")` returns `abc`. There's a corresponding `toupper()` that does the opposite. You can apply these functions to every column in one go with `rename_with()`. 
+
+```{r}
+
+penguins |> 
+  rename_with(toupper) |> 
+  names()
+
+```
+
+### `relocate()`
+
+You will sometimes find it helpful to reorder your variables. To do that, you can use `relocate()`, again passing it the column names. By default, it moves variables to the front, but you can also move them before or after specific variables with the `.before` and `.after` arguments.
+
+```{r}
+
+penguins |> names()
+
+penguins |> relocate(sex, year) |> names()
+
+penguins |> relocate(sex, year, .after = island) |> names()
+
+```
+
+### `mutate()`
+
+One of the most important and powerful functions provided by `dplyr` is `mutate()`. This allows you to add or change variables, often based on the values of other variables in your table. For instance, you can create a new variable that codes bill length in centimeters rather than millimeters. You just divide millimeters by 10.
+
+```{r}
+
+penguins |> 
+  mutate(bill_length_cm = bill_length_mm/10) |> 
+  select(species, bill_length_mm, bill_length_cm)
+
+```
+
+You can refer to as many variables in the table as you like, too. For instance, you can calculate the ratio of bill length to flipper length.
+
+```{r}
+
+penguins |> 
+  mutate(bill_to_flipper = bill_length_mm/flipper_length_mm) |> 
+  select(species, bill_length_mm, flipper_length_mm, bill_to_flipper)
+
+```
+
+When you work with `mutate()`, keep in mind that data.frames and tibbles are _rectangular_. That means each variable in the table must have the same number of _values_ (equal to the number of rows or _observations_ in the table). In the penguins table, there are `r nrow(penguins)` observations, so any new variable that you add with `mutate()` must have `r nrow(penguins)` values (it must have that length). If the variable you want to add does not have the same length, you will receive an error like the following: 
+
+```{r}
+#| error: true
+
+penguins |> mutate(id = 1:5)
+
+```
+
+Note, too, that you can refer to new variables you have created in the same `mutate()` call.
+
+```{r}
+
+penguins |> 
+  select(species, island) |> 
+  mutate(
+    id = 1:n(),
+    id2 = id * 2
+  )
+
+```
+
+### Exercises
+
+1. Remind yourself of what variables the penguins table has with `names()`.
+2. Now, extract a variable of your choice with `pull()`.
+2. Subset the data by choosing only four variables of your choice with `select()`.
+2. Use `relocate()` to move the species and island variables after bill_length_mm.
+2. Use `mutate()` on the `penguins` data to create variables that
+    - represent body mass in kilograms,
+    - represent bill depth in centimeters,
+    - compare bill length to bill depth to see whether the former is greater than (`>`) the latter.
+2. Using the `darts` tibble (formerly the DartPoints data.frame), rename the variables so that they are all lower case, rename the "name" variable to "type", and subset to the type, length, width, and thickness variables. Reassign this to darts, so you can save the result. Hint:
+
+```{r}
+#| eval: false
+
+darts <- darts |> 
+  rename_with() |> 
+  rename() |> 
+  selet()
+
+```
+
+2. Use `mutate()` to add a variable to `darts` that is the ratio of point length to width.
+
+## Rows
+
+### `arrange()`
+
+Sometimes it can be useful to sort a table, so you can more easily navigate the information it contains. To do this, `dplyr` provides the `arrange()` function. This sorts observations based on a supplied variable or variables. By default, it sorts observations in ascending order. If you provide multiple variables, it will sort the first variable first, then sort the second variable within that variable, and so on. In effect, it breaks ties in the sorting process.
+
+```{r}
+
+penguins |> arrange(species, island)
+
+```
+
+You can use the `desc()` function to sort descending.
+
+```{r}
+
+penguins |> arrange(desc(species))
+
+```
+
+### `distinct()`
+
+Observations will sometimes be duplicated in your data. The simplest way to remove them is with the `distinct()` function. For demonstration purposes, suppose you have this simple dataset.
+
+```{r}
+
+tbl <- tibble(
+  x = c(1, 1, 1, 3, 2), 
+  y = c("a", "a", "a", "b", "c"),
+  z = c(TRUE, TRUE, FALSE, TRUE, TRUE)
+)
+
+tbl
+
+```
+
+For whatever reason, your first observation or row has been duplicated (there are two rows with the values _x=1_, _y=a_, and _z=TRUE_). To remove that row, do this:
+
+```{r}
+
+tbl |> distinct()
+
+```
+
+You may also want distinct combinations of a specific variable or variables.
+
+```{r}
+
+tbl |> distinct(x, y)
+
+```
+
+### `filter()`
+
+Subsetting data by filtering observations is a little bit more involved than simply selecting variables, but intuitively, you are simply asking for those observations that satisfy a certain condition. Getting `filter()` to return those observations requires that you pass it an expression containing a comparison operator. The expression is then evaluated by R for its truth or falsity, with observations that evaluate to `TRUE` being returned, observations that evaluate to `FALSE` being ignored. Let's walk through an example, then try to break down what is happening in a little more detail. Suppose we want only those observations of penguins residing on Biscoe Island. Here is how we would go about collecting those observations from our penguins data.frame.
+
+```{r}
+
+penguins |> filter(island == "Biscoe")
+
+```
+
+Here we supplied this key information to `filter()`: 
+
+```
+island == "Biscoe"
+``` 
+
+What does this expression mean exactly? In effect, it is directing `filter()` to scan through our data, specifically the `island` column, and select only those rows where the value is _Biscoe_. The so-called _comparison operator_ here is the double equal sign, `==`. This is importantly different than the single equal sign, `=`, which is used inside a function as part of a `key=value` or `argument=value` pair. R provides several helpful comparison operators:  
+
+* `==` for _equals_ in the sense of a perfect match,  
+* `!=` for _not equals_,  
+* `>` for _greater than_,  
+* `>=` for _greater than or equal to_,  
+* `<` for _less than_, and  
+* `<=` for _less than or equal to_.  
+
+You can use the first two, `==` and `!=`, for comparisons with either character or numeric variables, but the rest apply only to the latter. Let's run through a few more examples:  
+
+_Filter penguins with body mass greater than 3500 grams_.  
+
+```{r}
+
+penguins |> filter(body_mass_g > 3500)
+
+```
+
+_Filter penguins with beaks longer than 39 millimeters_.
+
+```{r}
+
+penguins |> filter(bill_length_mm > 39)
+
+```
+
+#### Multiple conditions
+
+Often enough, we will want to combine a number of these simple conditions into one complex expression. In R, this is done with Boolean operators:  
+
+* `&` for _and_,  
+*  `|` for _or_, and  
+* `!` for _not_.  
+
+To demonstrate the underlying logic of these Boolean operators, consider these shapes and colors. You can think of each of A, B, and C as its own observation or row in a data.frame that includes two variables `color` and `shape`.  
+
+![](images/booleans_example.png){#fig-booleans fig-align="center" width="40%"}
+
+```{r}
+#| echo: false
+#| results: asis
+
+Boolean <- c("x", "y", "x & y", "x | y", "x & !y", "!x & y", "!(x & y)", "!(x | y)")
+
+Filter <- paste0(
+  '`', 
+  c('color == "yellow"', 
+    'shape == "circle"', 
+    'color == "yellow" & shape == "circle"',
+    'color == "yellow" | shape == "circle"',
+    'color == "yellow" & shape != "circle"',
+    'color != "yellow" & shape == "circle"',
+    '!(color == "yellow" & shape == "circle")',
+    '!(color == "yellow" | shape == "circle")'), 
+  '`'
+)
+
+Result <- c("A, B", "B, C", "B", "A, B, C", "A", "C", "A, C", "NULL")
+
+tibble(Boolean, Filter, Result) %>% gt()
+
+```
+
+And here is an example with our penguins data, where we ask R to return those observations in which (a) penguins reside on Biscoe Island and (b) their bills are longer than 39 millimeters.  
+
+```{r}
+
+penguins |> filter(island == "Biscoe" & bill_length_mm > 39)
+
+```
+
+Note that `filter()` let's you separate conditions with a comma, which it interprets as conjunction, represented by the `&`.
+
+```{r}
+
+penguins |> 
+  filter(
+    island == "Biscoe", 
+    species == "Adelie", 
+    body_mass_g < 3500
+  )
+
+```
+
+### Exercises
+
+1. Try all of the following with `filter()`:
+    - Filter penguins that reside on Torgersen island.
+    - Filter penguins that have a flipper length greater than 185 mm.
+    - Filter penguins that reside on Torgersen island and have a body mass less than 3500 g. 
+2. Try filtering the DartPoints dataset.
+    - Filter darts that 
+
+## Groups
+
+Your data will often include natural groupings (like species in the penguins table or dart types in the darts table), and you will want to summarize information about each of those groups. The way that you do this with `dplyr` involves the use of `group_by()` and `summarize()`.
+
+```{r}
+
+penguins |> group_by(species)
+
+```
+
+Notice that the data are not changed, but the tibble now includes information about the groupings (_Groups: species [3]_). Now, if you apply `summarize()` to it, it will know that you want summaries for each group.
+
+
+```{r}
+
+penguins |> 
+  group_by(species) |> 
+  summarize(
+    mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+    var_bill_length = var(bill_length_mm, na.rm = TRUE)
+  )
+
+```
+
+Note that you can summarize by multiple groups.
+
+```{r}
+
+penguins |> 
+  group_by(species, island) |> 
+  summarize(
+    mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+    var_bill_length = var(bill_length_mm, na.rm = TRUE)
+  )
+
+```
+
+A handy little function you will often want to use in summaries is `n()`. This counts the number of observations in each group.
+
+```{r}
+
+penguins |> 
+  group_by(species, island) |> 
+  summarize(
+    count = n(),
+    mean_bill_length = mean(bill_length_mm, na.rm = TRUE),
+    var_bill_length = var(bill_length_mm, na.rm = TRUE)
+  )
+
+```
+
+Now, suppose you wanted to get the three penguins in each species with the longest bills. To do that, you can apply the `slice_max()` function to the grouped penguins table.
+
+```{r}
+
+penguins |> 
+  group_by(species) |> 
+  slice_max(bill_length_mm, n = 3)
+
+```
+
+You can also get a random sample from each group (known as a stratified random sample) with `slice_sample()`.
+
+```{r}
+
+penguins |> 
+  group_by(species) |> 
+  slice_sample(n = 3)
+
+```
+
+Some other useful `slice_*()` functions include the following
+
+- `slice_head(n)` takes the first n rows in each group.
+- `slice_tail(n)` takes the last n rows in each group.
+- `slice_min(x, n)` takes the n rows with the smallest values of x.
+- `slice_max(x, n)` takes the n rows with the largest value of x.
+- `slice_sample(n)` takes n random rows in each group.
+
+### Exercises
+
+1. Group the penguins data by species and summarize the mean flipper length.
+2. Group the penguins data by island and count the number of penguins on each. Hint: you can use `n()` to do this.
+2. Group the penguins data by sex and summarize the mean and variance in body mass.
+2. Group the penguins data by sex and species and summarize the mean and variance in body mass.
+2. Group the darts data by type and summarize the mean length, width, and height.
+2. Group the darts data by type and take a random sample of length five from each group.
+2. Remove any potential duplicates from the darts data with `distinct()`.
+

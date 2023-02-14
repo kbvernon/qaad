@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.329">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="dcterms.date" content="2023-02-07">
+<meta name="dcterms.date" content="2023-02-14">
 <meta name="description" content="A review and a deep dive into visualizing distributions in R, including bar chart, histogram, kernel density, cumulative density, and boxplot. Examples are given using base R {graphics} and {ggplot2}.">
 <title>Quantitative Analysis of Archaeological Data - Lab 05: Visualizing Distributions</title>
 <style>
@@ -128,7 +128,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
  <span class="menu-text">Classes</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../help.qmd">
+    <a class="nav-link" href="../help.html">
  <span class="menu-text">Help</span></a>
   </li>  
 </ul>
@@ -209,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 7, 2023</p>
+      <p class="date">February 14, 2023</p>
     </div>
   </div>
   
@@ -419,7 +419,7 @@ Warning
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="dshqprrupd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="npgpfmhggm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
 <thead class="gt_col_headings" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;"><tr>
@@ -1155,8 +1155,8 @@ attr(,"class")
 <li>Create a histogram of dart point length using the <code><a href="https://rdrr.io/r/graphics/hist.html">hist()</a></code> function.</li>
 <li>Create a probability density plot of penguin bill length using the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. (Note that the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> function does not like missing values, so if there are any NA values in your data, you will need to include the argument <code>na.rm = TRUE</code> (this tells the function to ignore missing values).)</li>
 <li>Create a probability density plot of dart point length using the <code><a href="https://rdrr.io/r/stats/density.html">density()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions.</li>
-<li>Create an eCDF plot of penguin bill length using the <code><a href="https://rdrr.io/r/stats/ecdf.html">ecdf()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. Add a separate color for each species. Make sure the plot is stepwise.</li>
-<li>Create an eCDF plot of dart point length using the <code><a href="https://rdrr.io/r/stats/ecdf.html">ecdf()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. Add a separate color for dart point type. Make sure the plot is stepwise.</li>
+<li>Create an eCDF plot of penguin bill length using the <code><a href="https://rdrr.io/r/stats/ecdf.html">ecdf()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. Make sure the plot is stepwise.</li>
+<li>Create an eCDF plot of dart point length using the <code><a href="https://rdrr.io/r/stats/ecdf.html">ecdf()</a></code> and <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> functions. Make sure the plot is stepwise.</li>
 <li>Create a boxplot of penguin bill length grouped by species using the <code><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot()</a></code> function. Give the plot a horizontal orientation.</li>
 <li>Create a boxplot of dart point length grouped by dart point type using the <code><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot()</a></code> function. Give the plot a horizontal orientation.</li>
 </ol>

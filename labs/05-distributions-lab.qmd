@@ -1023,7 +1023,7 @@ For each of the following, make sure to change the fill (`col`) and outline (`bo
 2. Create a histogram of dart point length using the `hist()` function.
 2. Create a probability density plot of penguin bill length using the `density()` and `plot()` functions. (Note that the `density()` function does not like missing values, so if there are any NA values in your data, you will need to include the argument `na.rm = TRUE` (this tells the function to ignore missing values).)
 2. Create a probability density plot of dart point length using the `density()` and `plot()` functions.
-2. Create an eCDF plot of penguin bill length using the `ecdf()` and `plot()` functions. Add a separate color for each species. Make sure the plot is stepwise.
-2. Create an eCDF plot of dart point length using the `ecdf()` and `plot()` functions. Add a separate color for dart point type. Make sure the plot is stepwise.
+2. Create an eCDF plot of penguin bill length using the `ecdf()` and `plot()` functions. Make sure the plot is stepwise.
+2. Create an eCDF plot of dart point length using the `ecdf()` and `plot()` functions. Make sure the plot is stepwise.
 2. Create a boxplot of penguin bill length grouped by species using the `boxplot()` function. Give the plot a horizontal orientation.
 2. Create a boxplot of dart point length grouped by dart point type using the `boxplot()` function. Give the plot a horizontal orientation.

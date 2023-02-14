@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-02-14">
+<meta name="description" content="A review and a deep dive into working with rectangular data in R.">
+<title>Quantitative Analysis of Archaeological Data - Lab 06: Working with Tables</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+</head>
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.html">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#tables" id="toc-tables" class="nav-link" data-scroll-target="#tables">Tables</a>
+  <ul class="collapse">
+<li><a href="#creating-tables" id="toc-creating-tables" class="nav-link" data-scroll-target="#creating-tables">Creating tables</a></li>
+  <li><a href="#getting-basic-meta-data-from-tables" id="toc-getting-basic-meta-data-from-tables" class="nav-link" data-scroll-target="#getting-basic-meta-data-from-tables">Getting basic meta-data from tables</a></li>
+  <li><a href="#pretty-tibbles" id="toc-pretty-tibbles" class="nav-link" data-scroll-target="#pretty-tibbles">Pretty tibbles</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+</li>
+  <li><a href="#the-pipe" id="toc-the-pipe" class="nav-link" data-scroll-target="#the-pipe">The Pipe</a></li>
+  <li>
+<a href="#columns" id="toc-columns" class="nav-link" data-scroll-target="#columns">Columns</a>
+  <ul class="collapse">
+<li><a href="#pull" id="toc-pull" class="nav-link" data-scroll-target="#pull"><code>pull()</code></a></li>
+  <li><a href="#select" id="toc-select" class="nav-link" data-scroll-target="#select"><code>select()</code></a></li>
+  <li><a href="#rename" id="toc-rename" class="nav-link" data-scroll-target="#rename"><code>rename()</code></a></li>
+  <li><a href="#relocate" id="toc-relocate" class="nav-link" data-scroll-target="#relocate"><code>relocate()</code></a></li>
+  <li><a href="#mutate" id="toc-mutate" class="nav-link" data-scroll-target="#mutate"><code>mutate()</code></a></li>
+  <li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#rows" id="toc-rows" class="nav-link" data-scroll-target="#rows">Rows</a>
+  <ul class="collapse">
+<li><a href="#arrange" id="toc-arrange" class="nav-link" data-scroll-target="#arrange"><code>arrange()</code></a></li>
+  <li><a href="#distinct" id="toc-distinct" class="nav-link" data-scroll-target="#distinct"><code>distinct()</code></a></li>
+  <li><a href="#filter" id="toc-filter" class="nav-link" data-scroll-target="#filter"><code>filter()</code></a></li>
+  <li><a href="#exercises-2" id="toc-exercises-2" class="nav-link" data-scroll-target="#exercises-2">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#groups" id="toc-groups" class="nav-link" data-scroll-target="#groups">Groups</a>
+  <ul class="collapse">
+<li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
+  </ul>
+</li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 06: Working with Tables</h1>
+</div>
+
+<div>
+  <div class="description">
+    A review and a deep dive into working with rectangular data in R.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 14, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ul>
+<li>constructing data.frames and tibbles</li>
+<li>working with the pipe</li>
+<li>working with columns (variables) in a table</li>
+<li>working with rows (observations) in a table</li>
+<li>working with grouped data in a table</li>
+</ul></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></li>
+<li><a href="https://dplyr.tidyverse.org/">dplyr</a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code>
+</li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a>
+</li>
+</ul>
+</li>
+<li>
+<code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+</ul></section></section><section id="tables" class="level2"><h2 class="anchored" data-anchor-id="tables">Tables</h2>
+<div id="fig-table" class="quarto-figure quarto-figure-center anchored" style="text-align:center;">
+<figure class="figure"><div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/r-tables.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Elements of a Data Frame.</figcaption><p></p>
+</figure>
+</div>
+<p>Consider this research scenario: you have a museum collection of projectile points that you want to use for an analysis, maybe you want to know whether East Gate and Rose Spring points are actually the same type of point, commonly referred to using the portmanteau <em>Rosegate</em>. Following tradition, you think maybe it’s the size and shape that will you help finally put this old question to rest, so for each individual point, you set about measuring its length, width, and height.</p>
+<p>In this course, we’ll refer to each individual measure that you make as a <em>value</em>, each set of such measures for an individual point we will call (somewhat awkwardly) an <em>observation</em>, and each individual type of measurement will be a <em>variable</em>. It is almost certainly the case that you will be collecting this data and storing it in something like a spreadsheet or table, like that shown in <a href="#fig-table">Figure&nbsp;1</a>. You will sometimes hear data scientists refer to data stored in this way as <em>rectangular</em> data. All they mean by that is that the data come as collections of values organized into rows and columns. Crucially, all the columns must have the same length, so you can describe the data as having dimensions, specifically length (the number of observations or rows) and width (the number of variables or columns).</p>
+<section id="creating-tables" class="level3"><h3 class="anchored" data-anchor-id="creating-tables">Creating tables</h3>
+<p>In R, tabular datasets are known as <em>data frames</em>. To create a data frame, we use the eponymous <code><a href="https://rdrr.io/r/base/data.frame.html">data.frame()</a></code> function. Here, for example, is how we would create the table in <a href="#fig-table">Figure&nbsp;1</a> above:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Elko"</span>, <span class="st">"Rosegate"</span>, <span class="st">"DSN"</span>, <span class="st">"Elko"</span>, <span class="st">"Clovis"</span><span class="op">)</span>,</span>
+<span>  length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.03</span>, <span class="fl">1.4</span>, <span class="fl">1.9</span>, <span class="fl">2.1</span>, <span class="fl">3.3</span><span class="op">)</span>,</span>
+<span>  width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.23</span>, <span class="fl">2.4</span>, <span class="fl">1.29</span>, <span class="fl">2.7</span>, <span class="fl">4.15</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">projectiles_df</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length width height
+1     Elko   2.03  0.80   3.23
+2 Rosegate   1.40  0.40   2.40
+3      DSN   1.90  0.30   1.29
+4     Elko   2.10  0.70   2.70
+5   Clovis   3.30  0.95   4.15</code></pre>
+</div>
+</div>
+<p>Note that the values (or measurements) contained in each variable are wrapped in the <code><a href="https://rdrr.io/r/base/c.html">c()</a></code> function (short for <em>concatenate</em>). This variable tells R that all these values belong to this one variable. Each variable in turn is an argument to <code><a href="https://rdrr.io/r/base/data.frame.html">data.frame()</a></code> having the form <code>&lt;variable&gt; = c(&lt;value-1&gt;, &lt;value-2&gt;, ..., &lt;value-n&gt;)</code>.</p>
+</section><section id="getting-basic-meta-data-from-tables" class="level3"><h3 class="anchored" data-anchor-id="getting-basic-meta-data-from-tables">Getting basic meta-data from tables</h3>
+<p>When you want to know what variables a table includes, you can use the <code><a href="https://rdrr.io/r/base/names.html">names()</a></code> function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">projectiles_df</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "type"   "length" "width"  "height"</code></pre>
+</div>
+</div>
+<p>If you want to know how many variables or observations the table has, you can use <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> and <code><a href="https://rdrr.io/r/base/nrow.html">ncol()</a></code> respectively.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># number of observations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">projectiles_df</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># number of variables</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">projectiles_df</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+</section><section id="pretty-tibbles" class="level3"><h3 class="anchored" data-anchor-id="pretty-tibbles">Pretty tibbles</h3>
+<p>As an alternative to the default <code>data.frame</code>, you can also use a <code>tibble</code>, which is a standard format used by packages within the <code>tidyverse</code>, including the <code>tibble</code> package that defines it. In the grand scheme of things, the differences between tibbles and data.frames are quite small, mostly relating to their nicer (some might say prettier) print methods. It has some other nice features, but most of them are not things that should concern a beginning R user, so we won’t dwell on them here.</p>
+<p>You create a tibble just like you would a data.frame, but with the <code><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble()</a></code> function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Elko"</span>, <span class="st">"Rosegate"</span>, <span class="st">"DSN"</span>, <span class="st">"Elko"</span>, <span class="st">"Clovis"</span><span class="op">)</span>,</span>
+<span>  length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.03</span>, <span class="fl">1.4</span>, <span class="fl">1.9</span>, <span class="fl">2.1</span>, <span class="fl">3.3</span><span class="op">)</span>,</span>
+<span>  width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.23</span>, <span class="fl">2.4</span>, <span class="fl">1.29</span>, <span class="fl">2.7</span>, <span class="fl">4.15</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now you can see how the print method for tibbles differs from that of data.frames.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_df</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      type length width height
+1     Elko   2.03  0.80   3.23
+2 Rosegate   1.40  0.40   2.40
+3      DSN   1.90  0.30   1.29
+4     Elko   2.10  0.70   2.70
+5   Clovis   3.30  0.95   4.15</code></pre>
+</div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_tbl</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  type     length width height
+  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 Elko       2.03  0.8    3.23
+2 Rosegate   1.4   0.4    2.4 
+3 DSN        1.9   0.3    1.29
+4 Elko       2.1   0.7    2.7 
+5 Clovis     3.3   0.95   4.15</code></pre>
+</div>
+</div>
+<p>There are a few big differences here:</p>
+<ol type="1">
+<li>By default <code><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble()</a></code> will only print the first ten rows of data. This saves you from having to use the <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> function. It will also tell you how many rows were not printed at the bottom, assuming there are more than ten. With <code><a href="https://rdrr.io/r/base/data.frame.html">data.frame()</a></code>, the default print will print the maximum number of rows defined in your default options.</li>
+<li>
+<code><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble()</a></code> will only print columns that fit on your screen. It will then tell you how many columns were not printed.</li>
+<li>
+<code><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble()</a></code> provides information about the dimensions of your table: the number of rows and columns.</li>
+<li>
+<code><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble()</a></code> provides information about the type of data each variable is: factor (<code>fct</code>), character, numeric (<code>dbl</code> for “double” or <code>int</code> for “integer”).</li>
+</ol>
+<p>While the choice between <code>tibbles</code> and <code>data.frames</code> is largely a stylistic one, I would encourage you to use <code>tibbles</code> as much as possible. It’ll make things easier for you in the long run. You can always convert between them if you want with <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble()</a></code> and <code><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># turn a tibble into a data.frame</span></span>
+<span><span class="va">projectiles_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">projectiles_tbl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># turn a data.frame into a tibble</span></span>
+<span><span class="va">projectiles_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">projectiles_df</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In what follows, we are going to learn how to perform some tasks that almost always arise when working with tables using a powerful set of tools provided by the <code>dplyr</code> package, which is part of the <code>tidyverse</code>.</p>
+</section><section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+<ol type="1">
+<li>Get the names of the variables in the <code>penguins</code> table with <code><a href="https://rdrr.io/r/base/names.html">names()</a></code>.</li>
+<li>How many observations and variables are in this dataset? Hint: use <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> and <code><a href="https://rdrr.io/r/base/nrow.html">ncol()</a></code>.</li>
+<li>Load the DartPoints dataset and convert the data.frame to a tibble with <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble()</a></code>. Assign it to a new object called “darts” using the arrow <code>&lt;-</code>. Then remove the original DartPoints dataframe from your environment with <code>remove(DartPoints)</code>.</li>
+</ol></section></section><section id="the-pipe" class="level2"><h2 class="anchored" data-anchor-id="the-pipe">The Pipe</h2>
+<div id="fig-pipe" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure"><p><img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="img-fluid figure-img"><a href="https://en.wikipedia.org/wiki/The_Treachery_of_Images">The Treachery of Images</a> (1929) by Rene Magritte.</p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: <strong>?(caption)</strong></figcaption><p></p>
+</figure>
+</div>
+<p>Before we get to the ways in which you can shape and otherwise manipulate tables in R, though, let’s introduce a style of coding referred to as <code>piping</code> first, which allows you to express a series of operations in a clear and concise way. To motivate the use of pipes, consider this extremely common scenario: you want to select some specific variables in your table, filter the observations to include a subset based on some condition, then add a new variable by transforming or mutating another one. Your code might look like this (we will explain how to use these functions in just a moment):</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bob</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="va">species</span>, <span class="va">island</span>, <span class="va">bill_length_mm</span>, <span class="va">body_mass_g</span><span class="op">)</span></span>
+<span><span class="va">tom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">bob</span>, <span class="va">sex</span> <span class="op">==</span> <span class="st">"male"</span><span class="op">)</span></span>
+<span><span class="va">sue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span><span class="va">tom</span>, bill_length_cm <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">remove</a></span><span class="op">(</span><span class="va">bob</span>, <span class="va">tom</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You will sometimes see people write the same series of function calls this way:</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="va">species</span>, <span class="va">island</span>, <span class="va">bill_length_mm</span>, <span class="va">body_mass_g</span><span class="op">)</span>, <span class="va">island</span> <span class="op">==</span> <span class="st">"Torgersen"</span><span class="op">)</span>, bill_length_cm <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is called <em>nesting</em>. It’s primary advantage is that it does not require saving intermediate objects (like <code>bob</code> and <code>tom</code>) and thus polluting your R environment with unnecessary copies of your data. Nesting function calls in this way is fine as long as it remains relatively <em>shallow</em>, but the deeper the nest (like 2 or 3 functions deep), the harder it is to read, as you must follow results from the inside out and bottom up, as opposed to left to right and top down, which is more natural.</p>
+<p>To avoid deep nests <em>and</em> temporary assignments, you can use pipes. This involves calling the special operator, <code>|&gt;</code>, consisting of a vertical bar and the greater-than sign that was introduced to base R in 2021 with version 4.1.0. If you squint (and depending on the font you are using), it looks a bit like an arrow pointing to the right. Using the pipe-operator looks like this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sue</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">sex</span>, <span class="va">body_mass_g</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"male"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bill_length_cm <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you were to transpose this code into a natural language like English, it would sound something like this,</p>
+<blockquote class="blockquote">
+<p>Take the penguins table, then select the variables species, sex, and body mass, then filter the males, then create a new variable by converting bill length from millimeters to centimeters.</p>
+</blockquote>
+<p>The ‘then’ in each case is the pipe operator. Crucially, the pipe assumes that the data being transformed is the first argument to the function, which is true for all the functions in the <code>tidyverse</code>, as they were all designed very intentionally to work with the pipe. Unfortunately, many parts of R were written long before the pipe was ever introduced, so they may not work as easily with it.</p>
+<div class="callout-info callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Info
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is easily one of the most powerful tools for working with data in R, which is probably why it is so popular these days. RStudio gives a keyboard shortcut to make inserting this operator into your code easier. It’s <code>Ctrl + Shift + M</code> on Windows and <code>Cmd + Shift + M</code> on Mac. To ensure that this keyboard shortcut inserts the base R pipe operator, go to Tools &gt; Global Options… &gt; Code &gt; Editing and check that the option “Use native pipe operator, |&gt; (requires R 4.1+)” is selected.</p>
+</div>
+</div>
+</section><section id="columns" class="level2"><h2 class="anchored" data-anchor-id="columns">Columns</h2>
+<p>Now that we have the pipe, let’s look at different ways of working with variables or columns in a table. Some of the most common tasks involve selecting a subset of variables, relocating them, renaming them, and creating new variables. As mentioned before, the focus here will be on <code>dplyr</code> functions, but we will also take some time to introduce base R methods where appropriate.</p>
+<section id="pull" class="level3"><h3 class="anchored" data-anchor-id="pull"><code>pull()</code></h3>
+<p>To pull a variable out of a table and return it as a vector, you can pass the table along with the name of the target variable to the <code><a href="https://dplyr.tidyverse.org/reference/pull.html">pull()</a></code> function from <code>dplyr</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">bill_length_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 39.1 39.5 40.3   NA 36.7 39.3 38.9 39.2 34.1 42.0 37.8 37.8 41.1 38.6 34.6
+ [16] 36.6 38.7 42.5 34.4 46.0 37.8 37.7 35.9 38.2 38.8 35.3 40.6 40.5 37.9 40.5
+ [31] 39.5 37.2 39.5 40.9 36.4 39.2 38.8 42.2 37.6 39.8 36.5 40.8 36.0 44.1 37.0
+ [46] 39.6 41.1 37.5 36.0 42.3 39.6 40.1 35.0 42.0 34.5 41.4 39.0 40.6 36.5 37.6
+ [61] 35.7 41.3 37.6 41.1 36.4 41.6 35.5 41.1 35.9 41.8 33.5 39.7 39.6 45.8 35.5
+ [76] 42.8 40.9 37.2 36.2 42.1 34.6 42.9 36.7 35.1 37.3 41.3 36.3 36.9 38.3 38.9
+ [91] 35.7 41.1 34.0 39.6 36.2 40.8 38.1 40.3 33.1 43.2 35.0 41.0 37.7 37.8 37.9
+[106] 39.7 38.6 38.2 38.1 43.2 38.1 45.6 39.7 42.2 39.6 42.7 38.6 37.3 35.7 41.1
+[121] 36.2 37.7 40.2 41.4 35.2 40.6 38.8 41.5 39.0 44.1 38.5 43.1 36.8 37.5 38.1
+[136] 41.1 35.6 40.2 37.0 39.7 40.2 40.6 32.1 40.7 37.3 39.0 39.2 36.6 36.0 37.8
+[151] 36.0 41.5 46.1 50.0 48.7 50.0 47.6 46.5 45.4 46.7 43.3 46.8 40.9 49.0 45.5
+[166] 48.4 45.8 49.3 42.0 49.2 46.2 48.7 50.2 45.1 46.5 46.3 42.9 46.1 44.5 47.8
+[181] 48.2 50.0 47.3 42.8 45.1 59.6 49.1 48.4 42.6 44.4 44.0 48.7 42.7 49.6 45.3
+[196] 49.6 50.5 43.6 45.5 50.5 44.9 45.2 46.6 48.5 45.1 50.1 46.5 45.0 43.8 45.5
+[211] 43.2 50.4 45.3 46.2 45.7 54.3 45.8 49.8 46.2 49.5 43.5 50.7 47.7 46.4 48.2
+[226] 46.5 46.4 48.6 47.5 51.1 45.2 45.2 49.1 52.5 47.4 50.0 44.9 50.8 43.4 51.3
+[241] 47.5 52.1 47.5 52.2 45.5 49.5 44.5 50.8 49.4 46.9 48.4 51.1 48.5 55.9 47.2
+[256] 49.1 47.3 46.8 41.7 53.4 43.3 48.1 50.5 49.8 43.5 51.5 46.2 55.1 44.5 48.8
+[271] 47.2   NA 46.8 50.4 45.2 49.9 46.5 50.0 51.3 45.4 52.7 45.2 46.1 51.3 46.0
+[286] 51.3 46.6 51.7 47.0 52.0 45.9 50.5 50.3 58.0 46.4 49.2 42.4 48.5 43.2 50.6
+[301] 46.7 52.0 50.5 49.5 46.4 52.8 40.9 54.2 42.5 51.0 49.7 47.5 47.6 52.0 46.9
+[316] 53.5 49.0 46.2 50.9 45.5 50.9 50.8 50.1 49.0 51.5 49.8 48.1 51.4 45.7 50.7
+[331] 42.5 52.2 45.2 49.3 50.2 45.6 51.9 46.8 45.7 55.8 43.5 49.6 50.8 50.2</code></pre>
+</div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">bill_depth_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 18.7 17.4 18.0   NA 19.3 20.6 17.8 19.6 18.1 20.2 17.1 17.3 17.6 21.2 21.1
+ [16] 17.8 19.0 20.7 18.4 21.5 18.3 18.7 19.2 18.1 17.2 18.9 18.6 17.9 18.6 18.9
+ [31] 16.7 18.1 17.8 18.9 17.0 21.1 20.0 18.5 19.3 19.1 18.0 18.4 18.5 19.7 16.9
+ [46] 18.8 19.0 18.9 17.9 21.2 17.7 18.9 17.9 19.5 18.1 18.6 17.5 18.8 16.6 19.1
+ [61] 16.9 21.1 17.0 18.2 17.1 18.0 16.2 19.1 16.6 19.4 19.0 18.4 17.2 18.9 17.5
+ [76] 18.5 16.8 19.4 16.1 19.1 17.2 17.6 18.8 19.4 17.8 20.3 19.5 18.6 19.2 18.8
+ [91] 18.0 18.1 17.1 18.1 17.3 18.9 18.6 18.5 16.1 18.5 17.9 20.0 16.0 20.0 18.6
+[106] 18.9 17.2 20.0 17.0 19.0 16.5 20.3 17.7 19.5 20.7 18.3 17.0 20.5 17.0 18.6
+[121] 17.2 19.8 17.0 18.5 15.9 19.0 17.6 18.3 17.1 18.0 17.9 19.2 18.5 18.5 17.6
+[136] 17.5 17.5 20.1 16.5 17.9 17.1 17.2 15.5 17.0 16.8 18.7 18.6 18.4 17.8 18.1
+[151] 17.1 18.5 13.2 16.3 14.1 15.2 14.5 13.5 14.6 15.3 13.4 15.4 13.7 16.1 13.7
+[166] 14.6 14.6 15.7 13.5 15.2 14.5 15.1 14.3 14.5 14.5 15.8 13.1 15.1 14.3 15.0
+[181] 14.3 15.3 15.3 14.2 14.5 17.0 14.8 16.3 13.7 17.3 13.6 15.7 13.7 16.0 13.7
+[196] 15.0 15.9 13.9 13.9 15.9 13.3 15.8 14.2 14.1 14.4 15.0 14.4 15.4 13.9 15.0
+[211] 14.5 15.3 13.8 14.9 13.9 15.7 14.2 16.8 14.4 16.2 14.2 15.0 15.0 15.6 15.6
+[226] 14.8 15.0 16.0 14.2 16.3 13.8 16.4 14.5 15.6 14.6 15.9 13.8 17.3 14.4 14.2
+[241] 14.0 17.0 15.0 17.1 14.5 16.1 14.7 15.7 15.8 14.6 14.4 16.5 15.0 17.0 15.5
+[256] 15.0 13.8 16.1 14.7 15.8 14.0 15.1 15.2 15.9 15.2 16.3 14.1 16.0 15.7 16.2
+[271] 13.7   NA 14.3 15.7 14.8 16.1 17.9 19.5 19.2 18.7 19.8 17.8 18.2 18.2 18.9
+[286] 19.9 17.8 20.3 17.3 18.1 17.1 19.6 20.0 17.8 18.6 18.2 17.3 17.5 16.6 19.4
+[301] 17.9 19.0 18.4 19.0 17.8 20.0 16.6 20.8 16.7 18.8 18.6 16.8 18.3 20.7 16.6
+[316] 19.9 19.5 17.5 19.1 17.0 17.9 18.5 17.9 19.6 18.7 17.3 16.4 19.0 17.3 19.7
+[331] 17.3 18.8 16.6 19.9 18.8 19.4 19.5 16.5 17.0 19.8 18.1 18.2 19.0 18.7</code></pre>
+</div>
+</div>
+<p>The base R way of doing this relies on double brackets or the dollar sign, as in <code>&lt;table&gt;[["&lt;variable&gt;"]]</code> and <code>&lt;table&gt;$&lt;variable&gt;</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 39.1 39.5 40.3   NA 36.7 39.3 38.9 39.2 34.1 42.0 37.8 37.8 41.1 38.6 34.6
+ [16] 36.6 38.7 42.5 34.4 46.0 37.8 37.7 35.9 38.2 38.8 35.3 40.6 40.5 37.9 40.5
+ [31] 39.5 37.2 39.5 40.9 36.4 39.2 38.8 42.2 37.6 39.8 36.5 40.8 36.0 44.1 37.0
+ [46] 39.6 41.1 37.5 36.0 42.3 39.6 40.1 35.0 42.0 34.5 41.4 39.0 40.6 36.5 37.6
+ [61] 35.7 41.3 37.6 41.1 36.4 41.6 35.5 41.1 35.9 41.8 33.5 39.7 39.6 45.8 35.5
+ [76] 42.8 40.9 37.2 36.2 42.1 34.6 42.9 36.7 35.1 37.3 41.3 36.3 36.9 38.3 38.9
+ [91] 35.7 41.1 34.0 39.6 36.2 40.8 38.1 40.3 33.1 43.2 35.0 41.0 37.7 37.8 37.9
+[106] 39.7 38.6 38.2 38.1 43.2 38.1 45.6 39.7 42.2 39.6 42.7 38.6 37.3 35.7 41.1
+[121] 36.2 37.7 40.2 41.4 35.2 40.6 38.8 41.5 39.0 44.1 38.5 43.1 36.8 37.5 38.1
+[136] 41.1 35.6 40.2 37.0 39.7 40.2 40.6 32.1 40.7 37.3 39.0 39.2 36.6 36.0 37.8
+[151] 36.0 41.5 46.1 50.0 48.7 50.0 47.6 46.5 45.4 46.7 43.3 46.8 40.9 49.0 45.5
+[166] 48.4 45.8 49.3 42.0 49.2 46.2 48.7 50.2 45.1 46.5 46.3 42.9 46.1 44.5 47.8
+[181] 48.2 50.0 47.3 42.8 45.1 59.6 49.1 48.4 42.6 44.4 44.0 48.7 42.7 49.6 45.3
+[196] 49.6 50.5 43.6 45.5 50.5 44.9 45.2 46.6 48.5 45.1 50.1 46.5 45.0 43.8 45.5
+[211] 43.2 50.4 45.3 46.2 45.7 54.3 45.8 49.8 46.2 49.5 43.5 50.7 47.7 46.4 48.2
+[226] 46.5 46.4 48.6 47.5 51.1 45.2 45.2 49.1 52.5 47.4 50.0 44.9 50.8 43.4 51.3
+[241] 47.5 52.1 47.5 52.2 45.5 49.5 44.5 50.8 49.4 46.9 48.4 51.1 48.5 55.9 47.2
+[256] 49.1 47.3 46.8 41.7 53.4 43.3 48.1 50.5 49.8 43.5 51.5 46.2 55.1 44.5 48.8
+[271] 47.2   NA 46.8 50.4 45.2 49.9 46.5 50.0 51.3 45.4 52.7 45.2 46.1 51.3 46.0
+[286] 51.3 46.6 51.7 47.0 52.0 45.9 50.5 50.3 58.0 46.4 49.2 42.4 48.5 43.2 50.6
+[301] 46.7 52.0 50.5 49.5 46.4 52.8 40.9 54.2 42.5 51.0 49.7 47.5 47.6 52.0 46.9
+[316] 53.5 49.0 46.2 50.9 45.5 50.9 50.8 50.1 49.0 51.5 49.8 48.1 51.4 45.7 50.7
+[331] 42.5 52.2 45.2 49.3 50.2 45.6 51.9 46.8 45.7 55.8 43.5 49.6 50.8 50.2</code></pre>
+</div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span><span class="op">[[</span><span class="st">"bill_depth_mm"</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] 18.7 17.4 18.0   NA 19.3 20.6 17.8 19.6 18.1 20.2 17.1 17.3 17.6 21.2 21.1
+ [16] 17.8 19.0 20.7 18.4 21.5 18.3 18.7 19.2 18.1 17.2 18.9 18.6 17.9 18.6 18.9
+ [31] 16.7 18.1 17.8 18.9 17.0 21.1 20.0 18.5 19.3 19.1 18.0 18.4 18.5 19.7 16.9
+ [46] 18.8 19.0 18.9 17.9 21.2 17.7 18.9 17.9 19.5 18.1 18.6 17.5 18.8 16.6 19.1
+ [61] 16.9 21.1 17.0 18.2 17.1 18.0 16.2 19.1 16.6 19.4 19.0 18.4 17.2 18.9 17.5
+ [76] 18.5 16.8 19.4 16.1 19.1 17.2 17.6 18.8 19.4 17.8 20.3 19.5 18.6 19.2 18.8
+ [91] 18.0 18.1 17.1 18.1 17.3 18.9 18.6 18.5 16.1 18.5 17.9 20.0 16.0 20.0 18.6
+[106] 18.9 17.2 20.0 17.0 19.0 16.5 20.3 17.7 19.5 20.7 18.3 17.0 20.5 17.0 18.6
+[121] 17.2 19.8 17.0 18.5 15.9 19.0 17.6 18.3 17.1 18.0 17.9 19.2 18.5 18.5 17.6
+[136] 17.5 17.5 20.1 16.5 17.9 17.1 17.2 15.5 17.0 16.8 18.7 18.6 18.4 17.8 18.1
+[151] 17.1 18.5 13.2 16.3 14.1 15.2 14.5 13.5 14.6 15.3 13.4 15.4 13.7 16.1 13.7
+[166] 14.6 14.6 15.7 13.5 15.2 14.5 15.1 14.3 14.5 14.5 15.8 13.1 15.1 14.3 15.0
+[181] 14.3 15.3 15.3 14.2 14.5 17.0 14.8 16.3 13.7 17.3 13.6 15.7 13.7 16.0 13.7
+[196] 15.0 15.9 13.9 13.9 15.9 13.3 15.8 14.2 14.1 14.4 15.0 14.4 15.4 13.9 15.0
+[211] 14.5 15.3 13.8 14.9 13.9 15.7 14.2 16.8 14.4 16.2 14.2 15.0 15.0 15.6 15.6
+[226] 14.8 15.0 16.0 14.2 16.3 13.8 16.4 14.5 15.6 14.6 15.9 13.8 17.3 14.4 14.2
+[241] 14.0 17.0 15.0 17.1 14.5 16.1 14.7 15.7 15.8 14.6 14.4 16.5 15.0 17.0 15.5
+[256] 15.0 13.8 16.1 14.7 15.8 14.0 15.1 15.2 15.9 15.2 16.3 14.1 16.0 15.7 16.2
+[271] 13.7   NA 14.3 15.7 14.8 16.1 17.9 19.5 19.2 18.7 19.8 17.8 18.2 18.2 18.9
+[286] 19.9 17.8 20.3 17.3 18.1 17.1 19.6 20.0 17.8 18.6 18.2 17.3 17.5 16.6 19.4
+[301] 17.9 19.0 18.4 19.0 17.8 20.0 16.6 20.8 16.7 18.8 18.6 16.8 18.3 20.7 16.6
+[316] 19.9 19.5 17.5 19.1 17.0 17.9 18.5 17.9 19.6 18.7 17.3 16.4 19.0 17.3 19.7
+[331] 17.3 18.8 16.6 19.9 18.8 19.4 19.5 16.5 17.0 19.8 18.1 18.2 19.0 18.7</code></pre>
+</div>
+</div>
+<p>As you can see, using the <code>dplyr</code> function is quite a bit easier to read and intuit what you are doing. It also plays nice with the pipe.</p>
+</section><section id="select" class="level3"><h3 class="anchored" data-anchor-id="select"><code>select()</code></h3>
+<p>If you want to select one or more variables but return the result as a table, pass the table along with the names of the desired variables to <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code>. As an example, suppose (for reasons) that we want a smaller table that only has the <code>species</code> and <code>bill_length_mm</code> variables. To get that from the larger table, I simply do this</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">bill_length_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 2
+   species bill_length_mm
+   &lt;fct&gt;            &lt;dbl&gt;
+ 1 Adelie            39.1
+ 2 Adelie            39.5
+ 3 Adelie            40.3
+ 4 Adelie            NA  
+ 5 Adelie            36.7
+ 6 Adelie            39.3
+ 7 Adelie            38.9
+ 8 Adelie            39.2
+ 9 Adelie            34.1
+10 Adelie            42  
+# … with 334 more rows</code></pre>
+</div>
+</div>
+</section><section id="rename" class="level3"><h3 class="anchored" data-anchor-id="rename"><code>rename()</code></h3>
+<p>To rename variables in a table, use the <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code> function. This is similar to <code><a href="https://dplyr.tidyverse.org/reference/pull.html">pull()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> in that you pass it column names, but you are also going to signal new names for those columns using the equal sign. The idea here is to do <code>rename(&lt;new name&gt; = &lt;old name&gt;)</code>. Here, for example, is how you might remove the units of measure from the variable names in the penguins table.</p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "species"           "island"            "bill_length_mm"   
+[4] "bill_depth_mm"     "flipper_length_mm" "body_mass_g"      
+[7] "sex"               "year"             </code></pre>
+</div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span></span>
+<span>    bill_length <span class="op">=</span> <span class="va">bill_length_mm</span>,</span>
+<span>    bill_depth <span class="op">=</span> <span class="va">bill_depth_mm</span>,</span>
+<span>    flipper_length <span class="op">=</span> <span class="va">flipper_length_mm</span>,</span>
+<span>    body_mass <span class="op">=</span> <span class="va">body_mass_g</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "species"        "island"         "bill_length"    "bill_depth"    
+[5] "flipper_length" "body_mass"      "sex"            "year"          </code></pre>
+</div>
+</div>
+<div class="callout-info callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Info
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here are a few good rules of thumb for variable names in tables (and for all names in R!).</p>
+<ol type="1">
+<li>Use all lower-case characters. This makes them easier to type.</li>
+<li>Avoid special characters. They require special treatment when included.</li>
+<li>Use underscores <code>_</code> instead of spaces for similar reasons.</li>
+<li>Try to keep the names as simple as possible but…</li>
+<li>Air on the side of longer names that clearly communicate the meaning of each variable.</li>
+</ol>
+</div>
+</div>
+<p>Here is one trick you might find useful. Sometimes you will find yourself wanting to rename all the variables in a consistent way, for instance, by making them all lower case. This is something I find myself doing quite often actually. Base R has this nice function called <code><a href="https://rdrr.io/r/base/chartr.html">tolower()</a></code> that converts capitalized letters to lowercase. For instance, <code>tolower("ABC")</code> returns <code>abc</code>. There’s a corresponding <code><a href="https://rdrr.io/r/base/chartr.html">toupper()</a></code> that does the opposite. You can apply these functions to every column in one go with <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="va">toupper</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "SPECIES"           "ISLAND"            "BILL_LENGTH_MM"   
+[4] "BILL_DEPTH_MM"     "FLIPPER_LENGTH_MM" "BODY_MASS_G"      
+[7] "SEX"               "YEAR"             </code></pre>
+</div>
+</div>
+</section><section id="relocate" class="level3"><h3 class="anchored" data-anchor-id="relocate"><code>relocate()</code></h3>
+<p>You will sometimes find it helpful to reorder your variables. To do that, you can use <code><a href="https://dplyr.tidyverse.org/reference/relocate.html">relocate()</a></code>, again passing it the column names. By default, it moves variables to the front, but you can also move them before or after specific variables with the <code>.before</code> and <code>.after</code> arguments.</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "species"           "island"            "bill_length_mm"   
+[4] "bill_depth_mm"     "flipper_length_mm" "body_mass_g"      
+[7] "sex"               "year"             </code></pre>
+</div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html">relocate</a></span><span class="op">(</span><span class="va">sex</span>, <span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "sex"               "year"              "species"          
+[4] "island"            "bill_length_mm"    "bill_depth_mm"    
+[7] "flipper_length_mm" "body_mass_g"      </code></pre>
+</div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html">relocate</a></span><span class="op">(</span><span class="va">sex</span>, <span class="va">year</span>, .after <span class="op">=</span> <span class="va">island</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "species"           "island"            "sex"              
+[4] "year"              "bill_length_mm"    "bill_depth_mm"    
+[7] "flipper_length_mm" "body_mass_g"      </code></pre>
+</div>
+</div>
+</section><section id="mutate" class="level3"><h3 class="anchored" data-anchor-id="mutate"><code>mutate()</code></h3>
+<p>One of the most important and powerful functions provided by <code>dplyr</code> is <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code>. This allows you to add or change variables, often based on the values of other variables in your table. For instance, you can create a new variable that codes bill length in centimeters rather than millimeters. You just divide millimeters by 10.</p>
+<div class="cell">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bill_length_cm <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">bill_length_mm</span>, <span class="va">bill_length_cm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 3
+   species bill_length_mm bill_length_cm
+   &lt;fct&gt;            &lt;dbl&gt;          &lt;dbl&gt;
+ 1 Adelie            39.1           3.91
+ 2 Adelie            39.5           3.95
+ 3 Adelie            40.3           4.03
+ 4 Adelie            NA            NA   
+ 5 Adelie            36.7           3.67
+ 6 Adelie            39.3           3.93
+ 7 Adelie            38.9           3.89
+ 8 Adelie            39.2           3.92
+ 9 Adelie            34.1           3.41
+10 Adelie            42             4.2 
+# … with 334 more rows</code></pre>
+</div>
+</div>
+<p>You can refer to as many variables in the table as you like, too. For instance, you can calculate the ratio of bill length to flipper length.</p>
+<div class="cell">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bill_to_flipper <span class="op">=</span> <span class="va">bill_length_mm</span><span class="op">/</span><span class="va">flipper_length_mm</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">bill_length_mm</span>, <span class="va">flipper_length_mm</span>, <span class="va">bill_to_flipper</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 4
+   species bill_length_mm flipper_length_mm bill_to_flipper
+   &lt;fct&gt;            &lt;dbl&gt;             &lt;int&gt;           &lt;dbl&gt;
+ 1 Adelie            39.1               181           0.216
+ 2 Adelie            39.5               186           0.212
+ 3 Adelie            40.3               195           0.207
+ 4 Adelie            NA                  NA          NA    
+ 5 Adelie            36.7               193           0.190
+ 6 Adelie            39.3               190           0.207
+ 7 Adelie            38.9               181           0.215
+ 8 Adelie            39.2               195           0.201
+ 9 Adelie            34.1               193           0.177
+10 Adelie            42                 190           0.221
+# … with 334 more rows</code></pre>
+</div>
+</div>
+<p>When you work with <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code>, keep in mind that data.frames and tibbles are <em>rectangular</em>. That means each variable in the table must have the same number of <em>values</em> (equal to the number of rows or <em>observations</em> in the table). In the penguins table, there are 344 observations, so any new variable that you add with <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> must have 344 values (it must have that length). If the variable you want to add does not have the same length, you will receive an error like the following:</p>
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `mutate()`:
+! Problem while computing `id = 1:5`.
+✖ `id` must be size 344 or 1, not 5.</code></pre>
+</div>
+</div>
+<p>Note, too, that you can refer to new variables you have created in the same <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> call.</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">island</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    id2 <span class="op">=</span> <span class="va">id</span> <span class="op">*</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 4
+   species island       id   id2
+   &lt;fct&gt;   &lt;fct&gt;     &lt;int&gt; &lt;dbl&gt;
+ 1 Adelie  Torgersen     1     2
+ 2 Adelie  Torgersen     2     4
+ 3 Adelie  Torgersen     3     6
+ 4 Adelie  Torgersen     4     8
+ 5 Adelie  Torgersen     5    10
+ 6 Adelie  Torgersen     6    12
+ 7 Adelie  Torgersen     7    14
+ 8 Adelie  Torgersen     8    16
+ 9 Adelie  Torgersen     9    18
+10 Adelie  Torgersen    10    20
+# … with 334 more rows</code></pre>
+</div>
+</div>
+</section><section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+<ol type="1">
+<li>Remind yourself of what variables the penguins table has with <code><a href="https://rdrr.io/r/base/names.html">names()</a></code>.</li>
+<li>Now, extract a variable of your choice with <code><a href="https://dplyr.tidyverse.org/reference/pull.html">pull()</a></code>.</li>
+<li>Subset the data by choosing only four variables of your choice with <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code>.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/relocate.html">relocate()</a></code> to move the species and island variables after bill_length_mm.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> on the <code>penguins</code> data to create variables that
+<ul>
+<li>represent body mass in kilograms,</li>
+<li>represent bill depth in centimeters,</li>
+<li>compare bill length to bill depth to see whether the former is greater than (<code>&gt;</code>) the latter.</li>
+</ul>
+</li>
+<li>Using the <code>darts</code> tibble (formerly the DartPoints data.frame), rename the variables so that they are all lower case, rename the “name” variable to “type”, and subset to the type, length, width, and thickness variables. Reassign this to darts, so you can save the result. Hint:</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">darts</span> <span class="op">&lt;-</span> <span class="va">darts</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">selet</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> to add a variable to <code>darts</code> that is the ratio of point length to width.</li>
+</ol></section></section><section id="rows" class="level2"><h2 class="anchored" data-anchor-id="rows">Rows</h2>
+<section id="arrange" class="level3"><h3 class="anchored" data-anchor-id="arrange"><code>arrange()</code></h3>
+<p>Sometimes it can be useful to sort a table, so you can more easily navigate the information it contains. To do this, <code>dplyr</code> provides the <code><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange()</a></code> function. This sorts observations based on a supplied variable or variables. By default, it sorts observations in ascending order. If you provide multiple variables, it will sort the first variable first, then sort the second variable within that variable, and so on. In effect, it breaks ties in the sorting process.</p>
+<div class="cell">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">island</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 8
+   species island bill_length_mm bill_depth_mm flipper_len…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;         &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Biscoe           37.8          18.3           174    3400 fema…  2007
+ 2 Adelie  Biscoe           37.7          18.7           180    3600 male   2007
+ 3 Adelie  Biscoe           35.9          19.2           189    3800 fema…  2007
+ 4 Adelie  Biscoe           38.2          18.1           185    3950 male   2007
+ 5 Adelie  Biscoe           38.8          17.2           180    3800 male   2007
+ 6 Adelie  Biscoe           35.3          18.9           187    3800 fema…  2007
+ 7 Adelie  Biscoe           40.6          18.6           183    3550 male   2007
+ 8 Adelie  Biscoe           40.5          17.9           187    3200 fema…  2007
+ 9 Adelie  Biscoe           37.9          18.6           172    3150 fema…  2007
+10 Adelie  Biscoe           40.5          18.9           180    3950 male   2007
+# … with 334 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+<p>You can use the <code><a href="https://dplyr.tidyverse.org/reference/desc.html">desc()</a></code> function to sort descending.</p>
+<div class="cell">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 8
+   species island bill_length_mm bill_depth_mm flipper_len…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;         &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Gentoo  Biscoe           46.1          13.2           211    4500 fema…  2007
+ 2 Gentoo  Biscoe           50            16.3           230    5700 male   2007
+ 3 Gentoo  Biscoe           48.7          14.1           210    4450 fema…  2007
+ 4 Gentoo  Biscoe           50            15.2           218    5700 male   2007
+ 5 Gentoo  Biscoe           47.6          14.5           215    5400 male   2007
+ 6 Gentoo  Biscoe           46.5          13.5           210    4550 fema…  2007
+ 7 Gentoo  Biscoe           45.4          14.6           211    4800 fema…  2007
+ 8 Gentoo  Biscoe           46.7          15.3           219    5200 male   2007
+ 9 Gentoo  Biscoe           43.3          13.4           209    4400 fema…  2007
+10 Gentoo  Biscoe           46.8          15.4           215    5150 male   2007
+# … with 334 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+</section><section id="distinct" class="level3"><h3 class="anchored" data-anchor-id="distinct"><code>distinct()</code></h3>
+<p>Observations will sometimes be duplicated in your data. The simplest way to remove them is with the <code><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct()</a></code> function. For demonstration purposes, suppose you have this simple dataset.</p>
+<div class="cell">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, </span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span>,</span>
+<span>  z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tbl</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 3
+      x y     z    
+  &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
+1     1 a     TRUE 
+2     1 a     TRUE 
+3     1 a     FALSE
+4     3 b     TRUE 
+5     2 c     TRUE </code></pre>
+</div>
+</div>
+<p>For whatever reason, your first observation or row has been duplicated (there are two rows with the values <em>x=1</em>, <em>y=a</em>, and <em>z=TRUE</em>). To remove that row, do this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+      x y     z    
+  &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
+1     1 a     TRUE 
+2     1 a     FALSE
+3     3 b     TRUE 
+4     2 c     TRUE </code></pre>
+</div>
+</div>
+<p>You may also want distinct combinations of a specific variable or variables.</p>
+<div class="cell">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+      x y    
+  &lt;dbl&gt; &lt;chr&gt;
+1     1 a    
+2     3 b    
+3     2 c    </code></pre>
+</div>
+</div>
+</section><section id="filter" class="level3"><h3 class="anchored" data-anchor-id="filter"><code>filter()</code></h3>
+<p>Subsetting data by filtering observations is a little bit more involved than simply selecting variables, but intuitively, you are simply asking for those observations that satisfy a certain condition. Getting <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> to return those observations requires that you pass it an expression containing a comparison operator. The expression is then evaluated by R for its truth or falsity, with observations that evaluate to <code>TRUE</code> being returned, observations that evaluate to <code>FALSE</code> being ignored. Let’s walk through an example, then try to break down what is happening in a little more detail. Suppose we want only those observations of penguins residing on Biscoe Island. Here is how we would go about collecting those observations from our penguins data.frame.</p>
+<div class="cell">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">island</span> <span class="op">==</span> <span class="st">"Biscoe"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 168 × 8
+   species island bill_length_mm bill_depth_mm flipper_len…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;         &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Biscoe           37.8          18.3           174    3400 fema…  2007
+ 2 Adelie  Biscoe           37.7          18.7           180    3600 male   2007
+ 3 Adelie  Biscoe           35.9          19.2           189    3800 fema…  2007
+ 4 Adelie  Biscoe           38.2          18.1           185    3950 male   2007
+ 5 Adelie  Biscoe           38.8          17.2           180    3800 male   2007
+ 6 Adelie  Biscoe           35.3          18.9           187    3800 fema…  2007
+ 7 Adelie  Biscoe           40.6          18.6           183    3550 male   2007
+ 8 Adelie  Biscoe           40.5          17.9           187    3200 fema…  2007
+ 9 Adelie  Biscoe           37.9          18.6           172    3150 fema…  2007
+10 Adelie  Biscoe           40.5          18.9           180    3950 male   2007
+# … with 158 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+<p>Here we supplied this key information to <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code>:</p>
+<pre><code>island == "Biscoe"</code></pre>
+<p>What does this expression mean exactly? In effect, it is directing <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> to scan through our data, specifically the <code>island</code> column, and select only those rows where the value is <em>Biscoe</em>. The so-called <em>comparison operator</em> here is the double equal sign, <code>==</code>. This is importantly different than the single equal sign, <code>=</code>, which is used inside a function as part of a <code>key=value</code> or <code>argument=value</code> pair. R provides several helpful comparison operators:</p>
+<ul>
+<li>
+<code>==</code> for <em>equals</em> in the sense of a perfect match,<br>
+</li>
+<li>
+<code>!=</code> for <em>not equals</em>,<br>
+</li>
+<li>
+<code>&gt;</code> for <em>greater than</em>,<br>
+</li>
+<li>
+<code>&gt;=</code> for <em>greater than or equal to</em>,<br>
+</li>
+<li>
+<code>&lt;</code> for <em>less than</em>, and<br>
+</li>
+<li>
+<code>&lt;=</code> for <em>less than or equal to</em>.</li>
+</ul>
+<p>You can use the first two, <code>==</code> and <code>!=</code>, for comparisons with either character or numeric variables, but the rest apply only to the latter. Let’s run through a few more examples:</p>
+<p><em>Filter penguins with body mass greater than 3500 grams</em>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">body_mass_g</span> <span class="op">&gt;</span> <span class="fl">3500</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 264 × 8
+   species island    bill_length_mm bill_depth_mm flipper_…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;      &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Torgersen           39.1          18.7        181    3750 male   2007
+ 2 Adelie  Torgersen           39.5          17.4        186    3800 fema…  2007
+ 3 Adelie  Torgersen           39.3          20.6        190    3650 male   2007
+ 4 Adelie  Torgersen           38.9          17.8        181    3625 fema…  2007
+ 5 Adelie  Torgersen           39.2          19.6        195    4675 male   2007
+ 6 Adelie  Torgersen           42            20.2        190    4250 &lt;NA&gt;   2007
+ 7 Adelie  Torgersen           37.8          17.3        180    3700 &lt;NA&gt;   2007
+ 8 Adelie  Torgersen           38.6          21.2        191    3800 male   2007
+ 9 Adelie  Torgersen           34.6          21.1        198    4400 male   2007
+10 Adelie  Torgersen           36.6          17.8        185    3700 fema…  2007
+# … with 254 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+<p><em>Filter penguins with beaks longer than 39 millimeters</em>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">bill_length_mm</span> <span class="op">&gt;</span> <span class="fl">39</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 260 × 8
+   species island    bill_length_mm bill_depth_mm flipper_…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;      &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Torgersen           39.1          18.7        181    3750 male   2007
+ 2 Adelie  Torgersen           39.5          17.4        186    3800 fema…  2007
+ 3 Adelie  Torgersen           40.3          18          195    3250 fema…  2007
+ 4 Adelie  Torgersen           39.3          20.6        190    3650 male   2007
+ 5 Adelie  Torgersen           39.2          19.6        195    4675 male   2007
+ 6 Adelie  Torgersen           42            20.2        190    4250 &lt;NA&gt;   2007
+ 7 Adelie  Torgersen           41.1          17.6        182    3200 fema…  2007
+ 8 Adelie  Torgersen           42.5          20.7        197    4500 male   2007
+ 9 Adelie  Torgersen           46            21.5        194    4200 male   2007
+10 Adelie  Biscoe              40.6          18.6        183    3550 male   2007
+# … with 250 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+<section id="multiple-conditions" class="level4"><h4 class="anchored" data-anchor-id="multiple-conditions">Multiple conditions</h4>
+<p>Often enough, we will want to combine a number of these simple conditions into one complex expression. In R, this is done with Boolean operators:</p>
+<ul>
+<li>
+<code>&amp;</code> for <em>and</em>,<br>
+</li>
+<li>
+<code>|</code> for <em>or</em>, and<br>
+</li>
+<li>
+<code>!</code> for <em>not</em>.</li>
+</ul>
+<p>To demonstrate the underlying logic of these Boolean operators, consider these shapes and colors. You can think of each of A, B, and C as its own observation or row in a data.frame that includes two variables <code>color</code> and <code>shape</code>.</p>
+<div id="fig-booleans" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure"><p><img src="images/booleans_example.png" class="img-fluid figure-img" style="width:40.0%"></p>
+</figure>
+</div>
+<div class="cell-output-display">
+
+<div id="ftauakekvb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+:where(#ftauakekvb) .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+:where(#ftauakekvb) .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+:where(#ftauakekvb) .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+:where(#ftauakekvb) .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+:where(#ftauakekvb) .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+:where(#ftauakekvb) .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+:where(#ftauakekvb) .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+:where(#ftauakekvb) .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+:where(#ftauakekvb) .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+:where(#ftauakekvb) .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+:where(#ftauakekvb) .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+:where(#ftauakekvb) .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+:where(#ftauakekvb) .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+:where(#ftauakekvb) .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#ftauakekvb) .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+:where(#ftauakekvb) .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+:where(#ftauakekvb) .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#ftauakekvb) .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+:where(#ftauakekvb) .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#ftauakekvb) .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+:where(#ftauakekvb) .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#ftauakekvb) .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#ftauakekvb) .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#ftauakekvb) .gt_left {
+  text-align: left;
+}
+
+:where(#ftauakekvb) .gt_center {
+  text-align: center;
+}
+
+:where(#ftauakekvb) .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+:where(#ftauakekvb) .gt_font_normal {
+  font-weight: normal;
+}
+
+:where(#ftauakekvb) .gt_font_bold {
+  font-weight: bold;
+}
+
+:where(#ftauakekvb) .gt_font_italic {
+  font-style: italic;
+}
+
+:where(#ftauakekvb) .gt_super {
+  font-size: 65%;
+}
+
+:where(#ftauakekvb) .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+:where(#ftauakekvb) .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+:where(#ftauakekvb) .gt_indent_1 {
+  text-indent: 5px;
+}
+
+:where(#ftauakekvb) .gt_indent_2 {
+  text-indent: 10px;
+}
+
+:where(#ftauakekvb) .gt_indent_3 {
+  text-indent: 15px;
+}
+
+:where(#ftauakekvb) .gt_indent_4 {
+  text-indent: 20px;
+}
+
+:where(#ftauakekvb) .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+<thead class="gt_col_headings"><tr>
+<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Boolean">Boolean</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Filter">Filter</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Result">Result</th>
+    </tr></thead>
+<tbody class="gt_table_body">
+<tr>
+<td headers="Boolean" class="gt_row gt_left">x</td>
+<td headers="Filter" class="gt_row gt_left">`color == "yellow"`</td>
+<td headers="Result" class="gt_row gt_left">A, B</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">y</td>
+<td headers="Filter" class="gt_row gt_left">`shape == "circle"`</td>
+<td headers="Result" class="gt_row gt_left">B, C</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">x &amp; y</td>
+<td headers="Filter" class="gt_row gt_left">`color == "yellow" &amp; shape == "circle"`</td>
+<td headers="Result" class="gt_row gt_left">B</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">x | y</td>
+<td headers="Filter" class="gt_row gt_left">`color == "yellow" | shape == "circle"`</td>
+<td headers="Result" class="gt_row gt_left">A, B, C</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">x &amp; !y</td>
+<td headers="Filter" class="gt_row gt_left">`color == "yellow" &amp; shape != "circle"`</td>
+<td headers="Result" class="gt_row gt_left">A</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">!x &amp; y</td>
+<td headers="Filter" class="gt_row gt_left">`color != "yellow" &amp; shape == "circle"`</td>
+<td headers="Result" class="gt_row gt_left">C</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">!(x &amp; y)</td>
+<td headers="Filter" class="gt_row gt_left">`!(color == "yellow" &amp; shape == "circle")`</td>
+<td headers="Result" class="gt_row gt_left">A, C</td>
+</tr>
+<tr>
+<td headers="Boolean" class="gt_row gt_left">!(x | y)</td>
+<td headers="Filter" class="gt_row gt_left">`!(color == "yellow" | shape == "circle")`</td>
+<td headers="Result" class="gt_row gt_left">NULL</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>And here is an example with our penguins data, where we ask R to return those observations in which (a) penguins reside on Biscoe Island and (b) their bills are longer than 39 millimeters.</p>
+<div class="cell">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">island</span> <span class="op">==</span> <span class="st">"Biscoe"</span> <span class="op">&amp;</span> <span class="va">bill_length_mm</span> <span class="op">&gt;</span> <span class="fl">39</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 143 × 8
+   species island bill_length_mm bill_depth_mm flipper_len…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;         &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Biscoe           40.6          18.6           183    3550 male   2007
+ 2 Adelie  Biscoe           40.5          17.9           187    3200 fema…  2007
+ 3 Adelie  Biscoe           40.5          18.9           180    3950 male   2007
+ 4 Adelie  Biscoe           39.6          17.7           186    3500 fema…  2008
+ 5 Adelie  Biscoe           40.1          18.9           188    4300 male   2008
+ 6 Adelie  Biscoe           42            19.5           200    4050 male   2008
+ 7 Adelie  Biscoe           41.4          18.6           191    3700 male   2008
+ 8 Adelie  Biscoe           40.6          18.8           193    3800 male   2008
+ 9 Adelie  Biscoe           41.3          21.1           195    4400 male   2008
+10 Adelie  Biscoe           41.1          18.2           192    4050 male   2008
+# … with 133 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+<p>Note that <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> let’s you separate conditions with a comma, which it interprets as conjunction, represented by the <code>&amp;</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">island</span> <span class="op">==</span> <span class="st">"Biscoe"</span>, </span>
+<span>    <span class="va">species</span> <span class="op">==</span> <span class="st">"Adelie"</span>, </span>
+<span>    <span class="va">body_mass_g</span> <span class="op">&lt;</span> <span class="fl">3500</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 8
+   species island bill_length_mm bill_depth_mm flipper_len…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;         &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Biscoe           37.8          18.3           174    3400 fema…  2007
+ 2 Adelie  Biscoe           40.5          17.9           187    3200 fema…  2007
+ 3 Adelie  Biscoe           37.9          18.6           172    3150 fema…  2007
+ 4 Adelie  Biscoe           35            17.9           190    3450 fema…  2008
+ 5 Adelie  Biscoe           34.5          18.1           187    2900 fema…  2008
+ 6 Adelie  Biscoe           36.5          16.6           181    2850 fema…  2008
+ 7 Adelie  Biscoe           35.7          16.9           185    3150 fema…  2008
+ 8 Adelie  Biscoe           36.4          17.1           184    2850 fema…  2008
+ 9 Adelie  Biscoe           35.5          16.2           195    3350 fema…  2008
+10 Adelie  Biscoe           37.7          16             183    3075 fema…  2009
+11 Adelie  Biscoe           37.9          18.6           193    2925 fema…  2009
+12 Adelie  Biscoe           38.1          17             181    3175 fema…  2009
+13 Adelie  Biscoe           39.7          17.7           193    3200 fema…  2009
+# … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
+</div>
+</div>
+</section></section><section id="exercises-2" class="level3"><h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
+<ol type="1">
+<li>Try all of the following with <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code>:
+<ul>
+<li>Filter penguins that reside on Torgersen island.</li>
+<li>Filter penguins that have a flipper length greater than 185 mm.</li>
+<li>Filter penguins that reside on Torgersen island and have a body mass less than 3500 g.</li>
+</ul>
+</li>
+<li>Try filtering the DartPoints dataset.
+<ul>
+<li>Filter darts that</li>
+</ul>
+</li>
+</ol></section></section><section id="groups" class="level2"><h2 class="anchored" data-anchor-id="groups">Groups</h2>
+<p>Your data will often include natural groupings (like species in the penguins table or dart types in the darts table), and you will want to summarize information about each of those groups. The way that you do this with <code>dplyr</code> involves the use of <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 344 × 8
+# Groups:   species [3]
+   species island    bill_length_mm bill_depth_mm flipper_…¹ body_…² sex    year
+   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;      &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+ 1 Adelie  Torgersen           39.1          18.7        181    3750 male   2007
+ 2 Adelie  Torgersen           39.5          17.4        186    3800 fema…  2007
+ 3 Adelie  Torgersen           40.3          18          195    3250 fema…  2007
+ 4 Adelie  Torgersen           NA            NA           NA      NA &lt;NA&gt;   2007
+ 5 Adelie  Torgersen           36.7          19.3        193    3450 fema…  2007
+ 6 Adelie  Torgersen           39.3          20.6        190    3650 male   2007
+ 7 Adelie  Torgersen           38.9          17.8        181    3625 fema…  2007
+ 8 Adelie  Torgersen           39.2          19.6        195    4675 male   2007
+ 9 Adelie  Torgersen           34.1          18.1        193    3475 &lt;NA&gt;   2007
+10 Adelie  Torgersen           42            20.2        190    4250 &lt;NA&gt;   2007
+# … with 334 more rows, and abbreviated variable names ¹​flipper_length_mm,
+#   ²​body_mass_g</code></pre>
+</div>
+</div>
+<p>Notice that the data are not changed, but the tibble now includes information about the groupings (<em>Groups: species [3]</em>). Now, if you apply <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize()</a></code> to it, it will know that you want summaries for each group.</p>
+<div class="cell">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span></span>
+<span>    mean_bill_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    var_bill_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  species   mean_bill_length var_bill_length
+  &lt;fct&gt;                &lt;dbl&gt;           &lt;dbl&gt;
+1 Adelie                38.8            7.09
+2 Chinstrap             48.8           11.2 
+3 Gentoo                47.5            9.50</code></pre>
+</div>
+</div>
+<p>Note that you can summarize by multiple groups.</p>
+<div class="cell">
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">island</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span></span>
+<span>    mean_bill_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    var_bill_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+# Groups:   species [3]
+  species   island    mean_bill_length var_bill_length
+  &lt;fct&gt;     &lt;fct&gt;                &lt;dbl&gt;           &lt;dbl&gt;
+1 Adelie    Biscoe                39.0            6.15
+2 Adelie    Dream                 38.5            6.08
+3 Adelie    Torgersen             39.0            9.15
+4 Chinstrap Dream                 48.8           11.2 
+5 Gentoo    Biscoe                47.5            9.50</code></pre>
+</div>
+</div>
+<p>A handy little function you will often want to use in summaries is <code><a href="https://dplyr.tidyverse.org/reference/context.html">n()</a></code>. This counts the number of observations in each group.</p>
+<div class="cell">
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">island</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span><span class="op">(</span></span>
+<span>    count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    mean_bill_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    var_bill_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html">var</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+# Groups:   species [3]
+  species   island    count mean_bill_length var_bill_length
+  &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;            &lt;dbl&gt;           &lt;dbl&gt;
+1 Adelie    Biscoe       44             39.0            6.15
+2 Adelie    Dream        56             38.5            6.08
+3 Adelie    Torgersen    52             39.0            9.15
+4 Chinstrap Dream        68             48.8           11.2 
+5 Gentoo    Biscoe      124             47.5            9.50</code></pre>
+</div>
+</div>
+<p>Now, suppose you wanted to get the three penguins in each species with the longest bills. To do that, you can apply the <code><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_max()</a></code> function to the grouped penguins table.</p>
+<div class="cell">
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_max</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 8
+# Groups:   species [3]
+  species   island    bill_length_mm bill_depth_mm flipper…¹ body_…² sex    year
+  &lt;fct&gt;     &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;     &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+1 Adelie    Torgersen           46            21.5       194    4200 male   2007
+2 Adelie    Torgersen           45.8          18.9       197    4150 male   2008
+3 Adelie    Biscoe              45.6          20.3       191    4600 male   2009
+4 Chinstrap Dream               58            17.8       181    3700 fema…  2007
+5 Chinstrap Dream               55.8          19.8       207    4000 male   2009
+6 Chinstrap Dream               54.2          20.8       201    4300 male   2008
+7 Gentoo    Biscoe              59.6          17         230    6050 male   2007
+8 Gentoo    Biscoe              55.9          17         228    5600 male   2009
+9 Gentoo    Biscoe              55.1          16         230    5850 male   2009
+# … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
+</div>
+</div>
+<p>You can also get a random sample from each group (known as a stratified random sample) with <code><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 8
+# Groups:   species [3]
+  species   island    bill_length_mm bill_depth_mm flipper…¹ body_…² sex    year
+  &lt;fct&gt;     &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;     &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+1 Adelie    Torgersen           37.8          17.1       186    3300 &lt;NA&gt;   2007
+2 Adelie    Torgersen           41.8          19.4       198    4450 male   2008
+3 Adelie    Torgersen           36.6          17.8       185    3700 fema…  2007
+4 Chinstrap Dream               46.2          17.5       187    3650 fema…  2008
+5 Chinstrap Dream               49.8          17.3       198    3675 fema…  2009
+6 Chinstrap Dream               52.8          20         205    4550 male   2008
+7 Gentoo    Biscoe              43.5          14.2       220    4700 fema…  2008
+8 Gentoo    Biscoe              46.9          14.6       222    4875 fema…  2009
+9 Gentoo    Biscoe              47.2          13.7       214    4925 fema…  2009
+# … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
+</div>
+</div>
+<p>Some other useful <code>slice_*()</code> functions include the following</p>
+<ul>
+<li>
+<code>slice_head(n)</code> takes the first n rows in each group.</li>
+<li>
+<code>slice_tail(n)</code> takes the last n rows in each group.</li>
+<li>
+<code>slice_min(x, n)</code> takes the n rows with the smallest values of x.</li>
+<li>
+<code>slice_max(x, n)</code> takes the n rows with the largest value of x.</li>
+<li>
+<code>slice_sample(n)</code> takes n random rows in each group.</li>
+</ul>
+<section id="exercises-3" class="level3"><h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
+<ol type="1">
+<li>Group the penguins data by species and summarize the mean flipper length.</li>
+<li>Group the penguins data by island and count the number of penguins on each. Hint: you can use <code><a href="https://dplyr.tidyverse.org/reference/context.html">n()</a></code> to do this.</li>
+<li>Group the penguins data by sex and summarize the mean and variance in body mass.</li>
+<li>Group the penguins data by sex and species and summarize the mean and variance in body mass.</li>
+<li>Group the darts data by type and summarize the mean length, width, and height.</li>
+<li>Group the darts data by type and take a random sample of length five from each group.</li>
+<li>Remove any potential duplicates from the darts data with <code><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct()</a></code>.</li>
+</ol>
+
+
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
