@@ -367,8 +367,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Load the DartPoints dataset and convert the data.frame to a tibble with <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble()</a></code>. Assign it to a new object called “darts” using the arrow <code>&lt;-</code>. Then remove the original DartPoints dataframe from your environment with <code>remove(DartPoints)</code>.</li>
 </ol></section></section><section id="the-pipe" class="level2"><h2 class="anchored" data-anchor-id="the-pipe">The Pipe</h2>
 <div id="fig-pipe" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="img-fluid figure-img"><a href="https://en.wikipedia.org/wiki/The_Treachery_of_Images">The Treachery of Images</a> (1929) by Rene Magritte.</p>
-<p></p><figcaption class="figure-caption">Figure&nbsp;2: <strong>?(caption)</strong></figcaption><p></p>
+<figure class="figure"><p><img src="https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: <span style="margin: 0 auto;"><a href="https://en.wikipedia.org/wiki/The_Treachery_of_Images">The Treachery of Images</a> (1929) by Rene Magritte.</span></figcaption><p></p>
 </figure>
 </div>
 <p>Before we get to the ways in which you can shape and otherwise manipulate tables in R, though, let’s introduce a style of coding referred to as <code>piping</code> first, which allows you to express a series of operations in a clear and concise way. To motivate the use of pipes, consider this extremely common scenario: you want to select some specific variables in your table, filter the observations to include a subset based on some condition, then add a new variable by transforming or mutating another one. Your code might look like this (we will explain how to use these functions in just a moment):</p>
@@ -396,13 +396,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Take the penguins table, then select the variables species, sex, and body mass, then filter the males, then create a new variable by converting bill length from millimeters to centimeters.</p>
 </blockquote>
 <p>The ‘then’ in each case is the pipe operator. Crucially, the pipe assumes that the data being transformed is the first argument to the function, which is true for all the functions in the <code>tidyverse</code>, as they were all designed very intentionally to work with the pipe. Unfortunately, many parts of R were written long before the pipe was ever introduced, so they may not work as easily with it.</p>
-<div class="callout-info callout callout-style-default no-icon callout-captioned">
+<div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
+<i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Info
+Tip: keyboard shortcut
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -414,112 +414,24 @@ Info
 <section id="pull" class="level3"><h3 class="anchored" data-anchor-id="pull"><code>pull()</code></h3>
 <p>To pull a variable out of a table and return it as a vector, you can pass the table along with the name of the target variable to the <code><a href="https://dplyr.tidyverse.org/reference/pull.html">pull()</a></code> function from <code>dplyr</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">bill_length_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_tbl</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  [1] 39.1 39.5 40.3   NA 36.7 39.3 38.9 39.2 34.1 42.0 37.8 37.8 41.1 38.6 34.6
- [16] 36.6 38.7 42.5 34.4 46.0 37.8 37.7 35.9 38.2 38.8 35.3 40.6 40.5 37.9 40.5
- [31] 39.5 37.2 39.5 40.9 36.4 39.2 38.8 42.2 37.6 39.8 36.5 40.8 36.0 44.1 37.0
- [46] 39.6 41.1 37.5 36.0 42.3 39.6 40.1 35.0 42.0 34.5 41.4 39.0 40.6 36.5 37.6
- [61] 35.7 41.3 37.6 41.1 36.4 41.6 35.5 41.1 35.9 41.8 33.5 39.7 39.6 45.8 35.5
- [76] 42.8 40.9 37.2 36.2 42.1 34.6 42.9 36.7 35.1 37.3 41.3 36.3 36.9 38.3 38.9
- [91] 35.7 41.1 34.0 39.6 36.2 40.8 38.1 40.3 33.1 43.2 35.0 41.0 37.7 37.8 37.9
-[106] 39.7 38.6 38.2 38.1 43.2 38.1 45.6 39.7 42.2 39.6 42.7 38.6 37.3 35.7 41.1
-[121] 36.2 37.7 40.2 41.4 35.2 40.6 38.8 41.5 39.0 44.1 38.5 43.1 36.8 37.5 38.1
-[136] 41.1 35.6 40.2 37.0 39.7 40.2 40.6 32.1 40.7 37.3 39.0 39.2 36.6 36.0 37.8
-[151] 36.0 41.5 46.1 50.0 48.7 50.0 47.6 46.5 45.4 46.7 43.3 46.8 40.9 49.0 45.5
-[166] 48.4 45.8 49.3 42.0 49.2 46.2 48.7 50.2 45.1 46.5 46.3 42.9 46.1 44.5 47.8
-[181] 48.2 50.0 47.3 42.8 45.1 59.6 49.1 48.4 42.6 44.4 44.0 48.7 42.7 49.6 45.3
-[196] 49.6 50.5 43.6 45.5 50.5 44.9 45.2 46.6 48.5 45.1 50.1 46.5 45.0 43.8 45.5
-[211] 43.2 50.4 45.3 46.2 45.7 54.3 45.8 49.8 46.2 49.5 43.5 50.7 47.7 46.4 48.2
-[226] 46.5 46.4 48.6 47.5 51.1 45.2 45.2 49.1 52.5 47.4 50.0 44.9 50.8 43.4 51.3
-[241] 47.5 52.1 47.5 52.2 45.5 49.5 44.5 50.8 49.4 46.9 48.4 51.1 48.5 55.9 47.2
-[256] 49.1 47.3 46.8 41.7 53.4 43.3 48.1 50.5 49.8 43.5 51.5 46.2 55.1 44.5 48.8
-[271] 47.2   NA 46.8 50.4 45.2 49.9 46.5 50.0 51.3 45.4 52.7 45.2 46.1 51.3 46.0
-[286] 51.3 46.6 51.7 47.0 52.0 45.9 50.5 50.3 58.0 46.4 49.2 42.4 48.5 43.2 50.6
-[301] 46.7 52.0 50.5 49.5 46.4 52.8 40.9 54.2 42.5 51.0 49.7 47.5 47.6 52.0 46.9
-[316] 53.5 49.0 46.2 50.9 45.5 50.9 50.8 50.1 49.0 51.5 49.8 48.1 51.4 45.7 50.7
-[331] 42.5 52.2 45.2 49.3 50.2 45.6 51.9 46.8 45.7 55.8 43.5 49.6 50.8 50.2</code></pre>
+<pre><code>[1] "Elko"     "Rosegate" "DSN"      "Elko"     "Clovis"  </code></pre>
 </div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">bill_depth_mm</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_tbl</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">length</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  [1] 18.7 17.4 18.0   NA 19.3 20.6 17.8 19.6 18.1 20.2 17.1 17.3 17.6 21.2 21.1
- [16] 17.8 19.0 20.7 18.4 21.5 18.3 18.7 19.2 18.1 17.2 18.9 18.6 17.9 18.6 18.9
- [31] 16.7 18.1 17.8 18.9 17.0 21.1 20.0 18.5 19.3 19.1 18.0 18.4 18.5 19.7 16.9
- [46] 18.8 19.0 18.9 17.9 21.2 17.7 18.9 17.9 19.5 18.1 18.6 17.5 18.8 16.6 19.1
- [61] 16.9 21.1 17.0 18.2 17.1 18.0 16.2 19.1 16.6 19.4 19.0 18.4 17.2 18.9 17.5
- [76] 18.5 16.8 19.4 16.1 19.1 17.2 17.6 18.8 19.4 17.8 20.3 19.5 18.6 19.2 18.8
- [91] 18.0 18.1 17.1 18.1 17.3 18.9 18.6 18.5 16.1 18.5 17.9 20.0 16.0 20.0 18.6
-[106] 18.9 17.2 20.0 17.0 19.0 16.5 20.3 17.7 19.5 20.7 18.3 17.0 20.5 17.0 18.6
-[121] 17.2 19.8 17.0 18.5 15.9 19.0 17.6 18.3 17.1 18.0 17.9 19.2 18.5 18.5 17.6
-[136] 17.5 17.5 20.1 16.5 17.9 17.1 17.2 15.5 17.0 16.8 18.7 18.6 18.4 17.8 18.1
-[151] 17.1 18.5 13.2 16.3 14.1 15.2 14.5 13.5 14.6 15.3 13.4 15.4 13.7 16.1 13.7
-[166] 14.6 14.6 15.7 13.5 15.2 14.5 15.1 14.3 14.5 14.5 15.8 13.1 15.1 14.3 15.0
-[181] 14.3 15.3 15.3 14.2 14.5 17.0 14.8 16.3 13.7 17.3 13.6 15.7 13.7 16.0 13.7
-[196] 15.0 15.9 13.9 13.9 15.9 13.3 15.8 14.2 14.1 14.4 15.0 14.4 15.4 13.9 15.0
-[211] 14.5 15.3 13.8 14.9 13.9 15.7 14.2 16.8 14.4 16.2 14.2 15.0 15.0 15.6 15.6
-[226] 14.8 15.0 16.0 14.2 16.3 13.8 16.4 14.5 15.6 14.6 15.9 13.8 17.3 14.4 14.2
-[241] 14.0 17.0 15.0 17.1 14.5 16.1 14.7 15.7 15.8 14.6 14.4 16.5 15.0 17.0 15.5
-[256] 15.0 13.8 16.1 14.7 15.8 14.0 15.1 15.2 15.9 15.2 16.3 14.1 16.0 15.7 16.2
-[271] 13.7   NA 14.3 15.7 14.8 16.1 17.9 19.5 19.2 18.7 19.8 17.8 18.2 18.2 18.9
-[286] 19.9 17.8 20.3 17.3 18.1 17.1 19.6 20.0 17.8 18.6 18.2 17.3 17.5 16.6 19.4
-[301] 17.9 19.0 18.4 19.0 17.8 20.0 16.6 20.8 16.7 18.8 18.6 16.8 18.3 20.7 16.6
-[316] 19.9 19.5 17.5 19.1 17.0 17.9 18.5 17.9 19.6 18.7 17.3 16.4 19.0 17.3 19.7
-[331] 17.3 18.8 16.6 19.9 18.8 19.4 19.5 16.5 17.0 19.8 18.1 18.2 19.0 18.7</code></pre>
+<pre><code>[1] 2.03 1.40 1.90 2.10 3.30</code></pre>
 </div>
 </div>
 <p>The base R way of doing this relies on double brackets or the dollar sign, as in <code>&lt;table&gt;[["&lt;variable&gt;"]]</code> and <code>&lt;table&gt;$&lt;variable&gt;</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span><span class="op">$</span><span class="va">bill_length_mm</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_tbl</span><span class="op">$</span><span class="va">type</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  [1] 39.1 39.5 40.3   NA 36.7 39.3 38.9 39.2 34.1 42.0 37.8 37.8 41.1 38.6 34.6
- [16] 36.6 38.7 42.5 34.4 46.0 37.8 37.7 35.9 38.2 38.8 35.3 40.6 40.5 37.9 40.5
- [31] 39.5 37.2 39.5 40.9 36.4 39.2 38.8 42.2 37.6 39.8 36.5 40.8 36.0 44.1 37.0
- [46] 39.6 41.1 37.5 36.0 42.3 39.6 40.1 35.0 42.0 34.5 41.4 39.0 40.6 36.5 37.6
- [61] 35.7 41.3 37.6 41.1 36.4 41.6 35.5 41.1 35.9 41.8 33.5 39.7 39.6 45.8 35.5
- [76] 42.8 40.9 37.2 36.2 42.1 34.6 42.9 36.7 35.1 37.3 41.3 36.3 36.9 38.3 38.9
- [91] 35.7 41.1 34.0 39.6 36.2 40.8 38.1 40.3 33.1 43.2 35.0 41.0 37.7 37.8 37.9
-[106] 39.7 38.6 38.2 38.1 43.2 38.1 45.6 39.7 42.2 39.6 42.7 38.6 37.3 35.7 41.1
-[121] 36.2 37.7 40.2 41.4 35.2 40.6 38.8 41.5 39.0 44.1 38.5 43.1 36.8 37.5 38.1
-[136] 41.1 35.6 40.2 37.0 39.7 40.2 40.6 32.1 40.7 37.3 39.0 39.2 36.6 36.0 37.8
-[151] 36.0 41.5 46.1 50.0 48.7 50.0 47.6 46.5 45.4 46.7 43.3 46.8 40.9 49.0 45.5
-[166] 48.4 45.8 49.3 42.0 49.2 46.2 48.7 50.2 45.1 46.5 46.3 42.9 46.1 44.5 47.8
-[181] 48.2 50.0 47.3 42.8 45.1 59.6 49.1 48.4 42.6 44.4 44.0 48.7 42.7 49.6 45.3
-[196] 49.6 50.5 43.6 45.5 50.5 44.9 45.2 46.6 48.5 45.1 50.1 46.5 45.0 43.8 45.5
-[211] 43.2 50.4 45.3 46.2 45.7 54.3 45.8 49.8 46.2 49.5 43.5 50.7 47.7 46.4 48.2
-[226] 46.5 46.4 48.6 47.5 51.1 45.2 45.2 49.1 52.5 47.4 50.0 44.9 50.8 43.4 51.3
-[241] 47.5 52.1 47.5 52.2 45.5 49.5 44.5 50.8 49.4 46.9 48.4 51.1 48.5 55.9 47.2
-[256] 49.1 47.3 46.8 41.7 53.4 43.3 48.1 50.5 49.8 43.5 51.5 46.2 55.1 44.5 48.8
-[271] 47.2   NA 46.8 50.4 45.2 49.9 46.5 50.0 51.3 45.4 52.7 45.2 46.1 51.3 46.0
-[286] 51.3 46.6 51.7 47.0 52.0 45.9 50.5 50.3 58.0 46.4 49.2 42.4 48.5 43.2 50.6
-[301] 46.7 52.0 50.5 49.5 46.4 52.8 40.9 54.2 42.5 51.0 49.7 47.5 47.6 52.0 46.9
-[316] 53.5 49.0 46.2 50.9 45.5 50.9 50.8 50.1 49.0 51.5 49.8 48.1 51.4 45.7 50.7
-[331] 42.5 52.2 45.2 49.3 50.2 45.6 51.9 46.8 45.7 55.8 43.5 49.6 50.8 50.2</code></pre>
+<pre><code>[1] "Elko"     "Rosegate" "DSN"      "Elko"     "Clovis"  </code></pre>
 </div>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span><span class="op">[[</span><span class="st">"bill_depth_mm"</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">projectiles_tbl</span><span class="op">[[</span><span class="st">"length"</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  [1] 18.7 17.4 18.0   NA 19.3 20.6 17.8 19.6 18.1 20.2 17.1 17.3 17.6 21.2 21.1
- [16] 17.8 19.0 20.7 18.4 21.5 18.3 18.7 19.2 18.1 17.2 18.9 18.6 17.9 18.6 18.9
- [31] 16.7 18.1 17.8 18.9 17.0 21.1 20.0 18.5 19.3 19.1 18.0 18.4 18.5 19.7 16.9
- [46] 18.8 19.0 18.9 17.9 21.2 17.7 18.9 17.9 19.5 18.1 18.6 17.5 18.8 16.6 19.1
- [61] 16.9 21.1 17.0 18.2 17.1 18.0 16.2 19.1 16.6 19.4 19.0 18.4 17.2 18.9 17.5
- [76] 18.5 16.8 19.4 16.1 19.1 17.2 17.6 18.8 19.4 17.8 20.3 19.5 18.6 19.2 18.8
- [91] 18.0 18.1 17.1 18.1 17.3 18.9 18.6 18.5 16.1 18.5 17.9 20.0 16.0 20.0 18.6
-[106] 18.9 17.2 20.0 17.0 19.0 16.5 20.3 17.7 19.5 20.7 18.3 17.0 20.5 17.0 18.6
-[121] 17.2 19.8 17.0 18.5 15.9 19.0 17.6 18.3 17.1 18.0 17.9 19.2 18.5 18.5 17.6
-[136] 17.5 17.5 20.1 16.5 17.9 17.1 17.2 15.5 17.0 16.8 18.7 18.6 18.4 17.8 18.1
-[151] 17.1 18.5 13.2 16.3 14.1 15.2 14.5 13.5 14.6 15.3 13.4 15.4 13.7 16.1 13.7
-[166] 14.6 14.6 15.7 13.5 15.2 14.5 15.1 14.3 14.5 14.5 15.8 13.1 15.1 14.3 15.0
-[181] 14.3 15.3 15.3 14.2 14.5 17.0 14.8 16.3 13.7 17.3 13.6 15.7 13.7 16.0 13.7
-[196] 15.0 15.9 13.9 13.9 15.9 13.3 15.8 14.2 14.1 14.4 15.0 14.4 15.4 13.9 15.0
-[211] 14.5 15.3 13.8 14.9 13.9 15.7 14.2 16.8 14.4 16.2 14.2 15.0 15.0 15.6 15.6
-[226] 14.8 15.0 16.0 14.2 16.3 13.8 16.4 14.5 15.6 14.6 15.9 13.8 17.3 14.4 14.2
-[241] 14.0 17.0 15.0 17.1 14.5 16.1 14.7 15.7 15.8 14.6 14.4 16.5 15.0 17.0 15.5
-[256] 15.0 13.8 16.1 14.7 15.8 14.0 15.1 15.2 15.9 15.2 16.3 14.1 16.0 15.7 16.2
-[271] 13.7   NA 14.3 15.7 14.8 16.1 17.9 19.5 19.2 18.7 19.8 17.8 18.2 18.2 18.9
-[286] 19.9 17.8 20.3 17.3 18.1 17.1 19.6 20.0 17.8 18.6 18.2 17.3 17.5 16.6 19.4
-[301] 17.9 19.0 18.4 19.0 17.8 20.0 16.6 20.8 16.7 18.8 18.6 16.8 18.3 20.7 16.6
-[316] 19.9 19.5 17.5 19.1 17.0 17.9 18.5 17.9 19.6 18.7 17.3 16.4 19.0 17.3 19.7
-[331] 17.3 18.8 16.6 19.9 18.8 19.4 19.5 16.5 17.0 19.8 18.1 18.2 19.0 18.7</code></pre>
+<pre><code>[1] 2.03 1.40 1.90 2.10 3.30</code></pre>
 </div>
 </div>
 <p>As you can see, using the <code>dplyr</code> function is quite a bit easier to read and intuit what you are doing. It also plays nice with the pipe.</p>
@@ -566,13 +478,13 @@ Info
 [5] "flipper_length" "body_mass"      "sex"            "year"          </code></pre>
 </div>
 </div>
-<div class="callout-info callout callout-style-default no-icon callout-captioned">
+<div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
+<i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Info
+A good rule of 👍
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -911,472 +823,81 @@ Info
 <code>!</code> for <em>not</em>.</li>
 </ul>
 <p>To demonstrate the underlying logic of these Boolean operators, consider these shapes and colors. You can think of each of A, B, and C as its own observation or row in a data.frame that includes two variables <code>color</code> and <code>shape</code>.</p>
-<div id="fig-booleans" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/booleans_example.png" class="img-fluid figure-img" style="width:40.0%"></p>
+<div style="width:80%; margin:0 auto;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/booleans_example.png" class="img-fluid figure-img" style="width:70.0%"></p>
 </figure>
 </div>
 <div class="cell-output-display">
 
-<div id="ftauakekvb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-:where(#ftauakekvb) .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-:where(#ftauakekvb) .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-:where(#ftauakekvb) .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-:where(#ftauakekvb) .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-:where(#ftauakekvb) .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-:where(#ftauakekvb) .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-:where(#ftauakekvb) .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-:where(#ftauakekvb) .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-:where(#ftauakekvb) .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-:where(#ftauakekvb) .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-:where(#ftauakekvb) .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-:where(#ftauakekvb) .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-:where(#ftauakekvb) .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-:where(#ftauakekvb) .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-:where(#ftauakekvb) .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-:where(#ftauakekvb) .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-:where(#ftauakekvb) .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-:where(#ftauakekvb) .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-:where(#ftauakekvb) .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-:where(#ftauakekvb) .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-:where(#ftauakekvb) .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-:where(#ftauakekvb) .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-:where(#ftauakekvb) .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-:where(#ftauakekvb) .gt_left {
-  text-align: left;
-}
-
-:where(#ftauakekvb) .gt_center {
-  text-align: center;
-}
-
-:where(#ftauakekvb) .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-:where(#ftauakekvb) .gt_font_normal {
-  font-weight: normal;
-}
-
-:where(#ftauakekvb) .gt_font_bold {
-  font-weight: bold;
-}
-
-:where(#ftauakekvb) .gt_font_italic {
-  font-style: italic;
-}
-
-:where(#ftauakekvb) .gt_super {
-  font-size: 65%;
-}
-
-:where(#ftauakekvb) .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
-  font-size: 75%;
-  vertical-align: 0.4em;
-}
-
-:where(#ftauakekvb) .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-:where(#ftauakekvb) .gt_indent_1 {
-  text-indent: 5px;
-}
-
-:where(#ftauakekvb) .gt_indent_2 {
-  text-indent: 10px;
-}
-
-:where(#ftauakekvb) .gt_indent_3 {
-  text-indent: 15px;
-}
-
-:where(#ftauakekvb) .gt_indent_4 {
-  text-indent: 20px;
-}
-
-:where(#ftauakekvb) .gt_indent_5 {
-  text-indent: 25px;
-}
-</style>
-<table class="gt_table">
-<thead class="gt_col_headings"><tr>
-<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Boolean">Boolean</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Filter">Filter</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Result">Result</th>
+<div id="soobryqtld" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  
+  <table class="gt_table" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
+<thead class="gt_col_headings" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;"><tr>
+<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Boolean" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left">Boolean</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Filter" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left">Filter</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Result" style="color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 6px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; text-align: left;" bgcolor="#FFFFFF" valign="bottom" align="left">Result</th>
     </tr></thead>
-<tbody class="gt_table_body">
+<tbody class="gt_table_body" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3;">
 <tr>
-<td headers="Boolean" class="gt_row gt_left">x</td>
-<td headers="Filter" class="gt_row gt_left">`color == "yellow"`</td>
-<td headers="Result" class="gt_row gt_left">A, B</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">x</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>color == "yellow"</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">A, B</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">y</td>
-<td headers="Filter" class="gt_row gt_left">`shape == "circle"`</td>
-<td headers="Result" class="gt_row gt_left">B, C</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">y</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>shape == "circle"</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">B, C</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">x &amp; y</td>
-<td headers="Filter" class="gt_row gt_left">`color == "yellow" &amp; shape == "circle"`</td>
-<td headers="Result" class="gt_row gt_left">B</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">x &amp; y</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>color == "yellow" &amp; shape == "circle"</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">B</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">x | y</td>
-<td headers="Filter" class="gt_row gt_left">`color == "yellow" | shape == "circle"`</td>
-<td headers="Result" class="gt_row gt_left">A, B, C</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">x | y</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>color == "yellow" | shape == "circle"</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">A, B, C</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">x &amp; !y</td>
-<td headers="Filter" class="gt_row gt_left">`color == "yellow" &amp; shape != "circle"`</td>
-<td headers="Result" class="gt_row gt_left">A</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">x &amp; !y</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>color == "yellow" &amp; shape != "circle"</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">A</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">!x &amp; y</td>
-<td headers="Filter" class="gt_row gt_left">`color != "yellow" &amp; shape == "circle"`</td>
-<td headers="Result" class="gt_row gt_left">C</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">!x &amp; y</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>color != "yellow" &amp; shape == "circle"</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">C</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">!(x &amp; y)</td>
-<td headers="Filter" class="gt_row gt_left">`!(color == "yellow" &amp; shape == "circle")`</td>
-<td headers="Result" class="gt_row gt_left">A, C</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">!(x &amp; y)</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>!(color == "yellow" &amp; shape == "circle")</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">A, C</td>
 </tr>
 <tr>
-<td headers="Boolean" class="gt_row gt_left">!(x | y)</td>
-<td headers="Filter" class="gt_row gt_left">`!(color == "yellow" | shape == "circle")`</td>
-<td headers="Result" class="gt_row gt_left">NULL</td>
+<td headers="Boolean" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">!(x | y)</td>
+<td headers="Filter" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left"><div class="gt_from_md">
+<p style="margin-top: 0; margin-bottom: 0;"><code>!(color == "yellow" | shape == "circle")</code></p>
+</div></td>
+<td headers="Result" class="gt_row gt_left" style="padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; text-align: left;" valign="middle" align="left">NULL</td>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 <p>And here is an example with our penguins data, where we ask R to return those observations in which (a) penguins reside on Biscoe Island and (b) their bills are longer than 39 millimeters.</p>
@@ -1555,15 +1076,15 @@ Info
 # Groups:   species [3]
   species   island    bill_length_mm bill_depth_mm flipper…¹ body_…² sex    year
   &lt;fct&gt;     &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;     &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
-1 Adelie    Torgersen           37.8          17.1       186    3300 &lt;NA&gt;   2007
-2 Adelie    Torgersen           41.8          19.4       198    4450 male   2008
-3 Adelie    Torgersen           36.6          17.8       185    3700 fema…  2007
-4 Chinstrap Dream               46.2          17.5       187    3650 fema…  2008
-5 Chinstrap Dream               49.8          17.3       198    3675 fema…  2009
-6 Chinstrap Dream               52.8          20         205    4550 male   2008
-7 Gentoo    Biscoe              43.5          14.2       220    4700 fema…  2008
-8 Gentoo    Biscoe              46.9          14.6       222    4875 fema…  2009
-9 Gentoo    Biscoe              47.2          13.7       214    4925 fema…  2009
+1 Adelie    Torgersen           41.5          18.3       195    4300 male   2009
+2 Adelie    Torgersen           37.7          19.8       198    3500 male   2009
+3 Adelie    Biscoe              39            17.5       186    3550 fema…  2008
+4 Chinstrap Dream               45.7          17.3       193    3600 fema…  2009
+5 Chinstrap Dream               47.5          16.8       199    3900 fema…  2008
+6 Chinstrap Dream               46.8          16.5       189    3650 fema…  2009
+7 Gentoo    Biscoe              44.5          14.7       214    4850 fema…  2009
+8 Gentoo    Biscoe              45.5          15         220    5000 male   2008
+9 Gentoo    Biscoe              46.3          15.8       215    5050 male   2007
 # … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
 </div>
 </div>

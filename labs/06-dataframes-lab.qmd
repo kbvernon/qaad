@@ -159,7 +159,8 @@ In what follows, we are going to learn how to perform some tasks that almost alw
 
 ::: {#fig-pipe}
 ![](https://upload.wikimedia.org/wikipedia/en/b/b9/MagrittePipe.jpg)
-[The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images) (1929) by Rene Magritte.
+
+[[The Treachery of Images](https://en.wikipedia.org/wiki/The_Treachery_of_Images) (1929) by Rene Magritte.]{style="margin: 0 auto;"}
 :::
 
 Before we get to the ways in which you can shape and otherwise manipulate tables in R, though, let's introduce a style of coding referred to as `piping` first, which allows you to express a series of operations in a clear and concise way. To motivate the use of pipes, consider this extremely common scenario: you want to select some specific variables in your table, filter the observations to include a subset based on some condition, then add a new variable by transforming or mutating another one. Your code might look like this (we will explain how to use these functions in just a moment):
@@ -204,7 +205,8 @@ If you were to transpose this code into a natural language like English, it woul
 
 The 'then' in each case is the pipe operator. Crucially, the pipe assumes that the data being transformed is the first argument to the function, which is true for all the functions in the `tidyverse`, as they were all designed very intentionally to work with the pipe. Unfortunately, many parts of R were written long before the pipe was ever introduced, so they may not work as easily with it. 
 
-::: {.callout-info}
+::: {.callout-tip}
+## Tip: keyboard shortcut
 
 This is easily one of the most powerful tools for working with data in R, which is probably why it is so popular these days. RStudio gives a keyboard shortcut to make inserting this operator into your code easier. It's `Ctrl + Shift + M` on Windows and `Cmd + Shift + M` on Mac. To ensure that this keyboard shortcut inserts the base R pipe operator, go to Tools > Global Options... > Code > Editing and check that the option "Use native pipe operator, |> (requires R 4.1+)" is selected.
 
@@ -220,8 +222,8 @@ To pull a variable out of a table and return it as a vector, you can pass the ta
 
 ```{r}
 
-penguins |> pull(bill_length_mm)
-penguins |> pull(bill_depth_mm)
+projectiles_tbl |> pull(type)
+projectiles_tbl |> pull(length)
 
 ```
 
@@ -229,8 +231,8 @@ The base R way of doing this relies on double brackets or the dollar sign, as in
 
 ```{r}
 
-penguins$bill_length_mm
-penguins[["bill_depth_mm"]]
+projectiles_tbl$type
+projectiles_tbl[["length"]]
 
 ```
 
@@ -265,7 +267,8 @@ penguins |>
 
 ```
 
-::: {.callout-info}
+::: {.callout-note}
+## A good rule of 👍
 
 Here are a few good rules of thumb for variable names in tables (and for all names in R!).
 
@@ -474,7 +477,9 @@ Often enough, we will want to combine a number of these simple conditions into o
 
 To demonstrate the underlying logic of these Boolean operators, consider these shapes and colors. You can think of each of A, B, and C as its own observation or row in a data.frame that includes two variables `color` and `shape`.  
 
-![](images/booleans_example.png){#fig-booleans fig-align="center" width="40%"}
+::: {style="width:80%; margin:0 auto;"}
+
+![](images/booleans_example.png){fig-align="center" width=70%}
 
 ```{r}
 #| echo: false
@@ -497,9 +502,14 @@ Filter <- paste0(
 
 Result <- c("A, B", "B, C", "B", "A, B, C", "A", "C", "A, C", "NULL")
 
-tibble(Boolean, Filter, Result) %>% gt()
+tibble(Boolean, Filter, Result) |> 
+  gt() |> 
+  fmt_markdown("Filter") |> 
+  as_raw_html()
 
 ```
+
+:::
 
 And here is an example with our penguins data, where we ask R to return those observations in which (a) penguins reside on Biscoe Island and (b) their bills are longer than 39 millimeters.  
 
