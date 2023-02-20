@@ -538,8 +538,6 @@ penguins |>
     - Filter penguins that reside on Torgersen island.
     - Filter penguins that have a flipper length greater than 185 mm.
     - Filter penguins that reside on Torgersen island and have a body mass less than 3500 g. 
-2. Try filtering the DartPoints dataset.
-    - Filter darts that 
 
 ## Groups
 
