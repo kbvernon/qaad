@@ -2,12 +2,13 @@
   {
     "listing": "/classes.html",
     "items": [
-      "/classes/06-dataframes.html",
       "/classes/01-intro.html",
       "/classes/02-probability.html",
       "/classes/03-inference.html",
       "/classes/04-ols.html",
-      "/classes/05-distributions.html"
+      "/classes/05-distributions.html",
+      "/classes/06-dataframes.html",
+      "/classes/07-evaluation.html"
     ]
   }
 ]

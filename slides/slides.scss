@@ -16,7 +16,6 @@ $warning: $bronze !default;
 $danger:  $kobe !default;
 
 $presentation-font-size-root: 28px;
-$presentation-line-height: 1.2;
 $presentation-h2-font-size: 1.8em;
 
 /*-- scss:rules --*/
@@ -24,6 +23,10 @@ $presentation-h2-font-size: 1.8em;
 .reveal .slide ol li {
   margin-top: 0.3em !important;
   margin-bottom: 0.15em !important;
+}
+
+.reveal .panel-tabset [role=tab] {
+  padding: 0.25em 0.5em;
 }
 
 strong, b, a {

@@ -1,5 +1,5 @@
 ---
-title: "Lab 06: Working with Tables"
+title: "Week 06: Working with Tables"
 description: "A review and a deep dive into working with rectangular data in R."
 date: 2023-02-14
 toc: false

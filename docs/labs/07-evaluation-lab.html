@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-02-21">
+<meta name="description" content="(Stats) Learn how to interpret linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.">
+<title>Quantitative Analysis of Archaeological Data - Lab 07: Evaluating Linear Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+</head>
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.html">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#readwrite-data" id="toc-readwrite-data" class="nav-link" data-scroll-target="#readwrite-data">Read/Write Data</a>
+  <ul class="collapse">
+<li><a href="#file-paths" id="toc-file-paths" class="nav-link" data-scroll-target="#file-paths">File Paths</a></li>
+  <li><a href="#absolute-v-relative-paths" id="toc-absolute-v-relative-paths" class="nav-link" data-scroll-target="#absolute-v-relative-paths">Absolute v Relative Paths</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#visualize-model" id="toc-visualize-model" class="nav-link" data-scroll-target="#visualize-model">Visualize Model</a>
+  <ul class="collapse">
+<li><a href="#abline" id="toc-abline" class="nav-link" data-scroll-target="#abline">ABline</a></li>
+  <li><a href="#predict" id="toc-predict" class="nav-link" data-scroll-target="#predict">Predict</a></li>
+  <li><a href="#intervals" id="toc-intervals" class="nav-link" data-scroll-target="#intervals">Intervals</a></li>
+  <li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#model-summary" id="toc-model-summary" class="nav-link" data-scroll-target="#model-summary">Model Summary</a>
+  <ul class="collapse">
+<li><a href="#exercises-2" id="toc-exercises-2" class="nav-link" data-scroll-target="#exercises-2">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#anova" id="toc-anova" class="nav-link" data-scroll-target="#anova">ANOVA</a>
+  <ul class="collapse">
+<li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#diagnostic-plots" id="toc-diagnostic-plots" class="nav-link" data-scroll-target="#diagnostic-plots">Diagnostic Plots</a>
+  <ul class="collapse">
+<li><a href="#residuals" id="toc-residuals" class="nav-link" data-scroll-target="#residuals">Residuals</a></li>
+  <li><a href="#additional-diagnostics" id="toc-additional-diagnostics" class="nav-link" data-scroll-target="#additional-diagnostics">Additional Diagnostics</a></li>
+  <li><a href="#exercises-4" id="toc-exercises-4" class="nav-link" data-scroll-target="#exercises-4">Exercises</a></li>
+  </ul>
+</li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 07: Evaluating Linear Models</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>(Stats) Learn how to interpret linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 21, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol type="1">
+<li>importing and exporting data tables</li>
+<li>Visualizing a linear model
+<ul>
+<li>Using AB lines</li>
+<li>Using predictions</li>
+<li>Adding prediction and confidence intervals</li>
+</ul>
+</li>
+<li>Evaluating a linear model
+<ul>
+<li>interpreting model summaries in R</li>
+<li>t-tests</li>
+<li>ANOVA</li>
+</ul>
+</li>
+<li>Diagnostic plots with <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> and <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code>
+<ul>
+<li>Residual Histogram</li>
+<li>Raw Residuals v Fitted</li>
+<li>Standardized Residuals v Fitted</li>
+<li>Residuals v Leverage (and Cook’s Distance)</li>
+<li>Q-Q Plot</li>
+</ul>
+</li>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></li>
+<li><a href="https://easystats.github.io/performance/">performance</a></li>
+<li><a href="https://docs.ropensci.org/skimr/">skimr</a></li>
+<li><a href="https://www.tidyverse.org/">tidyverse</a></li>
+</ul>
+<p>You’ll want to install <code>performance</code> with <code>install.packages("performance")</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://easystats.github.io/performance/">performance</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/skimr/">skimr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>cars</code>
+<ul>
+<li>Includes measurements of car speed and stopping distance.</li>
+<li>package: <code>datasets</code>
+</li>
+<li>reference: <a href="https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html" class="uri">https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html</a>
+</li>
+</ul>
+</li>
+<li>
+<code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>OxfordPots</code>
+<ul>
+<li>Includes percentages of late Romano-British Oxford Pottery on 30 sites, along with their distance from Oxford.</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code>
+</li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a>
+</li>
+</ul>
+</li>
+</ul></section></section><section id="readwrite-data" class="level2"><h2 class="anchored" data-anchor-id="readwrite-data">Read/Write Data</h2>
+<div id="fig-table" class="quarto-figure quarto-figure-center anchored" style="text-align:center;">
+<figure class="figure"><div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/r-tables.png" class="img-fluid figure-img" style="width:75.0%"></p>
+</figure>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Elements of a Data Frame.</figcaption><p></p>
+</figure>
+</div>
+<p>This sections covers how to import data into and export data out of R, with a focus on rectangular data or tables. While many formats exist for representing rectangular data in plain-text file, the most common is perhaps common-separated values. You can spot this format by looking for files on your computer with the <em>.csv</em> extension. If we had saved the data represented in <a href="#fig-table">Figure&nbsp;1</a> to a csv file, the plain text of that file would look like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode md code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Elko, Rosegate, DSN, Elko, Clovis</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>2.03, 1.4, 1.9, 2.1, 3.3</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>0.8, 0.4, 0.3, 0.7, 0.95</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>3.23, 2.4, 1.29, 2.7, 4.15</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>with the first row typically assumed to contain the column names, also known as the header. To prove this to yourself, you can open a .csv file using a text editor like Notepad.</p>
+<p>Base R provides two functions for reading and writing these sorts of files: <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> and <code><a href="https://rdrr.io/r/utils/write.table.html">write.csv()</a></code>. These have some unfortunate default behavior, however, so we are going to focus on their tidyverse equivalents. Those are <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code> and <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> from the <code>readr</code> package. There are three main differences between these functions:</p>
+<ol type="1">
+<li>the tidy functions cannot be used without loading <code>readr</code>,</li>
+<li>
+<code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code> reads the data in as a tibble rather than a data.frame ,and</li>
+<li>
+<code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> does not by default add a column with row names or row ids to the exported csv file.</li>
+</ol>
+<ol type="1">
+<li>is a cost of doing business, but (2) and (3) more than make up for that.</li>
+</ol>
+<section id="file-paths" class="level3"><h3 class="anchored" data-anchor-id="file-paths">File Paths</h3>
+<p>To read and write data into R, you have to point R to where that data lives on your computer, meaning you have to specify a path to the file that holds the data. Suppose, for example, the penguins.csv file lives on Leslie Knope’s computer in this location:</p>
+<pre><code>C:/Users/Leslie_Knope/qaad-course/data/penguins.csv</code></pre>
+<p>This is a file path. The “/” denotes containment, meaning the thing to the right is within the thing to the left, so the penguins.csv file is in the data folder, which is in the qaad-course folder, which is in the Leslie_Knope folder, which is in the Users folder, which is in the C: folder. I have called them “folders” here, of course, but you will also often hear them referred to as “directories.”</p>
+<p>To read the penguins data into R from the location specified by this file path, you simply feed the file path as a character string to <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code> like so:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="st">"C:/Users/Leslie_Knope/qaad-course/data/penguins.csv"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that you will usually want to assign the table to an object, so that you can reference it later on during your R session.</p>
+<p>If you have the data in R and you want to write to this location, it works much the same way. The only difference is that you have to tell <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> what table you are wanting to write to disc, hence:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="st">"C:/Users/Leslie_Knope/qaad-course/data/penguins.csv"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="absolute-v-relative-paths" class="level3"><h3 class="anchored" data-anchor-id="absolute-v-relative-paths">Absolute v Relative Paths</h3>
+<p>The path listed above is known as an <strong>absolute</strong> path because it starts at the top most directory in the file path, namely “C:”, and works out from there to the exact location of the file. This top level directory is also known as the root directory. That’s “C:” for Windows systems. For MacOS the root is, well, “root”.</p>
+<p>Whenever you open R, your session happens somewhere on your computer, meaning it has some sense of its location within your file system. This is known as the <strong>working directory</strong>. For instance, when Leslie opens an R session, it might open in her “qaad-course” folder. The location of her working directory is, thus, “C:/Users/Leslie_Knope/qaad-course.” Because of this, she does not have to specify the entire file path to the penguins file. All she needs to specify is “data/penguins.csv,” as in <code>read_csv("data/penguins.csv")</code>. This is known as a <strong>relative</strong> file path, as it is relative to the working directory.</p>
+<p>Of course, R doesn’t just open anywhere on your computer. By default, it will always open in the same place (usually the Documents folder on Windows). But you can then point it to a specific directory on your computer where you would like to work. The traditional way of doing this is with the function <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code>, as in</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">"C:/Users/Leslie_Knope/qaad-course/data/penguins.csv"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is a brittle method, however, as it requires specifying the working directory using an absolute file path. So, if Leslie changes the location of qaad-course on her computer, if she moves it to, say, the parks-and-rec folder, it will no longer work. And, if Leslie wants to share her qaad-course folder - all the work and data and R code - with someone else, so they save that folder onto their own computer, again the call to <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> with the absolute path will not work. The actual path could be “C:/Users/Gerry/…” or “C:/Users/Jerry/…” or something to that effect, and yet the call to <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> uses “C:/Users/Leslie_Knope/…”.</p>
+<p>The alternative to setting the working directory with <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> is to use R projects. Fortunately, you have already done this for this class! Whenever you open an R project, the R session will automatically be set to the directory where that R project lives, whether that is on Leslie’s computer or Gerry’s or Andy’s or April’s. Doesn’t matter. Then you can use relative paths as you please, as long as you keep all the necessary data and code together in that project folder, which is what you should do!</p>
+<p>There are some extra advantages to using projects, but we’ll leave it at that for now.</p>
+</section><section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+<ol type="1">
+<li>Make sure your working directory is set to the R project folder for the course!</li>
+<li>Use <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> to write the <code>cars</code> data to a file called <em>cars.csv</em> in your project’s <em>data</em> folder.</li>
+<li>Remove the cars data from your environment with <code>remove(cars)</code>. If you look in the environment pane of RStudio (in the top right corner), you should see that the <code>cars</code> table has been removed.</li>
+<li>Now read <em>cars.csv</em> back into R with <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code> and assign it to <code>cars</code>. Check to make sure the table is back in your environment.</li>
+</ol></section></section><section id="visualize-model" class="level2"><h2 class="anchored" data-anchor-id="visualize-model">Visualize Model</h2>
+<p>Here we are going to use ordinary least squares to build a simple linear model of penguin bill length as a function of flipper length. To aid in the interpretation of this model, it is useful to visualize the relationship or trend it suggests (if it does suggest one!). Before building that model, however, you should, as always, make sure to visualize your data! In this case, we make a simple scatter plot.</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># clean up data, remove rows with missing data</span></span>
+<span><span class="va">penguins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">flipper_length_mm</span>, <span class="va">bill_length_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Bill Length (mm)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>What is the relationship here? Let’s see if a linear model can help us out.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">bill_length_mm</span> <span class="op">~</span> <span class="va">flipper_length_mm</span>, data <span class="op">=</span> <span class="va">penguins</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; lm(formula = bill_length_mm ~ flipper_length_mm, data = penguins)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residuals:</span></span>
+<span><span class="co">#&gt;    Min     1Q Median     3Q    Max </span></span>
+<span><span class="co">#&gt; -8.637 -2.698 -0.579  2.066 19.095 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;                   Estimate Std. Error t value            Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; (Intercept)        -7.2186     3.2717   -2.21               0.028 *  </span></span>
+<span><span class="co">#&gt; flipper_length_mm   0.2548     0.0162   15.69 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residual standard error: 4.15 on 331 degrees of freedom</span></span>
+<span><span class="co">#&gt; Multiple R-squared:  0.427,  Adjusted R-squared:  0.425 </span></span>
+<span><span class="co">#&gt; F-statistic:  246 on 1 and 331 DF,  p-value: &lt;0.0000000000000002</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are two ways to visualize this model:</p>
+<ol type="1">
+<li>With <strong>abline</strong>. Use the estimated coefficients (the slope and intercept) to construct a formula that will calculate values of y across the range of x. The formula has the form: <span class="math inline">\(y \sim a + bx\)</span>, where is <span class="math inline">\(a\)</span> is the intercept and <span class="math inline">\(b\)</span> is the slope, hence <em>abline</em>.</li>
+<li>With <strong>predict</strong>. Use the model to estimate values of <span class="math inline">\(y\)</span> for specified values of <span class="math inline">\(x\)</span> and construct a line from those values.</li>
+</ol>
+<p>OK. There’s actually three ways to do it. The most direct way that <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> offers uses <code><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth()</a></code>, but we’ll save that one for another time. The point here isn’t just to learn how to visualize a linear model, but to learn what it is that we are visualizing and what it means. So, let’s try an example of each, so you can get a feel for how to do this.</p>
+<section id="abline" class="level3"><h3 class="anchored" data-anchor-id="abline">ABline</h3>
+<p><code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> has a geometry for plotting AB lines. As you might have guessed, it’s <code><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline()</a></code>. All we need to do is extract the values of the coefficients from the model and feed these to the <code>slope</code> and <code>intercept</code> parameters, respectively. To do that, we will use the <code><a href="https://rdrr.io/r/stats/coef.html">coefficients()</a></code> function. This provides a named vector that we can use to get our estimates. Notice that we use <code>&lt;vector&gt;[[&lt;variable]]</code> like we do with tables, only this time we are extracting a single value.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coefficients</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">betas</span></span>
+<span><span class="co">#&gt;       (Intercept) flipper_length_mm </span></span>
+<span><span class="co">#&gt;            -7.219             0.255</span></span>
+<span></span>
+<span><span class="va">intercept</span> <span class="op">&lt;-</span> <span class="va">betas</span><span class="op">[[</span><span class="st">"(Intercept)"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">slope</span> <span class="op">&lt;-</span> <span class="va">betas</span><span class="op">[[</span><span class="st">"flipper_length_mm"</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, we can plot our model over the data. This is always useful, as you can see how the model compares to the actual observations.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">flipper_length_mm</span>, <span class="va">bill_length_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Bill Length (mm)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span></span>
+<span>    slope <span class="op">=</span> <span class="va">slope</span>,</span>
+<span>    intercept <span class="op">=</span> <span class="va">intercept</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>With this method, we simply supply the coefficients. <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> then uses those to estimate values of y for each value of x shown within the range of x represented by the plot. Notice that the line continues across the full range of the graph. This shows that the model assumes the relationship is <em>linear</em>, meaning in this case that it will always increase to the right (to infinity) and always decrease to the left (to negative infinity)</p>
+</section><section id="predict" class="level3"><h3 class="anchored" data-anchor-id="predict">Predict</h3>
+<p>We can also generate values of y manually with the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function. The key here is to supply it with our model, which it will then use to make predictions.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>estimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguins</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">flipper_length_mm</span>, <span class="va">bill_length_mm</span><span class="op">)</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Bill Length (mm)"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">flipper_length_mm</span>, <span class="va">estimates</span><span class="op">)</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>This is very similar to our abline graph above, but with the important difference that the trend line or modeled relationship does not extend across the entire graph.</p>
+<p>Note that you can use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> to estimate the value of the response at specific values of the independent variable. To do that, you simply feed the <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function, specifically its <code>newdata</code> parameter, a table with the values of the independent variable that interest you. For example, suppose you wanted to know what bill length this model would expect for a penguin having a body mass of, say, 4,500 grams. We can figure that out this way:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">new_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>flipper_length_mm <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">penguins_model</span>, newdata <span class="op">=</span> <span class="va">new_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    1 </span></span>
+<span><span class="co">#&gt; 43.7</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you like, you can also do that for multiple values like so:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">new_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>flipper_length_mm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">190</span>, <span class="fl">195</span>, <span class="fl">200</span>, <span class="fl">205</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">penguins_model</span>, newdata <span class="op">=</span> <span class="va">new_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    1    2    3    4 </span></span>
+<span><span class="co">#&gt; 41.2 42.5 43.7 45.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="intervals" class="level3"><h3 class="anchored" data-anchor-id="intervals">Intervals</h3>
+<p>You can use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> to calculate the prediction interval for these estimates by specifying <code>interval = "prediction"</code>. Note, too, that we ask it to provide that interval at <code>level = 0.95</code> to ensure the prediction interval is estimated at the 95% level. Recall that this is the interval within which we expect the value of Y to fall with 95% probability for each value of X.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span></span>
+<span>  <span class="va">penguins_model</span>, </span>
+<span>  newdata <span class="op">=</span> <span class="va">new_data</span>,</span>
+<span>  interval <span class="op">=</span> <span class="st">"prediction"</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    fit  lwr  upr</span></span>
+<span><span class="co">#&gt; 1 41.2 33.0 49.4</span></span>
+<span><span class="co">#&gt; 2 42.5 34.3 50.6</span></span>
+<span><span class="co">#&gt; 3 43.7 35.6 51.9</span></span>
+<span><span class="co">#&gt; 4 45.0 36.8 53.2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If we set <code>interval = "confidence"</code>, we can get the confidence interval, or the interval within which we expect the <em>average</em> value of Y to fall with 95% probability for each value of X.</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span></span>
+<span>  <span class="va">penguins_model</span>, </span>
+<span>  newdata <span class="op">=</span> <span class="va">new_data</span>,</span>
+<span>  interval <span class="op">=</span> <span class="st">"confidence"</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    fit  lwr  upr</span></span>
+<span><span class="co">#&gt; 1 41.2 40.6 41.8</span></span>
+<span><span class="co">#&gt; 2 42.5 42.0 43.0</span></span>
+<span><span class="co">#&gt; 3 43.7 43.3 44.2</span></span>
+<span><span class="co">#&gt; 4 45.0 44.6 45.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can actually add these to our model using the function <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon()</a></code> like so.</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="va">confidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span></span>
+<span>  <span class="va">penguins_model</span>, </span>
+<span>  interval <span class="op">=</span> <span class="st">"confidence"</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># coerce to a table</span></span>
+<span><span class="va">confidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">confidence</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># add the X values</span></span>
+<span><span class="va">confidence</span> <span class="op">&lt;-</span> <span class="va">confidence</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>flipper_length_mm <span class="op">=</span> <span class="va">penguins</span><span class="op">$</span><span class="va">flipper_length_mm</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">confidence</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">flipper_length_mm</span>, ymin <span class="op">=</span> <span class="va">lwr</span>, ymax <span class="op">=</span> <span class="va">upr</span><span class="op">)</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"gray85"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">confidence</span>, </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">flipper_length_mm</span>, <span class="va">fit</span><span class="op">)</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"darkred"</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">penguins</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">flipper_length_mm</span>, <span class="va">bill_length_mm</span><span class="op">)</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Bill Length (mm)"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>The ribbon geometry is, in effect, a polygon defined by an upper and lower line (<code>ymax</code> and <code>ymin</code>, respectively). Note that we added the ribbon before adding the trend line. If we did the reverse, the ribbon would be plotted over the trend line, thus obscuring it.</p>
+</section><section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+<ol type="1">
+<li>Build a model of penguin flipper length by body mass.
+<ul>
+<li>Make sure to visualize your data first! Make a scatter plot!</li>
+</ul>
+</li>
+<li>Now plot the modeled relationship between flipper length and body mass.
+<ul>
+<li>Use <code><a href="https://rdrr.io/r/stats/coef.html">coefficients()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline()</a></code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line()</a></code>.</li>
+<li>Add the confidence interval to the second plot using <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon()</a></code>.</li>
+</ul>
+</li>
+</ol></section></section><section id="model-summary" class="level2"><h2 class="anchored" data-anchor-id="model-summary">Model Summary</h2>
+<p>Let’s return to the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> of our model and discuss it in a little more detail.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; lm(formula = bill_length_mm ~ flipper_length_mm, data = penguins)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residuals:</span></span>
+<span><span class="co">#&gt;    Min     1Q Median     3Q    Max </span></span>
+<span><span class="co">#&gt; -8.637 -2.698 -0.579  2.066 19.095 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;                   Estimate Std. Error t value            Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; (Intercept)        -7.2186     3.2717   -2.21               0.028 *  </span></span>
+<span><span class="co">#&gt; flipper_length_mm   0.2548     0.0162   15.69 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residual standard error: 4.15 on 331 degrees of freedom</span></span>
+<span><span class="co">#&gt; Multiple R-squared:  0.427,  Adjusted R-squared:  0.425 </span></span>
+<span><span class="co">#&gt; F-statistic:  246 on 1 and 331 DF,  p-value: &lt;0.0000000000000002</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are four major components of the summary: (i) the function call, (ii) the residual distribution, (iii) the coefficients table, and (iv) the summary statistics. Let’s work through each one of these separately.</p>
+<p><strong>The Call.</strong> This refers to your “call” to the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function, which includes the model specification (meaning, the formula used to specify the model) and the data used to fit that model specification.</p>
+<p><strong>The Residual Distribution.</strong> This refers to the distribution of the residuals, here represented using quartiles and the minimum and maximum values. You can visualize the quartiles for the residuals really quickly with a boxplot.</p>
+<div class="cell" data-fig.asp="1">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span>, ylab <span class="op">=</span> <span class="st">"Raw Residuals"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>The thing to keep in mind here is that the linear model fit with OLS assumes that the residuals are normally distributed, <span class="math inline">\(\epsilon \approx N(0, \sigma)\)</span> with a mean of zero and standard deviation, <span class="math inline">\(\sigma\)</span>. Crucially, in a normal distribution, the median value is equal to the mean. In the boxplot, that means the dark line representing the median should be really close to zero. The first and third quartiles should also be equidistant from the median. In the boxplot, that means the median bar should be about halfway between top (3Q) and bottom (1Q) of the box. If it’s not, that means your residuals are not normally distributed. The minimum and maximum values kinda have this flavor, but not to the same degree.</p>
+<p><strong>The Coefficients Table.</strong> The number of rows in the coefficients table is equal to the number of variables in the model specification plus one. In this case, that’s two rows, one for the intercept and one for the flipper length variable. There are also five columns, one for the variables and the other four listing their coefficient estimates, the standard errors of those estimates, the t-statistics associated with the estimates, and the p-values for those t-statistics. If you just want the coefficients, as noted above, you can use the <code><a href="https://rdrr.io/r/stats/coef.html">coefficients()</a></code> function to get them. You can also get the variable names with <code><a href="https://rdrr.io/r/stats/case.names.html">variable.names()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/case.names.html">variable.names</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "(Intercept)"       "flipper_length_mm"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coefficients</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       (Intercept) flipper_length_mm </span></span>
+<span><span class="co">#&gt;            -7.219             0.255</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the t-statistic is just the ratio of the coefficient estimate to its standard error:</p>
+<p><span class="math display">\[t = \frac{\beta_i}{se(\beta_i)}\]</span></p>
+<p>If you multiply the standard error of the coefficients by $$1.96, you get the 95% confidence interval for the coefficient estimate. You can extract these confidence intervals from the linear model with the <code><a href="https://rdrr.io/r/stats/confint.html">confint()</a></code> function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                     2.5 % 97.5 %</span></span>
+<span><span class="co">#&gt; (Intercept)       -13.655 -0.783</span></span>
+<span><span class="co">#&gt; flipper_length_mm   0.223  0.287</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can also visualize those intervals using a dot and whisker plot using <code><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar()</a></code> like so:</p>
+<div class="cell" data-fig.asp="0.5">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># getting the standard errors is a smidge awkward</span></span>
+<span><span class="va">betas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coefficients</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span>,</span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/case.names.html">variable.names</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span>,</span>
+<span>  se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coefficients</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="st">"Std. Error"</span><span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">betas</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span></span>
+<span>    xintercept <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>    linewidth <span class="op">=</span> <span class="fl">1</span>, </span>
+<span>    color <span class="op">=</span> <span class="st">"darkred"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">x</span> <span class="op">-</span> <span class="op">(</span><span class="fl">1.96</span><span class="op">*</span><span class="va">se</span><span class="op">)</span>, xmax <span class="op">=</span> <span class="va">x</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1.96</span><span class="op">*</span><span class="va">se</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    width <span class="op">=</span> <span class="fl">0.33</span> <span class="co"># height of whiskers</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Estimate"</span>,</span>
+<span>    y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Model Coefficients"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="576"></p>
+</div>
+</div>
+<p>Two things to note here. First, the width of the confidence interval tells you something about how certain we are about the estimate, wider intervals mean less certainty, narrow intervals more certainty. Second, you can visually inspect whether the 95% confidence intervals overlap with zero. In this case, they do not. This tells you that it is extremely improbable that the coefficients could equal zero, since there is only a 2.5% chance or less of the coefficient being zero for each estimate. So, the dot and whisker plot with the coefficient estimates and their standard errors is effectively a visual representation of the t-test.</p>
+<p><strong>Summary statistics.</strong> The last element of the <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> is a set of statistics. This includes the <strong>residual standard error</strong> or the standard deviation in the error. The formula for this statistic is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sigma^2_\epsilon &amp;= \frac{1}{n-k}\sum \epsilon^2 \\
+se_\epsilon &amp;= \sqrt{\sigma^2}
+\end{aligned}
+\]</span> where <span class="math inline">\(n-k\)</span> is the degrees of freedom, in this case the number of observation <span class="math inline">\(n\)</span> minus the number of model parameters <span class="math inline">\(k\)</span> (meaning <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>). In R, you can calculate this standard error like so:</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span><span class="op">$</span><span class="va">df</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">e</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">/</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 4.15</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The set of summary statistics for a linear model also includes the <strong>R-squared</strong> value, which - if you recall - is the ratio of the Model Sum of Squares <span class="math inline">\(SS_M\)</span> to the Total Sum of Squares <span class="math inline">\(SS_T\)</span> (defined by the null or intercept-only model). This provides a measure of the proportion of the total variance explained by the model. You will also see here the so-called <em>Adjusted</em> R-squared. This is simply the R-squared statistic weighted by the complexity of the model, which is important because R-squared tends to increase with increases in model complexity, meaning each time you add an independent variable to a model it’s going to capture some amount of the total variance in the dependent variable.</p>
+<p>Finally, there is the F-statistic, which is similar to the R-squared value, but is estimated by the ratio of the model variance to the residual variance. The p-value is obtained by comparing the F-statistic to the F-distribution with <span class="math inline">\(k-1=1\)</span> and <span class="math inline">\(n-k=331\)</span> degrees of freedom. These are the summary statistics provided by the ANOVA, so let’s dive into that in the next section.</p>
+<section id="exercises-2" class="level3"><h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
+<ol type="1">
+<li>Build a model of penguin flipper length by body mass.
+<ul>
+<li>Make sure to visualize your data first! Make a scatter plot!</li>
+</ul>
+</li>
+<li>Run <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> on your model.
+<ul>
+<li>Do the residuals appear to be normally distributed?</li>
+<li>What is the R-Squared value?</li>
+<li>Does body mass explain much of the variance in flipper length?</li>
+<li>How would you interpret this result? What is the relationship between flipper length and body mass?</li>
+</ul>
+</li>
+</ol></section></section><section id="anova" class="level2"><h2 class="anchored" data-anchor-id="anova">ANOVA</h2>
+<p>A really powerful way to evaluate a linear model is to submit it to an ANOVA test. If you recall, an ANOVA for comparing the distribution of a variable across groups compares the ratio of the between-group variance to the within-group variance. This is known as an F-statistic. It gives us a sense of how much variance is coming from the groups themselves versus how much is coming from the individual observations within each group. If more of the variance is coming from the groups and not the individual observations, that indicates that at least one of the groups is not like the others. Crucially, the F-statistic can be compared to an F-distribution to determine whether the statistic is likely under the null hypothesis that the groups are not different.</p>
+<p>An ANOVA applied to a statistical model works in much the same way. The only catch is that we are not comparing the variance between groups but between models. More precisely, we are comparing the variance captured by the model to the remaining or residual variance. That is,</p>
+<p><span class="math display">\[F = \frac{\text{model variance}}{\text{residual variance}}\]</span></p>
+<p>where model variance is equal to <span class="math inline">\(SS_M/k\)</span> and residual variance is equal to <span class="math inline">\(SS_R/(n-k-1)\)</span> (or the square of the residual standard error). The sum of these two squared errors (<span class="math inline">\(SS_M\)</span> and <span class="math inline">\(SS_R\)</span>) is actually the total sum of squares <span class="math inline">\(SS_T\)</span>, which is defined by the mean or intercept-only model (sometimes referred to as the null model). Because the model includes at least one more parameter than the null model, an ANOVA applied to such a model can be thought of as answering the following</p>
+<p><strong>Question:</strong> does the model capture a sufficient amount of the variance to make its increased complexity worthwhile?</p>
+<p>Again, taking the ratio of the variance explained by the model to the residual variance provides an estimate of the F-statistic, which can be compared to the F-distribution to determine how likely it is under the null hypothesis that the more complex model does not explain more variance than the null model.</p>
+<p>To conduct this test in R, it’s quite simple. Simply supply a fitted linear model to the <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code> function. First, however, make sure to visualize your data! Note that summarizing the ANOVA with <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> prints an ANOVA table.</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguins_model_anova</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">penguins_model_anova</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                    Df Sum Sq Mean Sq F value              Pr(&gt;F)    </span></span>
+<span><span class="co">#&gt; flipper_length_mm   1   4235    4235     246 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; Residuals         331   5694      17                                </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The Mean Squared Error (<code>Mean Sq</code>) is calculated by dividing the Sum of Squares (<code>Sum Sq</code>) by the degrees of freedom (<code>Df</code>), the latter being a function of the number of independent variables or predictors in the model and the number of observations. MSE is, thus, another way of referring to the model and residual variance. The F-statistic is then calculated by dividing the Model variance or MSE (in this case <code>flipper_length_mm</code>) by the Residual variance or MSE (<code>Residuals</code>), in this case <span class="math inline">\(F = 4235/17 = 246.2\)</span>. By comparing this statistic to an F-distribution with those degrees of freedom, we get a very small p-value, much less than the standard critical value of 0.05. We can thus reject the null hypothesis and conclude that the variance explained by this model is indeed worth the price of increased complexity.</p>
+<section id="exercises-3" class="level3"><h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
+<ol type="1">
+<li>Use <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code> to conduct an ANOVA on the penguins model you created in the previous section.
+<ul>
+<li>Be sure to state your null and alternative hypotheses.</li>
+<li>Specify your critical value, too.</li>
+</ul>
+</li>
+<li>Summarize the penguins model again.</li>
+<li>Now summarize the ANOVA with <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code>.
+<ul>
+<li>Does the model provide a significant improvement over the null model?</li>
+<li>Did you get the same F-statistic and p-value as in the model summary?</li>
+</ul>
+</li>
+</ol></section></section><section id="diagnostic-plots" class="level2"><h2 class="anchored" data-anchor-id="diagnostic-plots">Diagnostic Plots</h2>
+<p>Whenever you build a model, it is critically important to visualize the model and its assumptions as this will give you some indication about whether those assumptions have been met. Here, we’ll visualize our penguins model, starting with the residuals.</p>
+<section id="residuals" class="level3"><h3 class="anchored" data-anchor-id="residuals">Residuals</h3>
+<p>One important assumption of OLS regression is that the errors are normally distributed. A simple histogram of the residuals will give us some indication of that. To get the residuals in our model, we can use the <code><a href="https://rdrr.io/r/stats/residuals.html">residuals()</a></code> function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">penguin_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>residuals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguin_fit</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">residuals</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Residual Bill Length (mm)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>Do these look normally distributed to you? Do they have the approximate shape of a bell curve? If a visual check does not suffice, you can always try a Shapiro-Wilk test for normality. To do that in R, you can use the <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> function. Note that the null hypothesis for this test is that the variable is <em>not</em> normally distributed.</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">penguins_model</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data:  residuals(penguins_model)</span></span>
+<span><span class="co">#&gt; W = 1, p-value = 0.00000005</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="additional-diagnostics" class="level3"><h3 class="anchored" data-anchor-id="additional-diagnostics">Additional Diagnostics</h3>
+<p>Base R provides a really useful <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> method for linear models. You just feed this function your linear model and tell it <code>which</code> kind of plot you want to make. Here is a list of options, which you can supply to the <code>which</code> parameter:</p>
+<ol type="1">
+<li>Residuals vs Fitted plot</li>
+<li>Normal Q-Q</li>
+<li>Scale-Location</li>
+<li>Cook’s Distance</li>
+<li>Residuals vs Leverage</li>
+<li>Cook’s Distance vs Leverage</li>
+</ol>
+<p>Here is an example of the Q-Q Plot for our penguins model.</p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">penguins_model</span>, which <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>The <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> function in this case is extremely utilitarian. If you just want a quick visual diagnostic for your own edification, I recommend using this. However, if you want to present all these plots together in a clean way that easily communicates the assumptions being tested by each, I recommend using the <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> function from the <code>performance</code> package.</p>
+<div class="cell" data-fig.asp="1">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://easystats.github.io/performance/reference/check_model.html">check_model</a></span><span class="op">(</span></span>
+<span>  <span class="va">penguins_model</span>, </span>
+<span>  check <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"linearity"</span>, <span class="st">"homogeneity"</span>, <span class="st">"outliers"</span>, <span class="st">"qq"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07-evaluation-lab_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+</div>
+<p>With this, we can hazard all the following conclusions:</p>
+<ol type="1">
+<li>The relationship is roughly linear, though you can see some wiggle.</li>
+<li>The model departs from homoscedasticity.</li>
+<li>No observations have an undue influence on the model.</li>
+<li>Looks like the residuals might be right skewed. (compare to histogram above)</li>
+</ol>
+<p>Note that none of the assumptions are met perfectly. This will never be the case, not with real world data. It should also clue you in to the fact that model evaluation is never certain. It always involves some risks that you might be wrong about your model.</p>
+</section><section id="exercises-4" class="level3"><h3 class="anchored" data-anchor-id="exercises-4">Exercises</h3>
+<ol type="1">
+<li>Extract the residuals from your model of flipper length by body mass and visualize their distribution with a histogram.
+<ul>
+<li>Do the residuals look normally distributed?</li>
+<li>Use the Shapiro Wilk test to verify this.</li>
+</ul>
+</li>
+<li>Explore the model with base <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>.</li>
+<li>Now, use <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code>.
+<ul>
+<li>What do these plots tell you about the model?</li>
+</ul>
+</li>
+</ol></section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
+<ol type="1">
+<li>Load the following datasets from the <code>archdata</code> package using <code><a href="https://rdrr.io/r/utils/data.html">data()</a></code>.
+<ul>
+<li><code>DartPoints</code></li>
+<li><code>OxfordPots</code></li>
+</ul>
+</li>
+<li>Practice writing these to disc and reading them back into R.
+<ul>
+<li>For each dataset, use <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> to write the table to a csv file. Put it in the data folder in your QAAD course project folder!</li>
+<li>Remove the table from your environment with <code><a href="https://rdrr.io/r/base/rm.html">remove()</a></code>, e.g., <code>remove(DartPoints)</code>. (This is just so you can see it returning to your environment in the next step, but also to practice using <code><a href="https://rdrr.io/r/base/rm.html">remove()</a></code>.)</li>
+<li>Read the table back into R with <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code>. Make sure to assign it to an object! A good idea is to avoid using upper-case letters as much as possible!</li>
+</ul>
+</li>
+<li>Using the <code>DartPoints</code> dataset, build a linear model showing the relationship (if any) between the length and width of dart points. Be sure to do all of the following:
+<ul>
+<li>Use <code><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim()</a></code> to quickly summarize your data.</li>
+<li>Visualize the data with a scatter plot!</li>
+<li>State your null and alternative hypotheses.</li>
+<li>Build a model with <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to report the model.</li>
+<li>Does the model refute the null hypothesis?</li>
+<li>Conduct an ANOVA of the model with <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to print the ANOVA table.</li>
+<li>Use <code><a href="https://rdrr.io/r/stats/coef.html">coefficients()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline()</a></code> to visualize the modeled relationship. Be sure to plot this over the data!</li>
+<li>Add a confidence interval with <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon()</a></code>.</li>
+<li>Use <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul>
+</li>
+<li>Using the <code>OxfordPots</code> dataset, build a linear model showing the relationship (if any) between the percentage of Oxford Pots found on an archaeological site and the distance of that site from the city of Oxford. Be sure to do all of the following:
+<ul>
+<li>Use <code><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim()</a></code> to quickly summarize your data.</li>
+<li>Visualize the data with a scatter plot!</li>
+<li>State your null and alternative hypotheses.</li>
+<li>Build a model with <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to report the model.</li>
+<li>Does the model refute the null hypothesis?</li>
+<li>Conduct an ANOVA of this with <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>.</li>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to print the ANOVA table.</li>
+<li>Use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line()</a></code> to visualize the modeled relationship. Be sure to plot this over the data!</li>
+<li>Add a confidence interval with <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon()</a></code>.</li>
+<li>Use <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul>
+</li>
+</ol>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

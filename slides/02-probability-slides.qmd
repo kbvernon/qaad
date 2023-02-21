@@ -18,7 +18,8 @@ data("cars")
 set.seed(12345)
 
 cars <- cars |> 
-  sample_n(10) |> 
+  as_tibble() |> 
+  slice_sample(n = 10) |> 
   rename("distance" = dist) |> 
   mutate(
     id = 1:n(),

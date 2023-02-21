@@ -6,6 +6,6 @@ format:
     width: 1100
     code-overflow: wrap
     chalkboard: true
-    fig-asp: 0.8
+fig-asp: 0.8
 execute:
   freeze: auto

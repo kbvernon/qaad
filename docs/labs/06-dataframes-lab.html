@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.329">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="dcterms.date" content="2023-02-14">
+<meta name="dcterms.date" content="2023-02-21">
 <meta name="description" content="A review and a deep dive into working with rectangular data in R.">
 <title>Quantitative Analysis of Archaeological Data - Lab 06: Working with Tables</title>
 <style>
@@ -204,7 +204,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 14, 2023</p>
+      <p class="date">February 21, 2023</p>
     </div>
   </div>
   
@@ -830,7 +830,7 @@ A good rule of 👍
 </div>
 <div class="cell-output-display">
 
-<div id="soobryqtld" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="ynczeiwhiu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif; display: table; border-collapse: collapse; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
 <thead class="gt_col_headings" style="border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3;"><tr>
@@ -958,11 +958,6 @@ A good rule of 👍
 <li>Filter penguins that reside on Torgersen island and have a body mass less than 3500 g.</li>
 </ul>
 </li>
-<li>Try filtering the DartPoints dataset.
-<ul>
-<li>Filter darts that</li>
-</ul>
-</li>
 </ol></section></section><section id="groups" class="level2"><h2 class="anchored" data-anchor-id="groups">Groups</h2>
 <p>Your data will often include natural groupings (like species in the penguins table or dart types in the darts table), and you will want to summarize information about each of those groups. The way that you do this with <code>dplyr</code> involves the use of <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarize()</a></code>.</p>
 <div class="cell">
@@ -1074,17 +1069,17 @@ A good rule of 👍
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9 × 8
 # Groups:   species [3]
-  species   island    bill_length_mm bill_depth_mm flipper…¹ body_…² sex    year
-  &lt;fct&gt;     &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;     &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
-1 Adelie    Torgersen           41.5          18.3       195    4300 male   2009
-2 Adelie    Torgersen           37.7          19.8       198    3500 male   2009
-3 Adelie    Biscoe              39            17.5       186    3550 fema…  2008
-4 Chinstrap Dream               45.7          17.3       193    3600 fema…  2009
-5 Chinstrap Dream               47.5          16.8       199    3900 fema…  2008
-6 Chinstrap Dream               46.8          16.5       189    3650 fema…  2009
-7 Gentoo    Biscoe              44.5          14.7       214    4850 fema…  2009
-8 Gentoo    Biscoe              45.5          15         220    5000 male   2008
-9 Gentoo    Biscoe              46.3          15.8       215    5050 male   2007
+  species   island bill_length_mm bill_depth_mm flipper_le…¹ body_…² sex    year
+  &lt;fct&gt;     &lt;fct&gt;           &lt;dbl&gt;         &lt;dbl&gt;        &lt;int&gt;   &lt;int&gt; &lt;fct&gt; &lt;int&gt;
+1 Adelie    Dream            42.3          21.2          191    4150 male   2007
+2 Adelie    Biscoe           38.1          16.5          198    3825 fema…  2009
+3 Adelie    Dream            36            17.9          190    3450 fema…  2007
+4 Chinstrap Dream            48.5          17.5          191    3400 male   2007
+5 Chinstrap Dream            52            20.7          210    4800 male   2008
+6 Chinstrap Dream            51.3          19.9          198    3700 male   2007
+7 Gentoo    Biscoe           48.4          14.6          213    5850 male   2007
+8 Gentoo    Biscoe           46.4          15.6          221    5000 male   2008
+9 Gentoo    Biscoe           45.2          16.4          223    5950 male   2008
 # … with abbreviated variable names ¹​flipper_length_mm, ²​body_mass_g</code></pre>
 </div>
 </div>

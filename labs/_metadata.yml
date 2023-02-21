@@ -9,6 +9,10 @@ format:
     toc-location: left
     reference-location: margin
     citation-location: margin
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>"
 execute: 
   echo: true
   freeze: auto
