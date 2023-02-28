@@ -1,0 +1,246 @@
+---
+title: "Lab 08: Multiple Linear Models"
+description: |
+  (Stats) Learn how to interpret multiple linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. Creating multiple linear models
+2. Evaluating model assumptions with diagnostic plots
+2. Checking for correlation in the predictors
+    - Scatterplot matrix with `plot()`
+    - Pearson's Correlation with `cor()`
+    - Variance Inflation Factor with `vif()`
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [car](https://socialsciences.mcmaster.ca/jfox/Books/Companion/index.html)
+- [ISLR2](https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf)
+- [performance](https://easystats.github.io/performance/)
+- [skimr](https://docs.ropensci.org/skimr/)
+- [tidyverse](https://www.tidyverse.org/)
+
+You'll want to install `ISLR2` and `car` with `install.packages(c("ISLR2", "car"))`.
+
+```{r}
+library(archdata)
+library(car)
+library(ISLR2)
+library(performance)
+library(skimr)
+library(tidyverse)
+
+```
+    
+### Data
+
+- `adverts`
+    - Observations of product sales and investments in advertising across various media.
+    - package: none
+    - reference: <https://www.statlearning.com/resources-second-edition>
+- `Boston`
+    - A dataset containing housing values in 506 suburbs of Boston.
+    - package: `ISLR2`
+    - reference: <https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf>
+- `HandAxes`
+    - Includes measurements of handaxes from the Furze Platt site stored at the Royal Ontario Museum.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+
+## Multiple Regression
+
+In this section, we will walk through how to build a multiple linear model in R. This is not fundamentally different than building a simple linear model. The only difference is that we need to update the model formula. For the simple linear model, the formula is just y ~ x, for the multiple linear model, it’s y ~ x1 + x2 + ... + xn. We simply add the covariates together using the plus-sign. 
+
+Let’s work through an example with the adverts data set used in the textbook [_An Introduction to Statistical Learning With Applications in R_](https://www.statlearning.com/). We want to know whether investment in different advertising media increases sales of some product. The website for the ISLR book hosts several data sets. The authors have also written companion R packages (ISLR and ISLR2, for the first and second editions, respectively). Now, as it happens, the path to a csv file does not have to be a local path pointing to a location on your computer. It can be also be a url pointing to where a file is stored remotely on a website, so reading in the advertising data from the ISLR website is as easy as this.
+
+```{r}
+adverts <- read_csv("https://www.statlearning.com/s/Advertising.csv") |> 
+  rename_with(tolower) |> 
+  select(sales, tv, radio, newspaper)
+
+```
+
+Before fitting the model, let's have a look at some summaries of the data with `skim()`.
+
+```{r}
+skim(adverts)
+
+```
+
+And now the model.
+
+```{r}
+adverts_lm <- lm(sales ~ tv + radio + newspaper, data = adverts)
+
+summary(adverts_lm)
+
+```
+
+Note the change in how we interpret the coefficients! Each coefficient must be interpreted relative to some value of the other covariates. For example, the coefficient estimate for television is `r coefficients(adverts_lm)[["tv"]]`. We interpret this as saying, "For some given investment in radio and newspaper advertising, increasing tv advertising by $1000 will increase the number of units sold by approximately 46 units (because the units are measured in thousands, so 1000 x `r coefficients(adverts_lm)[["tv"]]`)."
+
+### Exercises
+
+1. Load the `Boston` dataset from the `ISLR2` package with `data()`.
+2. Subset the variables in the dataset using the `select()` function from `dplyr`. Choose all the following variables: 
+    - `medv` = median household value
+    - `rm` = number of rooms
+    - `crim` = per capita crime rate
+    - `lstat` = percent of households with low socioeconomic status
+2. Summarize the table with `skim()`.
+2. Make a simple linear model of median household value (`medv`) as a function of average number of rooms (`rm`).
+    - Call the model `simple_lm`.
+3. Now make a multiple linear model of median household value (`medv`) as a function of average number of rooms, per capita crime rate, and percent of household with low socioeconomic status (`rm`, `crim`, and `lstat`, respectively). 
+    - Call the model `boston_lm`.
+4. Summarize the model with `summary()`.
+    - Are all the coefficients significantly different than zero?
+    - How much of the variance in house value is explained by these variables (ie what is the R-squared value)? 
+5. How do you interpret the coefficient for number of rooms? What effect does increasing the number of rooms have?
+
+## Model Evaluation
+
+As always, we can use the base `plot()` function to check model assumptions, using the `which` argument to specify the type of plot we want to make. For example, we can make a Q-Q plot like so:
+
+```{r}
+plot(adverts_lm, which = 2)
+
+```
+
+Or, we can use the `check_model()` function from the `performance` package.
+
+```{r}
+#| fig-asp: 1
+#| fig-width: 9
+#| out-width: 100%
+
+check_model(
+  adverts_lm,
+  check = c("linearity", "homogeneity", "outliers", "qq")
+)
+
+```
+
+How does it look? Have we met the assumptions of linear regression? Consider, for exmaple, that Q-Q plot. It would seem to suggest that the residuals are skewed to the left. That's not good because the linear model assumes that the residuals are normally distributed and centered on zero. Another way to check for this is to plot a histogram of the residuals and check whether it has the shape of a bell curve.
+
+```{r}
+adverts_residuals <- tibble(residuals = residuals(adverts_lm))
+
+ggplot(adverts_residuals, aes(residuals)) +
+  geom_histogram() +
+  labs(
+    x = "Residual Sales",
+    y = "Count"
+  )
+
+```
+
+😬 You can see the left skew as indicated by the Q-Q plot. 
+
+### Exercises
+
+1. Plot a histogram of the residuals in `boston_lm`.
+    - Use `residuals()` to get the residuals out of the model object.
+    - Use `geom_histogram()`.
+1. Run `check_model()` on `boston_lm` and check for linearity, homogeneity, outliers, and qq. 
+2. Does the model meet the assumptions of linear regression?
+
+## ANOVA
+
+When evaluating the model, we should also check whether adding variables actually makes a significant improvement. To do that, we need to compare the complex model to a simpler model. In R, we do that with the `anova()` function. Here, we're going to compare the full model to set of simpler models that are nested within it. Note that in each case the simpler model is a subset of the more complex model (ie, these are nested models)! The ANOVA wouldn't work otherwise! 
+
+```{r}
+m1 <- lm(sales ~ tv, data = adverts)
+m2 <- lm(sales ~ tv + radio, data = adverts)
+m3 <- lm(sales ~ tv + radio + newspaper, data = adverts)
+
+anova(m1, m2, m3)
+
+```
+
+This is a sequential ANOVA that does comparisons in order, first comparing the `tv` model to the intercept model, then the `tv + radio` model to the `tv` model, and so on, to the full model. For each step, it reports the residual sum of squares (`RSS` or the error in the model) and evaluates whether the difference in that value between the models is significant. The degrees of freedom (`DF`) represents the difference in residual degrees of freedom (`Res.Df`) between the simple and complex models (for row 2, that's 199-198=1). The sum of squares (`Sum of Sq`) is the difference in the Residual Sum of Squares (`RSS`) for each model (for row 2, that's 5417-2103=3315). The `F` statistic is then the ratio of (Sum of Sq/Df) to what is effectively the mean squared error of the full model (for row 2 that's (3315/5)/(557/196) = 1166). The intuitive idea here is that an F-statistic close to zero means that adding the covariate does not reduce the model's RSS or error to any meaningful degree. As always, the F-statistic is then compared to an F distribution with the degrees of freedom to determine how likely that particular value is, assuming the null hypothesis that there is no significant improvement. Notice that each of these covariates makes a significant contribution to the model of sales except newspaper spending. Why might that be?
+
+One last point, before moving on. You do not have to explicitly generate a sequence of nested models. You can simply call `anova()` on the full model and it will generate those models for you. However, do be aware that the printed ANOVA table is slightly different (additional columns and different column names) in the two cases. Here it is the for the full advertising model:
+
+```{r}
+anova(adverts_lm)
+
+```
+
+### Exercises
+
+1. Use the `anova()` function to compare `simple_lm` to `boston_lm`.
+    - State your null and alternate hypotheses.
+2. Is the complex model worth it?
+
+## Collinearity
+
+Linear regression assumes that the predictor or independent variables are uncorrelated. However, this is often not the case. To evaluate this assumption, you can do one of two things. I actually recommend that you always do both. First, you can check for pairwise correlations visually with the `pairs()` function from base R or analytically with the `cor()` argument. Both work with tables. Second, you check for multicollinearity using the `vif()` function to estimate the Variance Inflation Factor for each covariate.
+
+### Check for collinearity
+
+```{r}
+pairs(adverts)
+cor(adverts)
+
+```
+
+Notice that `pairs()` generates a scatterplot matrix with all pairwise combination of variables. If there's no correlation, the scatterplot should look like a cloud of random points. If there is a correlation, the points will cluster along some line. The `cor()` function generates a correlation matrix (by default a Pearson's correlation matrix). Of course, every variable correlates perfectly with itself, hence a value of 1 along the diagonal. Values above and below the diagonal are simply mirrors of each other, as is the case with the scatterplot matrix. The fact that each variable correlates with sales is not problematic in this case, as that is the relationship we are trying to model. What we want to focus on here is the degree of correlation between the predictors `tv`, `radio`, and `newspaper`. It is preferable that the correlations between these be as close to zero as possible, but again, it will rarely be the case that they are exactly zero. Any value greater than 0.7 is a cause for concern and should lead you to update your model to address it.
+
+### Check for multicollinearity
+
+Generally, it's a good idea to test for correlations between predictors before building a model. However, the `vif()` function only works on model objects, which makes sense as the variance being inflated is variance around coefficient estimates made by the model. That means, of course, that you have to build a model first before evaluating its covariates for multicollinearity. Using the linear model we made with the advertising data, that looks like this:
+
+```{r}
+vif(adverts_lm)
+
+```
+
+This generates a named vector, with one value for each covariate. A general rule of thumb is that VIF for a coefficient should be less than 5. After that, you should consider changes to your model.
+
+### Exercises
+
+1. Use `pairs()` on the `Boston` data to visualize pairwise relationships between variables.
+    - Do you see any potential trends?
+2. Use `cor()` on the `Boston` data to estimate the Pearson correlation coefficient for each pair of variables.
+    - Are there any strong correlations?
+3. Use `vif()` on the `bostom_lm` model to estimate the Variance Inflation Factor for each covariate.
+    - Are any greater than 5 for any of them?
+
+## Homework
+
+1. Load the `Handaxes` dataset from the `archdata` package using `data()`.
+2. Now let's explore this dataset.
+    - Check the variables that it includes with `names()`. You should see maximum length (`L`), breadth (`B`), and thickness (`T`), among others.
+    - Try renaming those to make them more informative and readable with `rename()`.
+    - Use `select()` to subset this table, taking only those three variables (length, breadth, and thickness).
+    - Summarize this table with `skim()`.
+    - Visualize the pairwise relationships between variables with `pairs()`.
+    - Estimate Pearson's correlation coefficient for each pair of variables with `cor()`.
+2. Now making a simple linear model showing the relationship (if any) between the length and breadth of handaxes. Be sure to do all of the following:
+    - Use `summary()` to report the model. 
+    - Use `predict()` and `geom_line()` to visualize the modeled relationship. Be sure to plot this over the data!
+    - Add a confidence interval with `geom_ribbon()`.
+    - Use `check_model()` to visually inspect the model.
+    - Does the model satisfy the assumptions of linear regression?
+2. Build a multiple linear model of handaxe length as a function of breadth and thickness. Be sure to do all of the following:
+    - Use `summary()` to report the model. 
+    - Use `check_model()` to visually inspect the model.
+    - Does the model satisfy the assumptions of linear regression?
+2. Use the `vif()` function on the multiple linear model.
+    - Is the VIF for either variable greater than 5?
+2. Conduct an ANOVA using the `anova()` function to compare the simple and complex models.
+    - Does the complex model significantly improve on the simpler model?

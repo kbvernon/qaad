@@ -1,0 +1,732 @@
+---
+title: "Lecture 08: Multiple Linear Models"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+library(broom)
+library(car)
+
+adverts <- read_csv("https://www.statlearning.com/s/Advertising.csv") |> 
+  rename_with(tolower) |> 
+  select(sales, tv, radio, newspaper)
+
+adverts_lm <- lm(sales ~ tv, data = adverts)
+
+estimate <- augment(adverts_lm)
+
+predictors <- tidy(adverts_lm)
+
+beta0 <- predictors |> filter(term == "(Intercept)") |> pull(estimate)
+beta1 <- predictors |> filter(term == "tv") |> pull(estimate)
+
+```
+
+## 📋 Lecture Outline
+
+- Simple Linear Regression
+- Multiple Linear Regression
+- Collinearity
+- Multicollinearity
+- ANOVA
+- Partial Dependence
+
+## Simple Linear Regression
+
+:::::: {.r-stack}
+::::: {.fragment .fade-out fragment-index=0 .w100}
+:::: {.columns}
+::: {.column}
+
+```{r}
+#| fig-asp: 0.9
+
+ggplot(estimate) +
+  geom_point(
+    aes(tv, sales),
+    size = 2.5
+  ) +
+  labs(
+    x = "Investment in TV Advertising\n(thousands of dollars)",
+    y = "Sales\n(thousands of units)"
+  ) +
+  theme(axis.title = element_text(lineheight = 1.4))
+
+```
+
+::: {style="text-align:center"}
+_From [James et al (2021). ISLR. 2nd Ed.](https://www.statlearning.com/)_
+:::
+
+:::
+::: {.column}
+
+```{r}
+#| results: asis
+
+adverts |> 
+  gt() |> 
+  tab_options(
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    container.height = px(350),
+    container.overflow.y = TRUE,
+    row.striping.background_color = "#ededed",
+    row.striping.include_table_body = TRUE,
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(100)
+  ) |> 
+  as_raw_html()
+
+```
+
+:::
+::::
+:::::
+::::: {.fragment .fade-in fragment-index=0 .w100}
+:::: {.columns}
+::: {.column}
+
+```{r}
+#| fig-asp: 0.9
+
+ggplot(estimate) +
+  geom_segment(
+    aes(tv, sales, xend = tv, yend = .fitted),
+    color = "gray60"
+  ) +
+  geom_abline(
+    intercept = beta0,
+    slope = beta1,
+    color = qcolors("kobe"),
+    size = 2
+  ) +
+  geom_point(
+    aes(tv, sales),
+    size = 3
+  ) +
+  labs(
+    x = "Investment in TV Advertising\n(thousands of dollars)",
+    y = "Sales\n(thousands of units)"
+  ) +
+  theme(axis.title = element_text(lineheight = 1.4))
+
+```
+
+::: {style="text-align:center"}
+_From [James et al (2021). ISLR. 2nd Ed.](https://www.statlearning.com/)_
+:::
+
+:::
+::: {.column}
+
+```{r}
+#| results: asis
+
+predictors |>
+  rename("t.statistic" = statistic) |> 
+  mutate(across(where(is.numeric), ~round(.x, 3))) |> 
+  gt() |> 
+  tab_options(
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    row.striping.background_color = "#ededed",
+    row.striping.include_table_body = TRUE,
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(100)
+  ) |> 
+  as_raw_html()
+
+```
+
+__Note the units!__ We interpret the slope coefficient here as saying, "For every $1000 spent on television advertising, sales increased by approximately 50 units."
+
+__Question__ What does the intercept mean?
+
+:::
+::::
+:::::
+::::::
+
+## But, muh data...
+
+__Question__ What about the money invested in radio and newspaper advertising? 
+
+. . .
+
+<br>
+
+To answer this, we could try building three separate models:  
+
+1. sales $\sim$ tv
+2. sales $\sim$ newspaper
+3. sales $\sim$ radio
+
+But, this assumes that the coefficient estimates are independent of each other... 
+
+. . .
+
+<br>
+
+__Solution__ Make one big model!  
+
+1. sales $\sim$ tv + newspaper + radio
+
+## Multiple Linear Regression
+
+```{r}
+
+adverts_lm_list <- list(
+  tv = adverts_lm,
+  radio = lm(sales ~ radio, data = adverts),
+  newspaper = lm(sales ~ newspaper, data = adverts),
+  all = lm(sales ~ tv + radio + newspaper, data = adverts)
+)
+
+adverts_lm_table <- adverts_lm_list |> 
+  lapply(tidy) |> 
+  bind_rows() |> 
+  mutate(model = c(rep("simple", 6), rep("multiple", 4))) |> 
+  rename("t.statistic" = statistic) |> 
+  select(model, everything())
+
+```
+
+:::::: {.r-stack}
+::::: {.fragment .fade-out fragment-index=0 .w100 .mt-0}
+:::: {.columns}
+::: {.column}
+
+```{r}
+#| fig-asp: 0.75
+
+adverts_lm_table |> 
+  filter(term != "(Intercept)") |> 
+  ggplot(aes(estimate, term, color = model)) +
+  geom_vline(
+    xintercept = 0,
+    color = qcolors("kobe"),
+    size = 0.4
+  ) +
+  geom_errorbarh(
+    aes(xmin = estimate - std.error, xmax = estimate + std.error),
+    height = 0.25,
+    size = 1
+  ) +
+  geom_point(
+    size = 4
+  ) +
+  scale_color_manual(
+    values = c("transparent", qcolors("gold"))
+  ) +
+  labs(
+    x = "Coefficient Estimates"
+  ) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = c(0.85, 0.87),
+    legend.box.just = c("right", "top"),
+    legend.title = element_blank()
+  )
+
+```
+
+::: {style="text-align:center"}
+_From [James et al (2021). ISLR. 2nd Ed.](https://www.statlearning.com/)_
+:::
+
+:::
+::: {.column}
+
+Coefficients are estimated in the same way, but the __interpretation__ changes! Consider 
+
+$$\beta_{radio}=0.189$$ 
+
+Read: "For some amount of `tv` and `newspaper` advertising, spending an additional $1000 on `radio` advertising increases sales by approximately 189 units."
+
+:::
+::::
+:::::
+::::: {.fragment .fade-in fragment-index=0 .w100 .mt-0}
+:::: {.columns}
+::: {.column}
+
+```{r}
+#| fig-asp: 0.75
+
+adverts_lm_table |> 
+  filter(term != "(Intercept)") |> 
+  ggplot(aes(estimate, term, color = model)) +
+  geom_vline(
+    xintercept = 0,
+    color = qcolors("kobe"),
+    size = 0.4
+  ) +
+  geom_errorbarh(
+    aes(xmin = estimate - std.error, xmax = estimate + std.error),
+    height = 0.25,
+    size = 1
+  ) +
+  geom_point(
+    size = 4
+  ) +
+  scale_color_manual(
+    values = c(qcolors("eerie", "gold"))
+  ) +
+  labs(
+    x = "Coefficient Estimates"
+  ) +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = c(0.85, 0.87),
+    legend.box.just = c("right", "top"),
+    legend.title = element_blank()
+  )
+
+```
+
+::: {style="text-align:center"}
+_From [James et al (2021). ISLR. 2nd Ed.](https://www.statlearning.com/)_
+:::
+
+:::
+::: {.column}
+
+The estimate for `newspaper` is no longer significantly different than zero!
+
+__Question__ Why might this be?
+
+:::
+::::
+:::::
+::::::
+
+## Collinearity
+
+:::::: {.columns}
+::::: {.column width="45%"}
+
+```{r}
+#| fig-align: left 
+#| fig-asp: 1
+
+pnt_matrix <- lapply(
+  seq_along(adverts),
+  function(x){
+    
+    n.var <- ncol(adverts)
+    n.obs <- nrow(adverts)
+    
+    s.var <- names(adverts)[[x]]
+    
+    var1 <- adverts[x]
+    
+    names(var1) <- "x"
+    
+    var1 <- var1 |> 
+      slice(rep(1:n.obs, n.var)) |> 
+      mutate(var1 = s.var)
+    
+    var2 <- adverts |> 
+      pivot_longer(
+        everything(),
+        names_to = "var2",
+        values_to = "y"
+      ) |> 
+      arrange(var2)
+    
+    bind_cols(var1, var2) |> 
+      select(var1, var2, x, y)
+    
+  }
+) |> 
+  bind_rows() |> 
+  mutate(
+    across(c(var1, var2), factor),
+    across(c(var1, var2), ~forcats::fct_relevel(.x, "sales", "tv", "radio")),
+  )
+
+lbl_matrix <- pnt_matrix |> 
+  group_by(var1, var2) |> 
+  summarize(
+    x = 0.5 * (min(x) + max(x)),
+    y = 0.5 * (min(y) + max(y))
+  ) |> 
+  filter(
+    var2 == var1
+  )
+
+cor_matrix <- cor(adverts) |> 
+  round(digits = 2) |> 
+  as_tibble(rownames = "var1") |> 
+  tidyr::pivot_longer(
+    -var1, 
+    names_to = "var2", 
+    values_to = "value"
+  ) |> 
+  mutate(
+    across(c(var1, var2), factor),
+    across(c(var1, var2), ~forcats::fct_relevel(.x, "sales", "tv", "radio")),
+    color = ifelse(value > 0.5 | is.na(value), "black", "white")
+  )
+
+bob_matrix <- pnt_matrix |> 
+  group_by(var1, var2) |> 
+  summarize(
+    xmid = 0.5 * (min(x) + max(x)),
+    ymid = 0.5 * (min(y) + max(y)),
+    xmin = min(x),
+    xmax = max(x),
+    ymin = min(y),
+    ymax = max(y)
+  ) |> 
+  filter(
+    !(var2 == var1),
+    !(var2 == "sales"),
+    !(var2 == "tv" & var1 %in% c("radio", "newspaper")),
+    !(var2 == "radio" & var1 == "newspaper")
+  )
+
+cor_matrix <- left_join(bob_matrix, cor_matrix, by = c("var1", "var2"))
+
+pnt_matrix <- pnt_matrix |> 
+  filter(
+    !(var2 == var1),
+    !(var2 == "newspaper"),
+    !(var2 == "radio" & var1 %in% c("sales", "tv")),
+    !(var2 == "tv" & var1 == "sales")
+  )
+
+ggplot() +
+  geom_point(
+    data = pnt_matrix, 
+    aes(x, y),
+    size = 1.8,
+    shape = 21,
+    color = qcolors("kobe"),
+    fill = alpha(qcolors("bronze"), 0.75)
+  ) +
+  geom_smooth(
+    data = pnt_matrix, 
+    aes(x, y),
+    method = "lm",
+    se = FALSE,
+    color = qcolors("sapphire")
+  ) +
+  geom_text(
+    data = lbl_matrix,
+    aes(x, y, label = var1),
+    size = 11/.pt
+  ) +
+  geom_rect(
+    data = cor_matrix,
+    aes(
+      fill = value,
+      xmin = xmin,
+      xmax = xmax,
+      ymin = ymin,
+      ymax = ymax
+    )
+  ) +
+  scale_fill_viridis(
+    option = "magma",
+    na.value = "white"
+  ) +
+  geom_text(
+    data = cor_matrix,
+    aes(
+      xmid,
+      ymid,
+      label = value, 
+      color = color
+    ),
+    hjust = 0.5,
+    vjust = 0.5,
+    size = 11/.pt
+  ) +
+  scale_color_manual(
+    values = c("black", "white")
+  ) +
+  facet_grid(var2 ~ var1, scales = "free") +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_blank()
+  ) +
+  coord_cartesian(expand = FALSE)
+
+```
+
+:::::
+::::: {.column width="55%"}
+
+__Answer:__ `newspaper` and `radio` advertising are correlated ($\rho$ = 0.35).  
+
+So, `newspaper` advertising was never really increasing `sales`. It was just taking "credit" for `radio`'s contribution.
+
+:::::
+::::::
+
+## Multicollinearity
+
+:::::: {.r-stack}
+::::: {.fragment .fade-out fragment-index=0 .w100 .mt-0 .ml-0}
+
+__Problem__ It is possible for multiple variables to correlate even if no single pair does. 
+
+<br>
+
+__Solution__ Measure the Variance Inflation Factor for each covariate.
+
+$$VIF(\hat{B_j}) = \frac{1}{1-R^{2}_{j}}$$
+
+where $R^{2}_{j}$ is the coefficient of determination for the model $x_j \sim x_1 + x_2 + \ldots + x_i$.
+
+<br>
+
+_Variance Inflation_ inflates the standard errors, too!
+
+$$se(\hat{B_j}) = \sqrt{Var(\hat{B_j}) \cdot VIF(\hat{B_j})}$$
+
+:::::
+::::: {.fragment .fade-in-then-out fragment-index=0 .w100 .mt-0 .ml-0}
+
+```{r}
+#| results: asis
+
+vif_vct <- vif(adverts_lm_list$all)
+
+tibble(
+  covariate = names(vif_vct),
+  VIF = unname(vif_vct)
+) |> 
+  gt() |> 
+  tab_options(
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    container.overflow.y = TRUE,
+    row.striping.background_color = "#ededed",
+    row.striping.include_table_body = TRUE,
+    table.align = "left",
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(40)
+  ) |> 
+  as_raw_html()
+
+```
+
+VIF close to 1 means no multicollinearity.  
+
+__Rule of Thumb__ VIF that exceeds 5 is too much! Or is it 10? 🤔
+
+:::::
+::::: {.fragment .fade-in fragment-index=1 .w100 .mt-0 .ml-0}
+
+Strategies for handling multicollinearity include:
+
+- Removing one or more correlated variables (simplest strategy)
+- Aggregating correlated variables (e.g., product or mean)
+- Using an interaction term (more later)
+- Using an ordination technique (more later)
+
+:::::
+::::::
+
+## ANOVA for model
+
+:::::: {.r-stack}
+::::: {.fragment .fade-out fragment-index=0 .w100 .mt-0 .ml-0}
+
+We have two __nested__ models of our data:  
+
+- $S:$ sales $\sim$ tv
+- $C:$ sales $\sim$ tv + newspaper + radio
+
+__Question:__ Does the complex model (C) explain more variance than the simple model (S)? Does the difference arise by chance?  
+
+Here are our  hypotheses:  
+
+- $H_0:$ no difference in variance explained.
+- $H_1:$ difference in variance explained.
+
+:::::
+::::: {.fragment .fade-in fragment-index=0 .w100 .mt-0 .ml-0}
+
+```{r}
+#| results: asis
+
+adverts_anova <- with(adverts_lm_list, anova(tv, all))
+
+adverts_anova <- adverts_anova |>
+  tidy() |>
+  rename(
+    "RSS" = rss,
+    "F" = statistic
+  ) |>
+  mutate(
+    m = c("S", "C"),
+    p.value = ifelse(
+      p.value < 2.2e-16, 
+      "< 2.2e-16", 
+      as.character(signif(p.value, 3))
+    )
+  ) |>
+  rename(
+    "Pr(>F)" = p.value
+  ) |>
+  select(m, everything())
+
+adverts_anova |>
+  gt() |> 
+  tab_options(
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    row.striping.background_color = "#ededed",
+    row.striping.include_table_body = TRUE,
+    table.align = "left",
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(70)
+  ) |> 
+  sub_missing(missing_text = "") |> 
+  as_raw_html()
+
+```
+
+::: {style="width:70%; margin-right:auto; margin-top:1em;"}
+$$F = \frac{(RSS_{S} - RSS_{C})/(df_S - df_C)}{RSS_{C}/df_C}$$
+:::
+
+:::::
+::::::
+
+## Partial Dependence Plot
+
+```{r}
+#| layout-ncol: 2
+#| out-width: 100%
+#| fig-asp: 1
+
+n <- 300
+
+radio <- with(adverts, seq(min(radio), max(radio), length = n))
+              
+new_data <- expand.grid(
+  tv = with(adverts, seq(min(tv), max(tv), length = n)),
+  radio = radio
+) |> 
+  as_tibble() |> 
+  mutate(
+    newspaper = mean(adverts$newspaper)
+  )
+
+new_data$sales <- predict(adverts_lm_list$all, newdata = new_data)
+
+margins <- with(adverts, quantile(tv, c(0.25, 0.5, 0.75)))
+margins <- unname(margins)
+margins <- round(margins, digits = 2)
+
+responses <- lapply(
+  margins, 
+  function(z){
+    
+    nd <- tibble(
+      radio = radio,
+      tv = z,
+      newspaper = mean(adverts$newspaper)
+    )
+    
+    tibble(
+      tv = z,
+      radio = radio,
+      sales = predict(adverts_lm_list$all, newdata = nd)
+    )
+    
+  }) |> 
+  bind_rows() |> 
+  mutate(
+    tv = factor(tv)
+  )
+  
+ggplot() +
+  geom_contour_filled(
+    data = new_data, 
+    aes(radio, tv, z = sales),
+    color = "transparent",
+    bins = 5
+  ) +
+  scale_fill_viridis(
+    name = "Sales\n(thousands of units)",
+    labels = paste0("< ", seq(6, 30, by = 6)),
+    discrete = TRUE
+  ) +
+  geom_hline(
+    aes(yintercept = margins),
+    color = "white",
+    linewidth = 3
+  ) +
+  geom_hline(
+    aes(
+      yintercept = margins,
+      color = factor(margins)
+    ),
+    linewidth = 1.5
+  ) +
+  scale_color_manual(
+    name = NULL,
+    values = qcolors("eerie", "blue", "bronze")
+  ) +
+  labs(
+    x = "Investment in Radio Advertising\n(thousands of dollars)",
+    y = "Investment in TV Advertising\n(thousands of dollars)"
+  ) +
+  coord_cartesian(expand = FALSE) +
+  theme(
+    axis.title = element_text(lineheight = 1.4),
+    legend.position = "top",
+    legend.direction = "horizontal",
+    legend.title = element_text(lineheight = 1.4),
+    legend.title.align = 0.5,
+    legend.margin = margin(0, 0, 0, 0.1, "in"),
+    plot.margin = margin(0, 0.2, 0.2, 0.2, "in")
+  ) +
+  guides(
+    color = "none",
+    fill = guide_legend(
+      title.position = "top"
+    )
+  )
+
+ggplot(responses, aes(radio, sales, color = tv)) +
+  geom_line(size = 2) +
+  scale_color_manual(
+    name = "Investment in TV Advertising\n(thousands of dollars)",
+    values = qcolors("eerie", "blue", "bronze")
+  ) +
+  labs(
+    x = "Investment in Radio Advertising\n(thousands of dollars)",
+    y = "Sales\n(thousands of units)"
+  ) +
+  coord_cartesian(expand = FALSE) +
+  theme(
+    axis.title = element_text(lineheight = 1.4),
+    legend.position = "top",
+    legend.direction = "horizontal",
+    legend.title = element_text(lineheight = 1.4),
+    legend.title.align = 0.5,
+    legend.margin = margin(0, 0, 0, 0.1, "in"),
+    plot.margin = margin(0, 0.2, 0.2, 0.2, "in")
+  ) +
+  guides(color = guide_legend(title.position = "top"))
+
+```

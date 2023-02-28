@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-02-28">
+<meta name="description" content="(Stats) Learn how to interpret multiple linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.">
+<title>Quantitative Analysis of Archaeological Data - Lab 08: Multiple Linear Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+</head>
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.html">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#multiple-regression" id="toc-multiple-regression" class="nav-link" data-scroll-target="#multiple-regression">Multiple Regression</a>
+  <ul class="collapse">
+<li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#model-evaluation" id="toc-model-evaluation" class="nav-link" data-scroll-target="#model-evaluation">Model Evaluation</a>
+  <ul class="collapse">
+<li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#anova" id="toc-anova" class="nav-link" data-scroll-target="#anova">ANOVA</a>
+  <ul class="collapse">
+<li><a href="#exercises-2" id="toc-exercises-2" class="nav-link" data-scroll-target="#exercises-2">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#collinearity" id="toc-collinearity" class="nav-link" data-scroll-target="#collinearity">Collinearity</a>
+  <ul class="collapse">
+<li><a href="#check-for-collinearity" id="toc-check-for-collinearity" class="nav-link" data-scroll-target="#check-for-collinearity">Check for collinearity</a></li>
+  <li><a href="#check-for-multicollinearity" id="toc-check-for-multicollinearity" class="nav-link" data-scroll-target="#check-for-multicollinearity">Check for multicollinearity</a></li>
+  <li><a href="#exercises-3" id="toc-exercises-3" class="nav-link" data-scroll-target="#exercises-3">Exercises</a></li>
+  </ul>
+</li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 08: Multiple Linear Models</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>(Stats) Learn how to interpret multiple linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 28, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol type="1">
+<li>Creating multiple linear models</li>
+<li>Evaluating model assumptions with diagnostic plots</li>
+<li>Checking for correlation in the predictors
+<ul>
+<li>Scatterplot matrix with <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>
+</li>
+<li>Pearson’s Correlation with <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code>
+</li>
+<li>Variance Inflation Factor with <code><a href="https://rdrr.io/pkg/car/man/vif.html">vif()</a></code>
+</li>
+</ul>
+</li>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://socialsciences.mcmaster.ca/jfox/Books/Companion/index.html">car</a></li>
+<li><a href="https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf">ISLR2</a></li>
+<li><a href="https://easystats.github.io/performance/">performance</a></li>
+<li><a href="https://docs.ropensci.org/skimr/">skimr</a></li>
+<li><a href="https://www.tidyverse.org/">tidyverse</a></li>
+</ul>
+<p>You’ll want to install <code>ISLR2</code> and <code>car</code> with <code>install.packages(c("ISLR2", "car"))</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-forge.r-project.org/projects/car/">car</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://www.statlearning.com">ISLR2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://easystats.github.io/performance/">performance</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/skimr/">skimr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>adverts</code>
+<ul>
+<li>Observations of product sales and investments in advertising across various media.</li>
+<li>package: none</li>
+<li>reference: <a href="https://www.statlearning.com/resources-second-edition" class="uri">https://www.statlearning.com/resources-second-edition</a>
+</li>
+</ul>
+</li>
+<li>
+<code>Boston</code>
+<ul>
+<li>A dataset containing housing values in 506 suburbs of Boston.</li>
+<li>package: <code>ISLR2</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf" class="uri">https://cran.r-project.org/web/packages/ISLR2/ISLR2.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>HandAxes</code>
+<ul>
+<li>Includes measurements of handaxes from the Furze Platt site stored at the Royal Ontario Museum.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+</ul></section></section><section id="multiple-regression" class="level2"><h2 class="anchored" data-anchor-id="multiple-regression">Multiple Regression</h2>
+<p>In this section, we will walk through how to build a multiple linear model in R. This is not fundamentally different than building a simple linear model. The only difference is that we need to update the model formula. For the simple linear model, the formula is just y ~ x, for the multiple linear model, it’s y ~ x1 + x2 + … + xn. We simply add the covariates together using the plus-sign.</p>
+<p>Let’s work through an example with the adverts data set used in the textbook <a href="https://www.statlearning.com/"><em>An Introduction to Statistical Learning With Applications in R</em></a>. We want to know whether investment in different advertising media increases sales of some product. The website for the ISLR book hosts several data sets. The authors have also written companion R packages (ISLR and ISLR2, for the first and second editions, respectively). Now, as it happens, the path to a csv file does not have to be a local path pointing to a location on your computer. It can be also be a url pointing to where a file is stored remotely on a website, so reading in the advertising data from the ISLR website is as easy as this.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">adverts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="st">"https://www.statlearning.com/s/Advertising.csv"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="va">tolower</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">sales</span>, <span class="va">tv</span>, <span class="va">radio</span>, <span class="va">newspaper</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Before fitting the model, let’s have a look at some summaries of the data with <code><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim</a></span><span class="op">(</span><span class="va">adverts</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<caption>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Name</td>
+<td style="text-align: left;">adverts</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Number of rows</td>
+<td style="text-align: left;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Number of columns</td>
+<td style="text-align: left;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">_______________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Column type frequency:</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">numeric</td>
+<td style="text-align: left;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">________________________</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Group variables</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 11%">
+<col style="width: 16%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">skim_variable</th>
+<th style="text-align: right;">n_missing</th>
+<th style="text-align: right;">complete_rate</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p0</th>
+<th style="text-align: right;">p25</th>
+<th style="text-align: right;">p50</th>
+<th style="text-align: right;">p75</th>
+<th style="text-align: right;">p100</th>
+<th style="text-align: left;">hist</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">sales</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">14.0</td>
+<td style="text-align: right;">5.22</td>
+<td style="text-align: right;">1.6</td>
+<td style="text-align: right;">10.38</td>
+<td style="text-align: right;">12.9</td>
+<td style="text-align: right;">17.4</td>
+<td style="text-align: right;">27.0</td>
+<td style="text-align: left;">▁▇▇▅▂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">tv</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">147.0</td>
+<td style="text-align: right;">85.85</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">74.38</td>
+<td style="text-align: right;">149.8</td>
+<td style="text-align: right;">218.8</td>
+<td style="text-align: right;">296.4</td>
+<td style="text-align: left;">▇▆▆▇▆</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">radio</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">23.3</td>
+<td style="text-align: right;">14.85</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">9.97</td>
+<td style="text-align: right;">22.9</td>
+<td style="text-align: right;">36.5</td>
+<td style="text-align: right;">49.6</td>
+<td style="text-align: left;">▇▆▆▆▆</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">newspaper</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">30.6</td>
+<td style="text-align: right;">21.78</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">12.75</td>
+<td style="text-align: right;">25.8</td>
+<td style="text-align: right;">45.1</td>
+<td style="text-align: right;">114.0</td>
+<td style="text-align: left;">▇▆▃▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>And now the model.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">adverts_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">tv</span> <span class="op">+</span> <span class="va">radio</span> <span class="op">+</span> <span class="va">newspaper</span>, data <span class="op">=</span> <span class="va">adverts</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">adverts_lm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; lm(formula = sales ~ tv + radio + newspaper, data = adverts)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residuals:</span></span>
+<span><span class="co">#&gt;    Min     1Q Median     3Q    Max </span></span>
+<span><span class="co">#&gt; -8.828 -0.891  0.242  1.189  2.829 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error t value            Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; (Intercept)  2.93889    0.31191    9.42 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; tv           0.04576    0.00139   32.81 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; radio        0.18853    0.00861   21.89 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; newspaper   -0.00104    0.00587   -0.18                0.86    </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residual standard error: 1.69 on 196 degrees of freedom</span></span>
+<span><span class="co">#&gt; Multiple R-squared:  0.897,  Adjusted R-squared:  0.896 </span></span>
+<span><span class="co">#&gt; F-statistic:  570 on 3 and 196 DF,  p-value: &lt;0.0000000000000002</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note the change in how we interpret the coefficients! Each coefficient must be interpreted relative to some value of the other covariates. For example, the coefficient estimate for television is 0.046. We interpret this as saying, “For some given investment in radio and newspaper advertising, increasing tv advertising by $1000 will increase the number of units sold by approximately 46 units (because the units are measured in thousands, so 1000 x 0.046).”</p>
+<section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+<ol type="1">
+<li>Load the <code>Boston</code> dataset from the <code>ISLR2</code> package with <code><a href="https://rdrr.io/r/utils/data.html">data()</a></code>.</li>
+<li>Subset the variables in the dataset using the <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> function from <code>dplyr</code>. Choose all the following variables:
+<ul>
+<li>
+<code>medv</code> = median household value</li>
+<li>
+<code>rm</code> = number of rooms</li>
+<li>
+<code>crim</code> = per capita crime rate</li>
+<li>
+<code>lstat</code> = percent of households with low socioeconomic status</li>
+</ul>
+</li>
+<li>Summarize the table with <code><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim()</a></code>.</li>
+<li>Make a simple linear model of median household value (<code>medv</code>) as a function of average number of rooms (<code>rm</code>).
+<ul>
+<li>Call the model <code>simple_lm</code>.</li>
+</ul>
+</li>
+<li>Now make a multiple linear model of median household value (<code>medv</code>) as a function of average number of rooms, per capita crime rate, and percent of household with low socioeconomic status (<code>rm</code>, <code>crim</code>, and <code>lstat</code>, respectively).
+<ul>
+<li>Call the model <code>boston_lm</code>.</li>
+</ul>
+</li>
+<li>Summarize the model with <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code>.
+<ul>
+<li>Are all the coefficients significantly different than zero?</li>
+<li>How much of the variance in house value is explained by these variables (ie what is the R-squared value)?</li>
+</ul>
+</li>
+<li>How do you interpret the coefficient for number of rooms? What effect does increasing the number of rooms have?</li>
+</ol></section></section><section id="model-evaluation" class="level2"><h2 class="anchored" data-anchor-id="model-evaluation">Model Evaluation</h2>
+<p>As always, we can use the base <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> function to check model assumptions, using the <code>which</code> argument to specify the type of plot we want to make. For example, we can make a Q-Q plot like so:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">adverts_lm</span>, which <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-multiple-lm-lab_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>Or, we can use the <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> function from the <code>performance</code> package.</p>
+<div class="cell" data-fig.asp="1">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://easystats.github.io/performance/reference/check_model.html">check_model</a></span><span class="op">(</span></span>
+<span>  <span class="va">adverts_lm</span>,</span>
+<span>  check <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"linearity"</span>, <span class="st">"homogeneity"</span>, <span class="st">"outliers"</span>, <span class="st">"qq"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-multiple-lm-lab_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+</div>
+<p>How does it look? Have we met the assumptions of linear regression? Consider, for exmaple, that Q-Q plot. It would seem to suggest that the residuals are skewed to the left. That’s not good because the linear model assumes that the residuals are normally distributed and centered on zero. Another way to check for this is to plot a histogram of the residuals and check whether it has the shape of a bell curve.</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">adverts_residuals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>residuals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">adverts_lm</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">adverts_residuals</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">residuals</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Residual Sales"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-multiple-lm-lab_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>😬 You can see the left skew as indicated by the Q-Q plot.</p>
+<section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+<ol type="1">
+<li>Plot a histogram of the residuals in <code>boston_lm</code>.
+<ul>
+<li>Use <code><a href="https://rdrr.io/r/stats/residuals.html">residuals()</a></code> to get the residuals out of the model object.</li>
+<li>Use <code><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram()</a></code>.</li>
+</ul>
+</li>
+<li>Run <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> on <code>boston_lm</code> and check for linearity, homogeneity, outliers, and qq.</li>
+<li>Does the model meet the assumptions of linear regression?</li>
+</ol></section></section><section id="anova" class="level2"><h2 class="anchored" data-anchor-id="anova">ANOVA</h2>
+<p>When evaluating the model, we should also check whether adding variables actually makes a significant improvement. To do that, we need to compare the complex model to a simpler model. In R, we do that with the <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> function. Here, we’re going to compare the full model to set of simpler models that are nested within it. Note that in each case the simpler model is a subset of the more complex model (ie, these are nested models)! The ANOVA wouldn’t work otherwise!</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">tv</span>, data <span class="op">=</span> <span class="va">adverts</span><span class="op">)</span></span>
+<span><span class="va">m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">tv</span> <span class="op">+</span> <span class="va">radio</span>, data <span class="op">=</span> <span class="va">adverts</span><span class="op">)</span></span>
+<span><span class="va">m3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">sales</span> <span class="op">~</span> <span class="va">tv</span> <span class="op">+</span> <span class="va">radio</span> <span class="op">+</span> <span class="va">newspaper</span>, data <span class="op">=</span> <span class="va">adverts</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">m1</span>, <span class="va">m2</span>, <span class="va">m3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Analysis of Variance Table</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model 1: sales ~ tv</span></span>
+<span><span class="co">#&gt; Model 2: sales ~ tv + radio</span></span>
+<span><span class="co">#&gt; Model 3: sales ~ tv + radio + newspaper</span></span>
+<span><span class="co">#&gt;   Res.Df  RSS Df Sum of Sq      F              Pr(&gt;F)    </span></span>
+<span><span class="co">#&gt; 1    198 2103                                            </span></span>
+<span><span class="co">#&gt; 2    197  557  1      1546 544.05 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; 3    196  557  1         0   0.03                0.86    </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is a sequential ANOVA that does comparisons in order, first comparing the <code>tv</code> model to the intercept model, then the <code>tv + radio</code> model to the <code>tv</code> model, and so on, to the full model. For each step, it reports the residual sum of squares (<code>RSS</code> or the error in the model) and evaluates whether the difference in that value between the models is significant. The degrees of freedom (<code>DF</code>) represents the difference in residual degrees of freedom (<code>Res.Df</code>) between the simple and complex models (for row 2, that’s 199-198=1). The sum of squares (<code>Sum of Sq</code>) is the difference in the Residual Sum of Squares (<code>RSS</code>) for each model (for row 2, that’s 5417-2103=3315). The <code>F</code> statistic is then the ratio of (Sum of Sq/Df) to what is effectively the mean squared error of the full model (for row 2 that’s (3315/5)/(557/196) = 1166). The intuitive idea here is that an F-statistic close to zero means that adding the covariate does not reduce the model’s RSS or error to any meaningful degree. As always, the F-statistic is then compared to an F distribution with the degrees of freedom to determine how likely that particular value is, assuming the null hypothesis that there is no significant improvement. Notice that each of these covariates makes a significant contribution to the model of sales except newspaper spending. Why might that be?</p>
+<p>One last point, before moving on. You do not have to explicitly generate a sequence of nested models. You can simply call <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> on the full model and it will generate those models for you. However, do be aware that the printed ANOVA table is slightly different (additional columns and different column names) in the two cases. Here it is the for the full advertising model:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">adverts_lm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Analysis of Variance Table</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response: sales</span></span>
+<span><span class="co">#&gt;            Df Sum Sq Mean Sq F value              Pr(&gt;F)    </span></span>
+<span><span class="co">#&gt; tv          1   3315    3315 1166.73 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; radio       1   1546    1546  544.05 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; newspaper   1      0       0    0.03                0.86    </span></span>
+<span><span class="co">#&gt; Residuals 196    557       3                                </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="exercises-2" class="level3"><h3 class="anchored" data-anchor-id="exercises-2">Exercises</h3>
+<ol type="1">
+<li>Use the <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> function to compare <code>simple_lm</code> to <code>boston_lm</code>.
+<ul>
+<li>State your null and alternate hypotheses.</li>
+</ul>
+</li>
+<li>Is the complex model worth it?</li>
+</ol></section></section><section id="collinearity" class="level2"><h2 class="anchored" data-anchor-id="collinearity">Collinearity</h2>
+<p>Linear regression assumes that the predictor or independent variables are uncorrelated. However, this is often not the case. To evaluate this assumption, you can do one of two things. I actually recommend that you always do both. First, you can check for pairwise correlations visually with the <code><a href="https://rdrr.io/r/graphics/pairs.html">pairs()</a></code> function from base R or analytically with the <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> argument. Both work with tables. Second, you check for multicollinearity using the <code><a href="https://rdrr.io/pkg/car/man/vif.html">vif()</a></code> function to estimate the Variance Inflation Factor for each covariate.</p>
+<section id="check-for-collinearity" class="level3"><h3 class="anchored" data-anchor-id="check-for-collinearity">Check for collinearity</h3>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/pairs.html">pairs</a></span><span class="op">(</span><span class="va">adverts</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="08-multiple-lm-lab_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="480"></p>
+</div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">adverts</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           sales     tv  radio newspaper</span></span>
+<span><span class="co">#&gt; sales     1.000 0.7822 0.5762    0.2283</span></span>
+<span><span class="co">#&gt; tv        0.782 1.0000 0.0548    0.0566</span></span>
+<span><span class="co">#&gt; radio     0.576 0.0548 1.0000    0.3541</span></span>
+<span><span class="co">#&gt; newspaper 0.228 0.0566 0.3541    1.0000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that <code><a href="https://rdrr.io/r/graphics/pairs.html">pairs()</a></code> generates a scatterplot matrix with all pairwise combination of variables. If there’s no correlation, the scatterplot should look like a cloud of random points. If there is a correlation, the points will cluster along some line. The <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> function generates a correlation matrix (by default a Pearson’s correlation matrix). Of course, every variable correlates perfectly with itself, hence a value of 1 along the diagonal. Values above and below the diagonal are simply mirrors of each other, as is the case with the scatterplot matrix. The fact that each variable correlates with sales is not problematic in this case, as that is the relationship we are trying to model. What we want to focus on here is the degree of correlation between the predictors <code>tv</code>, <code>radio</code>, and <code>newspaper</code>. It is preferable that the correlations between these be as close to zero as possible, but again, it will rarely be the case that they are exactly zero. Any value greater than 0.7 is a cause for concern and should lead you to update your model to address it.</p>
+</section><section id="check-for-multicollinearity" class="level3"><h3 class="anchored" data-anchor-id="check-for-multicollinearity">Check for multicollinearity</h3>
+<p>Generally, it’s a good idea to test for correlations between predictors before building a model. However, the <code><a href="https://rdrr.io/pkg/car/man/vif.html">vif()</a></code> function only works on model objects, which makes sense as the variance being inflated is variance around coefficient estimates made by the model. That means, of course, that you have to build a model first before evaluating its covariates for multicollinearity. Using the linear model we made with the advertising data, that looks like this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/car/man/vif.html">vif</a></span><span class="op">(</span><span class="va">adverts_lm</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        tv     radio newspaper </span></span>
+<span><span class="co">#&gt;      1.00      1.14      1.15</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This generates a named vector, with one value for each covariate. A general rule of thumb is that VIF for a coefficient should be less than 5. After that, you should consider changes to your model.</p>
+</section><section id="exercises-3" class="level3"><h3 class="anchored" data-anchor-id="exercises-3">Exercises</h3>
+<ol type="1">
+<li>Use <code><a href="https://rdrr.io/r/graphics/pairs.html">pairs()</a></code> on the <code>Boston</code> data to visualize pairwise relationships between variables.
+<ul>
+<li>Do you see any potential trends?</li>
+</ul>
+</li>
+<li>Use <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code> on the <code>Boston</code> data to estimate the Pearson correlation coefficient for each pair of variables.
+<ul>
+<li>Are there any strong correlations?</li>
+</ul>
+</li>
+<li>Use <code><a href="https://rdrr.io/pkg/car/man/vif.html">vif()</a></code> on the <code>bostom_lm</code> model to estimate the Variance Inflation Factor for each covariate.
+<ul>
+<li>Are any greater than 5 for any of them?</li>
+</ul>
+</li>
+</ol></section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
+<ol type="1">
+<li>Load the <code>Handaxes</code> dataset from the <code>archdata</code> package using <code><a href="https://rdrr.io/r/utils/data.html">data()</a></code>.</li>
+<li>Now let’s explore this dataset.
+<ul>
+<li>Check the variables that it includes with <code><a href="https://rdrr.io/r/base/names.html">names()</a></code>. You should see maximum length (<code>L</code>), breadth (<code>B</code>), and thickness (<code>T</code>), among others.</li>
+<li>Try renaming those to make them more informative and readable with <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code>.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> to subset this table, taking only those three variables (length, breadth, and thickness).</li>
+<li>Summarize this table with <code><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim()</a></code>.</li>
+<li>Visualize the pairwise relationships between variables with <code><a href="https://rdrr.io/r/graphics/pairs.html">pairs()</a></code>.</li>
+<li>Estimate Pearson’s correlation coefficient for each pair of variables with <code><a href="https://rdrr.io/r/stats/cor.html">cor()</a></code>.</li>
+</ul>
+</li>
+<li>Now making a simple linear model showing the relationship (if any) between the length and breadth of handaxes. Be sure to do all of the following:
+<ul>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to report the model.</li>
+<li>Use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line()</a></code> to visualize the modeled relationship. Be sure to plot this over the data!</li>
+<li>Add a confidence interval with <code><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon()</a></code>.</li>
+<li>Use <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul>
+</li>
+<li>Build a multiple linear model of handaxe length as a function of breadth and thickness. Be sure to do all of the following:
+<ul>
+<li>Use <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to report the model.</li>
+<li>Use <code><a href="https://easystats.github.io/performance/reference/check_model.html">check_model()</a></code> to visually inspect the model.</li>
+<li>Does the model satisfy the assumptions of linear regression?</li>
+</ul>
+</li>
+<li>Use the <code><a href="https://rdrr.io/pkg/car/man/vif.html">vif()</a></code> function on the multiple linear model.
+<ul>
+<li>Is the VIF for either variable greater than 5?</li>
+</ul>
+</li>
+<li>Conduct an ANOVA using the <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> function to compare the simple and complex models.
+<ul>
+<li>Does the complex model significantly improve on the simpler model?</li>
+</ul>
+</li>
+</ol>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

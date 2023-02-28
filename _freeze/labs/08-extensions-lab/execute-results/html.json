@@ -1,0 +1,14 @@
+{
+  "hash": "6f30f56012c09d3b2103db660309a69f",
+  "result": {
+    "markdown": "---\ntitle: \"Lab 07: Evaluating Linear Models\"\ndescription: |\n  (Stats) Learn how to interpret linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.\n---\n\n\n\n\n## Outline\n\n### Objectives\n\nThis lab will guide you through the process of  \n\n1. importing and exporting data tables\n2. Visualizing a linear model\n    - Using AB lines\n    - Using predictions\n    - Adding prediction and confidence intervals\n2. Evaluating a linear model\n    - interpreting model summaries in R\n    - t-tests\n    - ANOVA\n2. Diagnostic plots with `plot()` and `check_model()`\n    - Residual Histogram\n    - Raw Residuals v Fitted\n    - Standardized Residuals v Fitted\n    - Residuals v Leverage (and Cook's Distance)\n    - Q-Q Plot\n\n### R Packages\n\nWe will be using the following packages:\n\n- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)\n- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)\n- [performance](https://easystats.github.io/performance/)\n- [skimr](https://docs.ropensci.org/skimr/)\n- [tidyverse](https://www.tidyverse.org/)\n\nYou'll want to install `performance` with `install.packages(\"performance\")`.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(archdata)\nlibrary(palmerpenguins)\nlibrary(performance)\nlibrary(skimr)\nlibrary(tidyverse)\n```\n:::\n\n    \n### Data\n\n- `cars`\n    - Includes measurements of car speed and stopping distance.\n    - package: `datasets`\n    - reference: <https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/cars.html>\n- `DartPoints`\n    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.\n    - package: `archdata`\n    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>\n- `OxfordPots`\n    - Includes percentages of late Romano-British Oxford Pottery on 30 sites, along with their distance from Oxford.\n    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>\n- `penguins` \n    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. \n    - package: `palmerpenguins`\n    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

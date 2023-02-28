@@ -1,0 +1,15 @@
+---
+title: "Week 08: Multiple Linear Models"
+description:  |
+  (Stats) Learn how to interpret multiple linear models, make predictions, and use standard tests and diagnostics for evaluation, including making diagnostic plots. (R) Model summaries. Diagnostic plots. Prediction and plotting.
+date: 2023-02-28
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/08-multiple-lm-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 08 Lab](../labs/08-multiple-lm-lab.qmd)

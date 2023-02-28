@@ -8,7 +8,9 @@
       "/classes/04-ols.html",
       "/classes/05-distributions.html",
       "/classes/06-dataframes.html",
-      "/classes/07-evaluation.html"
+      "/classes/07-evaluation.html",
+      "/classes/08-multiple-lm.html",
+      "/classes/09-transforms.html"
     ]
   }
 ]

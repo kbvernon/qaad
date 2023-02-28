@@ -1,0 +1,16 @@
+---
+title: "Week 09: Transforming Variables"
+description: |
+  (Stats) 
+  (R) 
+date: 2023-03-14
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/09-transforms-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 09 Lab](../labs/09-transforms-lab.qmd)
