@@ -1,0 +1,1557 @@
+---
+title: "Lecture 10: Transforming Variables"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+kidiq <- here("_misc", "kidiq.csv") |> read_csv()
+
+model_table_defaults <- function(x){
+
+  tab_options(
+    x,
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(100)
+  )
+  
+}
+
+```
+
+## 📋 Lecture Outline
+
+- Qualitative variables
+    - Dummy variables
+    - Intercept offset
+    - t-test
+- Centering 
+- Scaling
+- Interactions
+- Polynomial transformations for non-linearity
+- Log transformations for non-linearity
+
+## Qualitative Variables
+
+```{r}
+
+set.seed(42)
+
+n <- 100
+
+income <- tibble(
+  sex = c(rep("female", n), rep("male", n)),
+  education = rpois(n, 5) + ifelse(sex == "female", 10, 2),
+  error = rnorm(2*n),
+  income = ifelse(
+    sex == "female",
+    1 + 0.5 * education + error,
+    14 + 0.8 * education + error
+  )
+)
+
+```
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+limits <- 
+  with(
+  income,
+  tibble(
+    x = c(min(education)-1, max(education)+1),
+    y = c(min(income)-1, max(income)+1)
+  )
+)
+
+gg_income <- 
+  ggplot(income) +
+  scale_color_manual(
+    name = NULL,
+    values = qcolors("sapphire", "bronze")
+  ) +
+  labs(
+    x = "Education (Years)", 
+    y = "Income ($1000)"
+  ) +
+  theme(legend.position = "none") +
+  coord_cartesian(
+    x = limits[["x"]],
+    y = limits[["y"]],
+    expand = FALSE
+  )
+
+gg_income + 
+  geom_point(
+    aes(education, income, color = sex),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_text(
+    data = tibble(x = c(12, 10), y = c(21, 8), sex = c("male", "female")),
+    aes(x, y, label = sex, color = sex),
+    hjust = c(0, 1),
+    size = 13/.pt
+  )
+
+```
+
+:::::
+::::: {.column}
+
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in-then-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+lm_null <- lm(income ~ education, data = income)
+
+new_data <- tibble(
+  education = seq(0, 30, length = n*2)
+)
+
+estimate_null <- predict(lm_null, newdata = new_data, se.fit = TRUE)
+
+estimate_null <- 
+  with(
+    estimate_null,
+    tibble(
+      y    = fit,
+      ymin = fit - 2*se.fit,
+      ymax = fit + 2*se.fit
+    )
+  ) |> 
+  bind_cols(new_data)
+
+gg_income + 
+  geom_ribbon(
+    data = estimate_null,
+    aes(education, ymin = ymin, ymax = ymax),
+    fill = "gray95",
+    color = "transparent"
+  ) +
+  geom_line(
+    data = estimate_null,
+    aes(education, y)
+  ) + 
+  geom_point(
+    aes(education, income, color = sex),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_text(
+    data = tibble(x = c(12, 10), y = c(21, 8), sex = c("male", "female")),
+    aes(x, y, label = sex, color = sex),
+    hjust = c(0, 1),
+    size = 13/.pt
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+broom::tidy(lm_null) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(across(where(is.numeric), ~round(.x, 3))) |> 
+  gt() |> 
+  tab_row_group("Sex Insensitive Model", 1:2, id = "bob") |> 
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups("bob")
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in fragment-index=1 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+lm_sex <- lm(income ~ education + sex, data = income)
+
+new_data <- tibble(
+  education = rep(seq(0, 30, length = n*2), 2),
+  sex = c(rep("male", n*2), rep("female", n*2))
+)
+
+estimate_sex <- 
+  with(
+    predict(lm_sex, newdata = new_data, se.fit = TRUE),
+    tibble(
+      y    = fit,
+      ymin = fit - 2*se.fit,
+      ymax = fit + 2*se.fit
+    )
+  ) |> 
+  bind_cols(new_data)
+
+gg_income + 
+  geom_ribbon(
+    data = estimate_sex,
+    aes(education, ymin = ymin, ymax = ymax, group = sex),
+    fill = "gray95",
+    color = "transparent"
+  ) +
+  geom_line(
+    data = estimate_sex,
+    aes(education, y, group = sex)
+  ) + 
+  geom_point(
+    aes(education, income, color = sex),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_text(
+    data = tibble(x = c(12, 10), y = c(21, 8), sex = c("male", "female")),
+    aes(x, y, label = sex, color = sex),
+    hjust = c(0, 1),
+    size = 13/.pt
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+bind_rows(
+  broom::tidy(lm_null),
+  broom::tidy(lm_sex)
+) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = str_replace(term, "sexmale", "sex(male)"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |> 
+  gt() |> 
+  tab_row_group("Sex Sensitive Model", 3:5, id = "tom") |> 
+  tab_row_group("Sex Insensitive Model", 1:2, id = "bob") |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups(c("bob", "tom"))
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+:::::
+::::::
+::::::::
+:::::::::
+
+## Dummy Variables
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+__Dummy variables__ code each observation:
+
+$x_i=\left\{\begin{array}{c l} 1 & \text{if i in category} \\ 0 & \text{if i not in category} \end{array}\right.$
+
+with zero being the __reference class__.
+
+For _m_ categories, requires _m-1_ dummy variables.
+:::::
+::::: {.column}
+```{r}
+
+tibble(
+  Category = c("D<sub>1</sub>", "D<sub>2</sub>", "&#8942;", "D<sub>m-1</sub>", "D<sub>m</sub>"),
+  "D1" = c(1, 0, "&#8942;", 0, 0),
+  "D2" = c(0, 1, "&#8942;", 0, 0),
+  "D3" = c(0, 0, "&#8942;", 0, 0),
+  "D4" = c(0, 0, "&#8942;", 1, 0)
+) |> 
+  gt() |> 
+  fmt_markdown(columns = everything()) |> 
+  cols_label(
+    D1 = gt::html("D<sub>1</sub>"),
+    D2 = gt::html("D<sub>2</sub>"),
+    D3 = gt::html("&#8230;"),
+    D4 = gt::html("D<sub>m-1</sub>")
+  ) |> 
+  tab_options(
+    column_labels.font.weight = "bold",
+    table.border.top.style = "hidden",
+    table.font.size = px(20)
+  ) |> 
+  as_raw_html()
+
+```
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+__Dummy variables__ code each observation:
+
+$sex_i=\left\{\begin{array}{c l} 1 & \text{if i-th person is male} \\ 0 & \text{if i-th person is not male} \end{array}\right.$
+
+Here the __reference class__ is _female_.
+
+The sex variable has two categories, hence one dummy variable.
+:::::
+::::: {.column}
+```{r}
+
+tibble(
+  sex = c("male", "female", "&#8942;", "male", "female"),
+  "male" = c(1, 0, "&#8942;", 1, 0)
+) |> 
+  gt() |> 
+  fmt_markdown(columns = everything()) |>
+  tab_options(
+    column_labels.font.weight = "bold",
+    table.border.top.style = "hidden",
+    table.font.size = px(20)
+  ) |> 
+  as_raw_html()
+
+```
+:::::
+::::::
+::::::::
+:::::::::
+
+## Intercept Offset
+
+```{css}
+
+.blank-table table {
+  margin: 0 auto 0 0;
+}
+
+.blank-table table td {
+  padding: 0.6em 1em 0.6em 0;
+  border-bottom: 0 !important;
+}
+
+.blank-table table tr[first-child] {
+  display: none;
+}
+
+```
+
+::: {.blank-table}
+
+|                                    |                                                             |
+|------------------------------------|-------------------------------------------------------------|
+| Simple linear model                | $y_i = \beta_0 + \beta_1x_1 + \epsilon_i$                   |
+| Add dummy $D$ with $\gamma$ offset | $y_i = (\beta_0 + \gamma\cdot D) + \beta_1x_1 + \epsilon_i$      |
+| _for a binary class:_              |                                                             |
+| Model for reference class          | $y_i = (\beta_0 + \gamma\cdot 0) + \beta_1x_1 + \epsilon_i$ |
+| Model for other class              | $y_i = (\beta_0 + \gamma\cdot 1) + \beta_1x_1 + \epsilon_i$ |
+
+:::
+
+## t-test
+
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+sex_mean <- income |> 
+  group_by(sex) |> 
+  summarize(intercept = mean(income)) |> 
+  mutate(
+    x = c(0.5, 0.5),
+    xend = c(1, 2)
+  )
+
+ggplot(income) +
+  scale_color_manual(
+    name = NULL,
+    values = qcolors("sapphire", "bronze")
+  ) +
+  labs(
+    x = "Sex", 
+    y = "Income ($1000)"
+  ) +
+  theme(
+    legend.position = "none"
+  ) +
+  geom_point(
+    aes(sex, income, color = sex),
+    size = 3.5,
+    alpha = 0.6
+  ) +
+  geom_segment(
+    data = sex_mean,
+    aes(x, intercept, xend = xend, yend = intercept)
+  ) +
+  coord_cartesian(
+    xlim = c(0.5, 2.5),
+    ylim = with(income, c(min(income)-1, max(income)+1)),
+    expand = FALSE
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+lm_ttest <- lm(income ~ sex, data = income)
+
+broom::tidy(lm_ttest) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = str_replace(term, "sexmale", "sex(male)"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |> 
+  gt() |> 
+  tab_row_group("Sex Sensitive Model", 1:2, id = "tom") |> 
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups("tom")
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+
+$H_{0}$: no difference in mean
+
+model: $income \sim sex$
+
+$\bar{y}_{F} = `r round(sex_mean$intercept[[1]], 3)`$  
+$\bar{y}_{M} = \bar{y}_{F} + 11.165 = `r round(sex_mean$intercept[[2]], 3)`$   
+:::::
+::::::
+
+## Centering
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+lm_kid <- lm(kid ~ mom, data = kidiq)
+
+ggplot() + 
+  geom_point(
+    data = kidiq, 
+    aes(mom, kid),
+    size = 3
+  ) +
+  geom_abline(
+    intercept = coefficients(lm_kid)[["(Intercept)"]],
+    slope = coefficients(lm_kid)[["mom"]],
+    color = qcolors("blue"),
+    linewidth = 1
+  ) +
+  labs(
+    x = "Mom's IQ",
+    y = "Kid's IQ"
+  ) +
+  coord_cartesian(
+    xlim = with(kidiq, c(min(mom)-5, max(mom)+5)),
+    ylim = with(kidiq, c(min(kid)-5, max(kid)+5)),
+    expand = FALSE
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+broom::tidy(lm_kid) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Mom's IQ"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Uncentered Model", 1:2, id = "bob") |> 
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups("bob")
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+
+Model child IQ as a function of mother's IQ.
+
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in-then-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+ggplot() + 
+  geom_point(
+    data = kidiq, 
+    aes(mom, kid),
+    size = 3
+  ) +
+  geom_abline(
+    intercept = coefficients(lm_kid)[["(Intercept)"]],
+    slope = coefficients(lm_kid)[["mom"]],
+    color = qcolors("blue"),
+    linewidth = 1
+  ) +
+  labs(
+    x = "Mom's IQ",
+    y = "Kid's IQ"
+  ) +
+  coord_cartesian(
+    xlim = with(kidiq, c(-5, max(mom)+5)),
+    ylim = with(kidiq, c(min(kid)-5, max(kid)+5)),
+    expand = FALSE
+  ) +
+  annotate(
+    "segment",
+    x = 0, xend = 0,
+    y = 65, yend = coefficients(lm_kid)[["(Intercept)"]] + 2,
+    color = qcolors("kobe"),
+    arrow = arrow(length = unit(0.15, "inches"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = 67,
+    label = "What is this?!!!",
+    color = qcolors("kobe"),
+    size = 14/.pt,
+    hjust = 0,
+    vjust = 0
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+broom::tidy(lm_kid) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Mom's IQ"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Uncentered Model", 1:2, id = "bob") |> 
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups("bob")
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+
+Model child IQ as a function of mother's IQ.
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in-then-out fragment-index=1 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+ggplot() + 
+  geom_point(
+    data = kidiq, 
+    aes(mom, kid),
+    size = 3
+  ) +
+  geom_abline(
+    intercept = coefficients(lm_kid)[["(Intercept)"]],
+    slope = coefficients(lm_kid)[["mom"]],
+    color = qcolors("blue"),
+    linewidth = 1
+  ) +
+  labs(
+    x = "Mom's IQ",
+    y = "Kid's IQ"
+  ) +
+  coord_cartesian(
+    xlim = with(kidiq, c(-5, max(mom)+5)),
+    ylim = with(kidiq, c(min(kid)-5, max(kid)+5)),
+    expand = FALSE
+  ) +
+  annotate(
+    "segment",
+    x = 0, xend = 0,
+    y = 65, yend = coefficients(lm_kid)[["(Intercept)"]] + 2,
+    color = qcolors("kobe"),
+    arrow = arrow(length = unit(0.15, "inches"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = 67,
+    label = "What is this?!!!",
+    color = qcolors("kobe"),
+    size = 14/.pt,
+    hjust = 0,
+    vjust = 0
+  )
+
+```
+:::::
+::::: {.column}
+Centering will make intercept more interpretable.
+
+To center, subtract the mean:
+
+$$\text{Mom's IQ} - \text{mean(Mom's IQ)}$$
+
+That gets us this model...
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in fragment-index=2 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+kidiq_scale <- kidiq |> mutate(mom = scale(mom, scale = FALSE)[,1])
+
+lm_kid_scale <- lm(kid ~ mom, data = kidiq_scale)
+
+ggplot() + 
+  geom_vline(
+    xintercept = 0,
+    color = qcolors("kobe"),
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  geom_point(
+    data = kidiq, 
+    aes(mom - mean(mom), kid),
+    size = 3
+  ) +
+  geom_abline(
+    intercept = coefficients(lm_kid_scale)[["(Intercept)"]],
+    slope = coefficients(lm_kid_scale)[["mom"]],
+    color = qcolors("blue"),
+    linewidth = 1
+  ) +
+  labs(
+    x = "Mom's IQ",
+    y = "Kid's IQ"
+  ) +
+  coord_cartesian(
+    xlim = with(kidiq_scale, c(min(mom)-5, max(mom)+5)),
+    ylim = with(kidiq_scale, c(min(kid)-5, max(kid)+5)),
+    expand = FALSE
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+bind_rows(
+  broom::tidy(lm_kid),
+  broom::tidy(lm_kid_scale)
+) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Mom's IQ", "(Intercept)", "Mom's IQ"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Centered Model", 3:4, id = "tom") |> 
+  tab_row_group("Uncentered Model", 1:2, id = "bob") |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups(c("bob", "tom"))
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+
+Now we interpret the intercept as expected IQ of a child for a mother with mean IQ. (Notice change in standard error!)
+:::::
+::::::
+::::::::
+:::::::::
+
+::: aside
+No commitment here to IQ being meaningful. Just an example I'm using till I have time to find a better one.
+:::
+
+## Scaling
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+#| fig-asp: 1
+
+lm_cars <- lm(mpg ~ hp + wt, data = mtcars)
+
+mtcars_longer <- mtcars |> 
+  select(mpg, hp, wt) |> 
+  pivot_longer(
+    -mpg,
+    names_to = "variable",
+    values_to = "x"
+  )
+
+new_data <- 
+  tibble(
+    hp = with(mtcars, seq(min(hp)-7, max(hp)+7, length = 300)),
+    wt = with(mtcars, seq(min(wt)-0.13, max(wt)+0.13, length = 300))
+  )
+
+margins <-
+  bind_rows(
+    with(
+      predict(
+        lm_cars, 
+        newdata = new_data |> mutate(wt = mean(mtcars$wt)), 
+        se.fit = TRUE
+      ),
+      tibble(
+        variable = "hp",
+        x = new_data$hp,
+        y = fit,
+        ymin = fit - 2*se.fit,
+        ymax = fit + 2*se.fit
+      )
+    ),
+    with(
+      predict(
+        lm_cars, 
+        newdata = new_data |> mutate(hp = mean(mtcars$hp)), 
+        se.fit = TRUE
+      ),
+      tibble(
+        variable = "wt",
+        x = new_data$wt,
+        y = fit,
+        ymin = fit - 2*se.fit,
+        ymax = fit + 2*se.fit
+      )
+    )
+  )
+
+gg_cars <- ggplot() + 
+  geom_ribbon(
+    data = margins,
+    aes(x, ymin = ymin, ymax = ymax),
+    fill = "gray95",
+    color = "transparent"
+  ) +
+  geom_line(
+    data = margins,
+    aes(x,y)
+  ) +
+  geom_point(
+    data = mtcars_longer, 
+    aes(x, mpg),
+    size = 3
+  ) +
+  labs(
+    x = NULL,
+    y = "Fuel Efficiency\n(Miles Per Gallon)"
+  ) +
+  coord_cartesian(
+    ylim = with(mtcars, c(min(mpg)-2, max(mpg)+2)),
+    expand = FALSE
+  ) +
+  facet_wrap(
+    ~variable,
+    nrow = 2,
+    scale = "free_x",
+    strip.position = "bottom",
+    labeller = labeller(variable = c(wt = "Weight (1,000 pounds)", hp = "Horse Power"))
+  ) +
+  theme(
+    axis.title.y = element_text(lineheight = 1.3),
+    strip.background = element_blank(),
+    strip.placement = "outside"
+  )
+
+gg_cars
+
+```
+:::::
+::::: {.column}
+```{r}
+
+broom::tidy(lm_cars) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Horsepower", "Weight"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Unscaled Model", 1:3, id = "bob") |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups("bob")
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+
+Model fuel efficiency as a function of weight and horse power.  
+
+__Question__ Which covariate has a bigger effect?  
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in-then-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+#| fig-asp: 1
+
+gg_cars
+
+```
+:::::
+::::: {.column}
+__Problem__ Cannot directly compare coefficients on different scales.  
+
+__Solution__ Convert variable values to their z-scores: 
+
+$$z_i = \frac{x_i-\bar{x}}{\sigma_{x}}$$
+
+All coefficients now give change in $y$ for 1$\sigma$ change in $x$.  
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in fragment-index=1 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+#| fig-asp: 1
+
+rescale <- function(x) scale(x)[,1]
+
+mtcars_scaled <- mtcars |> mutate(across(c(hp, wt), rescale))
+
+lm_cars_scaled <- lm(mpg ~ hp + wt, data = mtcars_scaled)
+
+mtcars_longer <- mtcars_scaled |> 
+  pivot_longer(
+    -mpg,
+    names_to = "variable",
+    values_to = "x"
+  ) |> 
+  filter(variable %in% c("wt", "hp"))
+
+new_data <- 
+  tibble(
+    hp = with(mtcars_longer, seq(min(x), max(x)+0.1, length = 300)),
+    wt = hp
+  )
+
+margins <-
+  bind_rows(
+    with(
+      predict(
+        lm_cars_scaled, 
+        newdata = new_data |> mutate(wt = 0), 
+        se.fit = TRUE
+      ),
+      tibble(
+        variable = "hp",
+        x = new_data$hp,
+        y = fit,
+        ymin = fit - 2*se.fit,
+        ymax = fit + 2*se.fit
+      )
+    ),
+    with(
+      predict(
+        lm_cars_scaled, 
+        newdata = new_data |> mutate(hp = 0), 
+        se.fit = TRUE
+      ),
+      tibble(
+        variable = "wt",
+        x = new_data$wt,
+        y = fit,
+        ymin = fit - 2*se.fit,
+        ymax = fit + 2*se.fit
+      )
+    )
+  )
+
+ggplot() + 
+  geom_ribbon(
+    data = margins,
+    aes(x, ymin = ymin, ymax = ymax),
+    fill = "gray95",
+    color = "transparent"
+  ) +
+  geom_line(
+    data = margins,
+    aes(x, y)
+  ) +
+  geom_point(
+    data = mtcars_longer, 
+    aes(x, mpg),
+    size = 3
+  ) +
+  labs(
+    x = NULL,
+    y = "Fuel Efficiency\n(Miles Per Gallon)"
+  ) +
+  coord_cartesian(
+    ylim = with(margins, c(min(y)-2, max(y)+2)),
+    expand = FALSE
+  ) +
+  facet_wrap(
+    vars(variable), 
+    nrow = 2,
+    scale = "free_x",
+    strip.position = "bottom",
+    labeller = labeller(variable = c(wt = "Weight (z)", hp = "Horsepower (z)"))
+  ) +
+  theme(
+    axis.title.y = element_text(lineheight = 1.3),
+    strip.background = element_blank(),
+    strip.placement = "outside"
+  )
+
+```
+
+:::::
+::::: {.column}
+```{r}
+
+bind_rows(
+  broom::tidy(lm_cars),
+  broom::tidy(lm_cars_scaled)
+) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Horsepower", "Weight", "(Intercept)", "Horsepower", "Weight"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Scaled Model", 4:6, id = "tom") |> 
+  tab_row_group("Unscaled Model", 1:3, id = "bob") |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups(c("bob", "tom"))
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+:::::
+::::::
+::::::::
+:::::::::
+
+## Interactions
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+kidiq_scale <- kidiq_scale |> mutate(mom_hs = factor(mom_hs))
+
+gg_kid_hs <- ggplot() + 
+  geom_point(
+    data = kidiq_scale, 
+    aes(mom, kid, color = mom_hs),
+    size = 3
+  ) +
+  scale_color_manual(
+    name = NULL,
+    values = qcolors("gold", "eerie"),
+    labels = c("No High School", "High School")
+  ) +
+  labs(
+    x = "Mom's IQ",
+    y = "Kid's IQ"
+  ) +
+  coord_cartesian(
+    xlim = with(kidiq_scale, c(min(mom)-5, max(mom)+5)),
+    ylim = with(kidiq_scale, c(min(kid)-5, max(kid)+5)),
+    expand = FALSE
+  ) +
+  theme(
+    legend.position = c(0.8, 0.14),
+    legend.box.just = c("right", "bottom")
+  )
+
+gg_kid_hs
+
+```
+:::::
+::::: {.column}
+```{r}
+
+broom::tidy(lm_kid_scale) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Mom's IQ"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Additive Model", 1:2, id = "bob") |> 
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups("bob")
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+
+__Question__ What if the relationship between child's IQ and mother's IQ depends on the mother's educational attainment?
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in-then-out fragment-index=0 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+gg_kid_hs
+
+```
+:::::
+::::: {.column}
+Simple formula becomes:
+
+$$y_i = (\beta_0 + \gamma D) + (\beta_1x_1 + \omega D x_1) + \epsilon_i$$
+
+With  
+- $\gamma$ giving the change in $\beta_0$ and  
+- $\omega$ giving the change in $\beta_1$.  
+
+That's a __change in intercept__ and a __change in slope__!
+:::::
+::::::
+::::::::
+:::::::: {.fragment .fade-in fragment-index=1 .mt-0 .w100}
+:::::: {.columns}
+::::: {.column}
+```{r}
+
+lm_kidx <- lm(kid ~ mom * mom_hs, data = kidiq_scale)
+
+new_data <- 
+  tibble(
+    mom = with(kidiq_scale, rep(seq(min(mom)-5, max(mom)+5, length = 300), 2)),
+    mom_hs = factor(rep(c(0, 1), each = 300))
+  )
+
+margins <-
+  with(
+      predict(
+        lm_kidx, 
+        newdata = new_data, 
+        se.fit = TRUE
+      ),
+      tibble(
+        mom_hs = new_data$mom_hs,
+        x = new_data$mom,
+        y = fit,
+        ymin = fit - 2*se.fit,
+        ymax = fit + 2*se.fit
+      )
+    )
+
+ggplot() + 
+  geom_ribbon(
+    data = margins,
+    aes(x, ymin = ymin, ymax = ymax, group = mom_hs),
+    fill = "gray95",
+    color = "transparent"
+  ) +
+  geom_line(
+    data = margins,
+    aes(x, y, color = mom_hs),
+    linewidth = 1
+  ) + 
+  geom_point(
+    data = kidiq_scale, 
+    aes(mom, kid, color = mom_hs),
+    size = 3
+  ) +
+  scale_color_manual(
+    name = NULL,
+    values = qcolors("gold", "eerie"),
+    labels = c("No High School", "High School")
+  ) +
+  labs(
+    x = "Mom's IQ",
+    y = "Kid's IQ"
+  ) +
+  coord_cartesian(
+    xlim = with(kidiq_scale, c(min(mom)-5, max(mom)+5)),
+    ylim = with(kidiq_scale, c(min(kid)-5, max(kid)+5)),
+    expand = FALSE
+  ) +
+  theme(
+    legend.position = c(0.8, 0.14),
+    legend.box.just = c("right", "bottom")
+  )
+
+```
+:::::
+::::: {.column}
+```{r}
+
+bind_rows(
+  broom::tidy(lm_kid_scale),
+  broom::tidy(lm_kidx)
+) |> 
+  rename("t.statistic" = statistic) |> 
+  mutate(
+    term = c("(Intercept)", "Mom's IQ", "(Intercept)", "Mom's IQ", "High School", "Mom's IQ x HS"),
+    across(where(is.numeric), ~round(.x, 3))
+  ) |>
+  gt() |> 
+  tab_row_group("Interactive Model", 3:6, id = "tom") |> 
+  tab_row_group("Additive Model", 1:2, id = "bob") |>
+  tab_style(
+    style = list(cell_text(weight = "bold", color = qcolors("kobe"))),
+    locations = cells_row_groups(c("bob", "tom"))
+  ) |> 
+  model_table_defaults() |> 
+  as_raw_html()
+
+```
+:::::
+::::::
+::::::::
+:::::::::
+
+## Polynomial transformations for non-linearity
+
+:::::: {.r-stack}
+::: {.fragment .fade-out fragment-index=0}
+
+```{r}
+
+set.seed(25)
+
+n <- 100
+
+observations <- tibble(
+  x = seq(0, 1, length = n),
+  y = 1 - 3.7 * (x - 0.5)^2 + (0.75 * x) + rnorm(n, sd = 0.2)
+) |> 
+  mutate(
+    y = scales::rescale(y, c(0.1, 0.9))
+  )
+
+bad_mod <- lm(y ~ x, data = observations)
+
+bad_b0 <- coefficients(bad_mod)[[1]]
+bad_b1 <- coefficients(bad_mod)[[2]]
+
+bad_fit <- tibble(
+  observation = 1:n,
+  estimate = predict(bad_mod),
+  residuals = residuals(bad_mod)
+)
+
+bad_r2 <- summary(bad_mod)$r.squared
+
+```
+
+__Simple Linear Model:__ $y_{i} = \beta_{0} + \beta_{1}X + \epsilon_{i}$  
+$R^2 = `r bad_r2`$
+
+```{r}
+#| out-width: 100%
+#| layout-ncol: 2
+
+ggplot(observations, aes(x,y)) +
+  geom_abline(
+    intercept = bad_b0,
+    slope = bad_b1,
+    color = qcolors("kobe"),
+    size = 1
+  ) + 
+  geom_point(
+    size = 3
+  ) +
+  labs(
+    x = "X",
+    y = "Y"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+ggplot(bad_fit, aes(estimate, residuals)) +
+  geom_segment(
+    aes(xend = estimate, yend = 0),
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    aes(yintercept = 0),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  geom_point(
+    size = 3
+  ) +
+  labs(
+    x = "Estimates",
+    y = "Residuals"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+```
+
+:::
+::: {.fragment .fade-in fragment-index=0}
+
+```{r}
+
+meh_mod <- lm(y ~ poly(x, 2), data = observations)
+
+meh_fit <- tibble(
+  observation = 1:n,
+  estimate = predict(meh_mod),
+  residuals = residuals(meh_mod)
+)
+
+meh_r2 <- summary(meh_mod)$r.squared
+
+```
+
+__Quadratic Model:__ $y_{i} = \beta_{0} + \beta_{1}X + \beta_{2}X^{2} + \epsilon_{i}$  
+$R^2=`r meh_r2`$
+
+```{r}
+#| out-width: 100%
+#| layout-ncol: 2
+
+ggplot(observations, aes(x,y)) +
+  geom_line(
+    aes(y = meh_fit$estimate),
+    color = qcolors("kobe"),
+    size = 1
+  ) + 
+  geom_point(
+    size = 3
+  ) +
+  labs(
+    x = "X",
+    y = "Y"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+ggplot(meh_fit, aes(estimate, residuals)) +
+  geom_segment(
+    aes(xend = estimate, yend = 0),
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    aes(yintercept = 0),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  geom_point(
+    size = 3
+  ) +
+  labs(
+    x = "Estimates",
+    y = "Residuals"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+```
+
+
+:::
+::::::
+
+## Log transformations
+
+```{r}
+
+n <- 100
+
+x <- seq(0.1,5,length.out = n)
+
+set.seed(1)
+
+e <- rnorm(n, mean = 0, sd = 0.2)
+
+y <- exp(0.3 + 0.5 * x + e)
+
+```
+
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+#| fig-asp: 0.9
+
+dat <- tibble(
+  v = rep(c("Y", "log(Y)"), each = n),
+  y = c(y, log(y))
+)
+
+txt <- tibble(
+  x = c(3.2, 14),
+  y = c(35, 6),
+  v = c("log(Y)", "Y")
+)
+
+ggplot() +
+  geom_histogram(
+    data = dat,
+    position = "identity",
+    aes(y, color = v, fill = v),
+    bins = 20
+  ) +
+  scale_color_manual(values = qcolors("blue", "bronze")) +
+  scale_fill_manual(values = alpha(qcolors("blue", "bronze"), 0.75)
+  ) +
+  geom_text(
+    data = txt,
+    aes(x, y, color = v, label = v),
+    size = 8,
+    hjust = 0
+  ) +
+  labs(
+    x = "Value",
+    y = "Count"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    legend.position = "none"
+  )
+
+```
+
+:::::
+::::: {.column}
+
+__Logging__ a skewed variable normalizes it.  
+
+This is the inverse of __exponentiation__: 
+
+$$Y = log(exp(Y))$$  
+
+May be applied to $X$ and $Y$.  
+
+__Question__: but, whyyyyyy???
+
+:::::
+::::::
+
+## Log transformations for non-linearity
+
+:::::: {.r-stack}
+::: {.fragment .fade-out fragment-index=0}
+
+```{r}
+
+linear_mod <- lm(y ~ x)
+
+linear_b0 <- coefficients(linear_mod)[[1]]
+linear_b1 <- coefficients(linear_mod)[[2]]
+
+linear_fit <- tibble(
+  observation = 1:n,
+  estimate = predict(linear_mod),
+  residuals = residuals(linear_mod)
+)
+
+linear_r2 <- summary(linear_mod)$r.squared
+
+```
+
+__Simple Linear Model:__ $y_{i} = \beta_{0} + \beta_{1}X + \epsilon_{i}$  
+$R^2 = `r linear_r2`$
+
+```{r}
+#| out-width: 100%
+#| layout-ncol: 2
+
+ggplot() +
+  geom_abline(
+    intercept = linear_b0,
+    slope = linear_b1,
+    color = qcolors("kobe")
+  ) +
+  geom_point(
+    aes(x, y),
+    size = 3
+  ) +
+  labs(
+    x = "X",
+    y = "Y"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+ggplot(linear_fit, aes(estimate, residuals)) +
+  geom_segment(
+    aes(xend = estimate, yend = 0),
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    aes(yintercept = 0),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  geom_point(
+    size = 3
+  ) +
+  labs(
+    x = "Estimates",
+    y = "Residuals"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+```
+
+:::
+::: {.fragment .fade-in fragment-index=0}
+
+```{r}
+
+log_mod <- lm(log(y) ~ x)
+
+log_b0 <- coefficients(log_mod)[[1]]
+log_b1 <- coefficients(log_mod)[[2]]
+
+log_fit <- tibble(
+  observation = 1:n,
+  estimate = predict(log_mod),
+  residuals = residuals(log_mod)
+)
+
+log_r2 <- summary(log_mod)$r.squared
+
+```
+
+__Log Linear Model:__ $log(y_{i}) = \beta_{0} + \beta_{1}X + \epsilon_{i}$  
+$R^2 = `r log_r2`$
+
+```{r}
+#| out-width: 100%
+#| layout-ncol: 2
+
+ggplot() +
+  geom_abline(
+    intercept = log_b0,
+    slope = log_b1,
+    color = qcolors("kobe")
+  ) +
+  geom_point(
+    aes(x, log(y)),
+    size = 3
+  ) +
+  labs(
+    x = "X",
+    y = "log(Y)"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+ggplot(log_fit, aes(estimate, residuals)) +
+  geom_segment(
+    aes(xend = estimate, yend = 0),
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    aes(yintercept = 0),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  geom_point(
+    size = 3
+  ) +
+  labs(
+    x = "log(Estimates)",
+    y = "Residuals"
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  )
+
+```
+
+:::
+::::::
+
+## ⚠️ [Careful!]{.kobe}
+
+Have to take care how we interpret log-models!  
+
+$\beta_1$ means...
+
+<br>
+
+:::::: {.columns}
+::::: {.column}
+__Linear Model__  
+$y_{i} = \beta_{0} + \beta_{1}X + \epsilon_{i}$  
+_Increase in Y for one unit increase in X._  
+
+<br>
+
+__Log-Linear Model__  
+$log(y_{i}) = \beta_{0} + \beta_{1}X + \epsilon_{i}$  
+_Percent increase in Y for one unit increase in X._  
+:::::
+::::: {.column}
+__Linear-Log Model__  
+$y_{i} = \beta_{0} + \beta_{1}log(X) + \epsilon_{i}$   
+_Increase in Y for percent increase in X._  
+
+<br>
+
+__Log-Log Model__  
+$log(y_{i}) = \beta_{0} + \beta_{1}log(X) + \epsilon_{i}$  
+_Percent increase in Y for percent increase in X._  
+:::::
+::::::

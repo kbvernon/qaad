@@ -2,114 +2,118 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>kbvernon.github.io/qaad/classes.html</loc>
-    <lastmod>2023-02-28T20:19:52.573Z</lastmod>
+    <lastmod>2023-03-14T19:37:57.898Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/01-intro.html</loc>
-    <lastmod>2023-02-28T20:19:53.310Z</lastmod>
+    <lastmod>2023-03-14T19:37:59.146Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/02-probability.html</loc>
-    <lastmod>2023-02-28T20:19:54.045Z</lastmod>
+    <lastmod>2023-03-14T19:38:00.368Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/03-inference.html</loc>
-    <lastmod>2023-02-28T20:19:55.143Z</lastmod>
+    <lastmod>2023-03-14T19:38:01.528Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/04-ols.html</loc>
-    <lastmod>2023-02-28T20:19:56.062Z</lastmod>
+    <lastmod>2023-03-14T19:38:02.437Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/05-distributions.html</loc>
-    <lastmod>2023-02-28T20:19:56.806Z</lastmod>
+    <lastmod>2023-03-14T19:38:03.683Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/06-dataframes.html</loc>
-    <lastmod>2023-02-28T20:19:57.552Z</lastmod>
+    <lastmod>2023-03-14T19:38:04.838Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/07-evaluation.html</loc>
-    <lastmod>2023-02-28T20:19:58.472Z</lastmod>
+    <lastmod>2023-03-14T19:38:06.345Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/classes/08-multiple-lm.html</loc>
-    <lastmod>2023-02-28T20:19:59.317Z</lastmod>
+    <lastmod>2023-03-14T19:38:07.293Z</lastmod>
   </url>
   <url>
-    <loc>kbvernon.github.io/qaad/classes/09-transforms.html</loc>
-    <lastmod>2023-02-28T20:20:00.445Z</lastmod>
+    <loc>kbvernon.github.io/qaad/classes/10-transforms.html</loc>
+    <lastmod>2023-03-14T19:38:08.848Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/help.html</loc>
-    <lastmod>2023-02-28T20:20:02.892Z</lastmod>
+    <lastmod>2023-03-14T19:38:12.068Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/index.html</loc>
-    <lastmod>2023-02-28T20:20:03.784Z</lastmod>
+    <lastmod>2023-03-14T19:38:12.994Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/01-intro-lab.html</loc>
-    <lastmod>2023-02-28T20:20:14.421Z</lastmod>
+    <lastmod>2023-03-14T19:38:25.473Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/02-probability-lab.html</loc>
-    <lastmod>2023-02-28T20:20:19.642Z</lastmod>
+    <lastmod>2023-03-14T19:38:30.943Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/03-inference-lab.html</loc>
-    <lastmod>2023-02-28T20:20:24.536Z</lastmod>
+    <lastmod>2023-03-14T19:38:36.582Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/04-ols-lab.html</loc>
-    <lastmod>2023-02-28T20:20:30.115Z</lastmod>
+    <lastmod>2023-03-14T19:38:41.785Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/05-distributions-lab.html</loc>
-    <lastmod>2023-02-28T20:20:39.029Z</lastmod>
+    <lastmod>2023-03-14T19:38:51.176Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/06-dataframes-lab.html</loc>
-    <lastmod>2023-02-28T20:20:44.131Z</lastmod>
+    <lastmod>2023-03-14T19:38:55.996Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/07-evaluation-lab.html</loc>
-    <lastmod>2023-02-28T20:20:51.250Z</lastmod>
+    <lastmod>2023-03-14T19:39:03.245Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/labs/08-multiple-lm-lab.html</loc>
-    <lastmod>2023-02-28T20:21:06.214Z</lastmod>
+    <lastmod>2023-03-14T19:39:11.152Z</lastmod>
+  </url>
+  <url>
+    <loc>kbvernon.github.io/qaad/labs/10-transforms-lab.html</loc>
+    <lastmod>2023-03-14T19:39:16.878Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/01-intro-slides.html</loc>
-    <lastmod>2023-02-28T20:21:09.977Z</lastmod>
+    <lastmod>2023-03-14T19:39:20.254Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/02-probability-slides.html</loc>
-    <lastmod>2023-02-28T20:21:14.226Z</lastmod>
+    <lastmod>2023-03-14T19:39:26.794Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/03-inference-slides.html</loc>
-    <lastmod>2023-02-28T20:21:17.945Z</lastmod>
+    <lastmod>2023-03-14T19:39:31.707Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/04-ols-slides.html</loc>
-    <lastmod>2023-02-28T20:21:21.583Z</lastmod>
+    <lastmod>2023-03-14T19:39:36.644Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/05-distributions-slides.html</loc>
-    <lastmod>2023-02-28T20:21:25.824Z</lastmod>
+    <lastmod>2023-03-14T19:39:41.526Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/07-evaluation-slides.html</loc>
-    <lastmod>2023-02-28T20:21:30.228Z</lastmod>
+    <lastmod>2023-03-14T19:39:46.828Z</lastmod>
   </url>
   <url>
     <loc>kbvernon.github.io/qaad/slides/08-multiple-lm-slides.html</loc>
-    <lastmod>2023-02-28T20:21:33.872Z</lastmod>
+    <lastmod>2023-03-14T19:39:50.532Z</lastmod>
   </url>
   <url>
-    <loc>kbvernon.github.io/qaad/slides/09-transforms-slides.html</loc>
-    <lastmod>2023-02-28T20:21:36.203Z</lastmod>
+    <loc>kbvernon.github.io/qaad/slides/10-transforms-slides.html</loc>
+    <lastmod>2023-03-14T19:39:54.993Z</lastmod>
   </url>
 </urlset>

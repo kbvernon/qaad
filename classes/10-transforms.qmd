@@ -1,0 +1,15 @@
+---
+title: "Week 10: Transforming Variables"
+description: |
+  (Stats) Learn how to add qualitative variables and transformed variables to linear models and interpret the results. (R) Scaling and centering variables, specifying model formulas to include intercept offsets, interactions, log transforms, and polynomial terms.
+date: 2023-03-14
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/10-transforms-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 10 Lab](../labs/10-transforms-lab.qmd)
