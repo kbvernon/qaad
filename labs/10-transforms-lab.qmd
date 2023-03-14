@@ -251,6 +251,19 @@ ggplot(
 
 ### Exercises
 
+::: {.callout-warning}
+
+Before starting these exercises, you should remove all the obserations (rows) in your table with missing values. The function `lm()` implicitly drops missing values, so you can sometimes get models fit to different subsets of your data when you start adding variables. That's not really a problem in itself, but if you want to compare nested models with an ANOVA, for instance, that won't do because of the way that the test calculates the degrees of freedom necessary to evaluate the F-statistic. So, what I suggest you do is remove all the missing values in one fell swoop with `na.omit()`. So, add this code chunk before you start the exercises.
+
+```{r}
+#| eval: false
+
+penguins <- na.omit(penguins)
+
+```
+
+:::
+
 1. Try running the same models, but substitute sex for species. Create all the following:
     - a sex-insensitive model
     - a sex-sensitive offset model

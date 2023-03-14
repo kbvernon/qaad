@@ -7,7 +7,7 @@ format:
     code-overflow: wrap
     chalkboard: true
     fig-width: 6
-    fig-asp: 1
+    fig-asp: 0.8
     auto-stretch: false
 execute:
   freeze: auto
