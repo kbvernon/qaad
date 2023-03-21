@@ -1,0 +1,798 @@
+---
+title: "Lecture 11: Maximum Likelihood"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+model_table_defaults <- function(x){
+
+  tab_options(
+    x,
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(100)
+  )
+  
+}
+
+```
+
+## 📋 Lecture Outline
+
+1. Limitations of OLS
+2. Likelihood
+3. Likelihood Estimation
+4. Maximum Likelihood Estimation (MLE)
+
+## Limitations of OLS
+
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+set.seed(123)
+
+n <- 50
+
+dat <- tibble(
+  x = runif(n, 2, 6),
+  y = abs(-3 + (2.3 * x) + rnorm(n, sd = 2.25))
+)
+
+mod <- lm(y ~ x, data = dat)
+
+beta0 <- coefficients(mod)[["(Intercept)"]]
+beta1 <- coefficients(mod)[["x"]]
+
+ggplot() +
+  geom_hline(
+    yintercept = 0,
+    color = "gray55"
+  ) +
+  geom_abline(
+    intercept = beta0,
+    slope = beta1, 
+    color = qcolors("kobe"),
+    linewidth = 1
+  ) +
+  geom_point(
+    data = dat, 
+    aes(x, y),
+    size = 4,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Artiodactyl Abundance", 
+    y = "Number of Projectile Points"
+  ) +
+  coord_cartesian(
+    xlim = c(0, round(max(dat$x)+1)),
+    ylim = c(-4, round(max(dat$y)+1))
+  ) +
+  scale_x_continuous(
+    breaks = c(0, round(max(dat$x)+1)),
+    labels = c(0, 1)
+  ) +
+  annotate(
+    "curve",
+    x = 1.5, 
+    xend = 0.6, 
+    y = predict(mod, newdata = tibble(x=0.5)),
+    yend = predict(mod, newdata = tibble(x=0.5)),
+    arrow = arrow(type = "closed", length = unit(0.2, "in")),
+    curvature = -0.5
+  ) +
+  annotate(
+    "text",
+    x = 1.55,
+    y = predict(mod, newdata = tibble(x=0.6)),
+    label = "Negative counts?!",
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 0,
+    color = qcolors("sapphire")
+  )
+
+```
+
+::: {style="color: #8b8b8b; width: 100%; text-align: center;"}
+_This is a made-up dataset._ 
+:::
+
+:::::
+::::: {.column}
+
+Can't use OLS to model counts or binary outcomes. Inflexible approach to quantifying uncertainty about these types of outcome.  
+
+<br>
+
+Model evaluation with ANOVA is restricted to subsets.  
+
+:::::
+::::::
+
+## Likelihood
+
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+likelihood <- 
+  ggplot(
+    tibble(x = seq(-5, 5, length = 300)),
+    aes(x)
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(sd = 1.5),
+    xlim = c(1.5, 6),
+    geom = "area",
+    color = "black",
+    fill = qcolors("sapphire")
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(sd = 1.5)
+    ) +
+  labs(
+    x = NULL, 
+    y = "Density"
+  ) +
+  scale_x_continuous(
+    limits = c(-5.5, 5.5),
+    breaks = seq(-5, 5, by = 2.5)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = 1.5,
+    xend = 1.5,
+    y = 0,
+    yend = dnorm(1.5, sd = 1.5)
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    xend = 2.34,
+    y = 0.02,
+    yend = 0.02,
+    linewidth = 1.3,
+    color = "white",
+    arrow = arrow(length = unit(0.25, "in"), type = "closed")
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    xend = 2.3,
+    y = 0.02,
+    yend = 0.02,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = -0.1,
+    y = 0.02,
+    label = "Probability",
+    size = 12/.pt,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = 1.5,
+    y = dnorm(1.5, sd = 1.5),
+    shape = 21,
+    size = 4,
+    stroke = 1.3,
+    fill = qcolors("bronze"),
+    color = "black"
+  ) +
+  annotate(
+    "segment",
+    x = 2.7,
+    xend = 1.63,
+    y = 0.23,
+    yend = dnorm(1.42, sd = 1.5),
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 2.703,
+    y = 0.233,
+    label = "Likelihood",
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 0
+  )
+
+likelihood
+
+```
+
+:::::
+::::: {.column}
+
+__Definition:__ Probability of data, $X$, given model, $\theta$.
+
+$$\mathcal{L}(\theta|X) = P(X|\theta)$$
+
+In English: "The likelihood of the model given the data is equal to the probability of the data given the model."
+
+Answers the __Question__: how unlikely or __strange__ is our data?
+
+:::::
+::::::
+
+## Likelihood Estimation
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+__A Simple Experiment__
+
+![](images/coins.png){width=75% fig-align="center"}
+
+We flip a coin $n = 100$ times and count the number of heads.  
+
+__Result:__ $h = 56$
+
+:::::
+::::: {.column}
+
+Suppose our model is that the coin is fair.  
+
+<br>
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?  
+
+<br>
+
+In English: "How _likely_ is it that the coin is fair given that heads came up 56 times?"  
+
+<br>
+
+⚠️ This is the probability that heads comes up 56/100 times _assuming that the coin is fair_.
+
+:::::
+::::::
+::::::::
+
+:::::::: {.fragment .fade-in-then-out fragment-index=0 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+__A Simple Experiment__
+
+![](images/coins.png){width=75% fig-align="center"}
+
+We flip a coin $n = 100$ times and count the number of heads.  
+
+__Result:__ $h = 56$
+
+:::::
+::::: {.column}
+
+Suppose our model is that the coin is fair.  
+
+<br>
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?  
+
+<br>
+
+This experiment is a series of Bernoulli trials, so we can use the binomial distribution to calculate $\mathcal{L}(p|h)$. 
+
+$$\;\;\;\;\,\mathcal{L}(p|h) = \binom{n}{h}p^{h}(1-p)^{n-h}$$
+:::::
+::::::
+:::::::: 
+
+:::::::: {.fragment .fade-in-then-out fragment-index=1 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+h <- 56
+n <- 100
+p <- 0.5
+d <- dbinom(h, size = n, prob = p)
+
+ggplot(
+    tibble(x = 0:n),
+    aes(x)
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = length(h:n), 
+    xlim = c(h, n),
+    geom = "area",
+    color = "black",
+    fill = qcolors("sapphire")
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = n+1
+  ) +
+  labs(
+    x = "Number of Heads", 
+    y = "Density"
+  ) +
+  scale_x_continuous(
+    limits = c(0, n),
+    breaks = seq(0, n, by = 20)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = h,
+    xend = h,
+    y = 0,
+    yend = d,
+    color = qcolors("bronze"),
+    linewidth = 1.3
+  ) +
+  annotate(
+    "text",
+    x = h-1.5,
+    y = 0.005,
+    label = "h=56",
+    size = 12/.pt,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = h,
+    y = d,
+    shape = 21,
+    size = 4,
+    stroke = 1.3,
+    fill = qcolors("bronze"),
+    color = "black"
+  ) +
+  annotate(
+    "segment",
+    x = 70,
+    xend = h+2.5,
+    y = 0.06,
+    yend = d+0.003,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 70.5,
+    y = 0.062,
+    label = "L=0.039", # unicode for lagrange L is \U1D4DB, but it won't work till R4.2
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 0.75
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = 0.08,
+    label = "p=0.5\nn=100",
+    size = 12/.pt,
+    lineheight = 1.5,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Suppose our model is that the coin is fair.  
+
+<br>
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?  
+
+<br>
+
+This experiment is a series of Bernoulli trials, so we can use the binomial distribution to calculate $\mathcal{L}(p|h)$. 
+
+$$
+\begin{align}
+\mathcal{L}(p=0.5|h=56) &= \binom{100}{56}0.5^{56}(1-0.5)^{100-56}\\\\
+\mathcal{L}(p=0.5|h=56) &= 0.039
+\end{align}
+$$
+:::::
+::::::
+::::::::
+
+:::::::: {.fragment .fade-in fragment-index=2 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+h <- 56
+n <- 100
+p <- 0.52
+d <- dbinom(h, size = n, prob = p)
+
+ggplot(
+    tibble(x = 0:n),
+    aes(x)
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = length(h:n), 
+    xlim = c(h, n),
+    geom = "area",
+    color = "black",
+    fill = qcolors("sapphire")
+  ) +
+  stat_function(
+    fun = dbinom,
+    args = list(size = n, prob = p),
+    n = n+1
+  ) +
+  labs(
+    x = "Number of Heads", 
+    y = "Density"
+  ) +
+  scale_x_continuous(
+    limits = c(0, n),
+    breaks = seq(0, n, by = 20)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = h,
+    xend = h,
+    y = 0,
+    yend = d,
+    color = qcolors("bronze"),
+    linewidth = 1.3
+  ) +
+  annotate(
+    "text",
+    x = h-1.5,
+    y = 0.005,
+    label = "h=56",
+    size = 12/.pt,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = h,
+    y = d,
+    shape = 21,
+    size = 4,
+    stroke = 1.3,
+    fill = qcolors("bronze"),
+    color = "black"
+  ) +
+  annotate(
+    "segment",
+    x = 70,
+    xend = h+2.85,
+    y = 0.06,
+    yend = d+0.001,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 70.5,
+    y = 0.062,
+    label = "L=0.058",
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 0.75
+  ) +
+  annotate(
+    "text",
+    x = 0,
+    y = 0.08,
+    label = "p=0.52\nn=100",
+    size = 12/.pt,
+    lineheight = 1.5,
+    hjust = 0,
+    vjust = 1
+  )
+```
+
+:::::
+
+::::: {.column}
+
+Suppose our model is that the coin is fair.  
+
+<br>
+
+__Question:__ What is $\mathcal{L}(p=0.5|h=56)$?  
+
+<br>
+In English: "How _likely_ is it that the coin is fair given that heads came up 56 times?"  
+
+<br>
+
+⚠️ This is the probability that heads comes up 56/100 times _assuming that the coin is fair_.
+
+:::::
+::::::
+::::::::
+:::::::::
+
+## Maximum Likelihood
+
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+likelihood <- tibble(
+  p = seq(0, 1, length = 100),
+  l = dbinom(56, size = 100, prob = p)
+)
+
+i <- with(likelihood, which(l == max(l)))
+maxl <- likelihood$l[[i]]
+maxp <- likelihood$p[[i]]
+
+ggplot() +
+  geom_polygon(
+    data = likelihood |> 
+      filter(p >= maxp) |> 
+      (\(x) bind_rows(tibble(p = maxp, l = 0), x))(), 
+    aes(p, l),
+    color = "transparent",
+    fill = qcolors("sapphire")
+  ) +
+  geom_polygon(
+    data = likelihood, 
+    aes(p, l),
+    color = "black",
+    fill = "transparent"
+  ) +
+  labs(
+    x = "Probability of Heads (p)", 
+    y = "Likelihood (L)"
+  ) +
+  scale_x_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, by = 0.25)
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  ) +
+  annotate(
+    "segment",
+    x = maxp,
+    xend = maxp,
+    y = 0,
+    yend = maxl,
+    color = qcolors("bronze"),
+    linewidth = 1.3
+  ) +
+  annotate(
+    "segment",
+    x = 0.37,
+    xend = maxp-0.03,
+    y = 0.01,
+    yend = 0.01,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed"),
+    linewidth = 1
+  ) +
+  annotate(
+    "text",
+    x = 0.36,
+    y = 0.01,
+    label = paste0("p=",round(maxp, digits = 2)),
+    size = 12/.pt,
+    hjust = 1
+  ) +
+  annotate(
+    "point",
+    x = maxp,
+    y = maxl,
+    shape = 21,
+    size = 4,
+    stroke = 1.3,
+    fill = qcolors("bronze"),
+    color = "black"
+  ) +
+  annotate(
+    "segment",
+    x = 0.75,
+    xend = maxp+0.05,
+    y = maxl-0.01,
+    yend = maxl-0.002,
+    arrow = arrow(length = unit(0.2, "in"), type = "closed")
+  ) +
+  annotate(
+    "text",
+    x = 0.76,
+    y = maxl-0.01,
+    label = paste0("L=", round(maxl, digits = 2)),
+    size = 12/.pt,
+    hjust = 0
+  )
+
+```
+
+:::::
+
+::::: {.column}
+
+__Question:__ What value of $p$ maximizes $\mathcal{L}(p|h)$?  
+
+$$\hat{p} = max\, \mathcal{L}(p|h)$$  
+
+In English: "Given a set of models, choose the one that makes what we observe the most probable thing to observe."  
+
+<br>
+
+It's a method for estimating the parameters of a model given some observed data.  
+
+:::::
+::::::
+
+## Maximum Likelihood Estimation
+
+::::::::: {.r-stack}
+:::::::: {.fragment .fade-out fragment-index=0 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+What if we have multiple observations?
+
+$$X = [5, 7, 8, 2, 4]$$
+
+__Question:__ What is the probability that this sample comes from a normal distribution with a mean of 5 and a variance of 2?
+
+:::::
+
+::::: {.column}
+
+```{r}
+#| out-width: 90%
+#| fig-align: right
+
+X <- c(5, 7, 8, 2, 4)
+Y <- dnorm(X, 5, 2)
+
+normal_model <- tibble(
+  x = seq(0, 10, length = 300),
+  y = dnorm(x, mean = 5, sd = 2)
+) |> 
+  (\(q)
+   bind_rows(
+    c(x = 0, y = 0),
+    q,
+    c(x = 10, y = 0)
+  )
+  )()
+
+gg_normal <- ggplot() +
+  geom_polygon(
+    data = normal_model,
+    aes(x, y), 
+    size = 1,
+    fill = qcolors("wintergreen"),
+    color = "black"
+  ) +
+  geom_segment(
+    aes(x = X, y = 0, xend = X, yend = 0.009),
+    size = 3,
+    color = qcolors("eerie")
+  ) +
+  labs(
+    x = NULL, 
+    y = "Density"
+  )
+
+gg_normal
+
+```
+
+:::::
+::::::
+::::::::
+
+:::::::: {.fragment .fade-in-then-out fragment-index=0 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+The probability density for a given observation $x_i$ given a normal distribution is:
+
+$$N(x_i,\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}\;exp\left[-\frac{1}{2}\left(\frac{x_i-\mu}{\sigma}\right)^2\right]$$
+
+For any set of values $X$, the likelihood is the product of the individual densities:
+
+$$\mathcal{L}(\mu, \sigma^2|x_i)=\prod_{i=1}^{n} N(x_i, \mu, \sigma^2)$$
+:::::
+
+::::: {.column}
+
+```{r}
+#| out-width: 90%
+#| fig-align: right
+
+gg_normal <- gg_normal +
+  geom_segment(
+    aes(x = X, y = 0, xend = X, yend = Y),
+    linetype = "dashed",
+    size = 1,
+    color = qcolors("eerie")
+  ) +
+  geom_point(
+    aes(X, Y),
+    size = 3,
+    shape = 15,
+    color = qcolors("eerie")
+  )
+
+gg_normal
+
+```
+
+:::::
+::::::
+::::::::
+
+:::::::: {.fragment .fade-in fragment-index=1 .mt-0}
+:::::: {.columns}
+::::: {.column}
+
+For $X = [5, 7, 8, 2, 4]$, we have
+
+<br>
+
+```{r}
+
+L <- formatC(prod(dnorm(X, 5, 2)), format = "e", digits = 2)
+
+```
+
+
+$$
+\begin{align}
+\mathcal{L}(\mu, \sigma^2|X) &= N(5) \cdot N(7) \cdot N(8) \cdot N(2) \cdot N(4)\\\\ 
+&= `r L`
+\end{align}
+$$
+<br>
+
+where $\mu=5$ and $\sigma^2=2$.
+
+As the likelihood is often very small, a common strategy is to minimize the negative log likelihood rather than maximize the likelihood, ($min\;\mathrm{-}\ell$) rather than ($max\;\mathcal{L}$).
+
+:::::
+
+::::: {.column}
+
+```{r}
+#| out-width: 90%
+#| fig-align: right
+
+gg_normal
+
+```
+
+:::::
+::::::
+::::::::
+:::::::::

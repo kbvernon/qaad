@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-03-21">
+<meta name="description" content="(Stats) Making sense of maximum likelihood. (R) Learn how to save figures. Learn how to generate robust relative paths in project folders with here().">
+<title>Quantitative Analysis of Archaeological Data - Lab 11: Another R Lab</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+</head>
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.html">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li><a href="#saving-figures" id="toc-saving-figures" class="nav-link" data-scroll-target="#saving-figures">Saving figures</a></li>
+  <li><a href="#here-here" id="toc-here-here" class="nav-link" data-scroll-target="#here-here">Here <code>here()</code></a></li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 11: Another R Lab</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>(Stats) Making sense of maximum likelihood. (R) Learn how to save figures. Learn how to generate robust relative paths in project folders with <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code>.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 21, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol type="1">
+<li>saving ggplot figures with <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code>
+</li>
+<li>building robust relative paths in project folders with <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code>
+</li>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://here.r-lib.org/">here</a></li>
+<li><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></li>
+<li><a href="https://www.tidyverse.org">tidyverse</a></li>
+<li><a href="https://sjmgarnier.github.io/viridis/">viridis</a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://here.r-lib.org/">here</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/">viridis</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>penguins</code>
+<ul>
+<li>Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.</li>
+<li>package: <code>palmerpenguins</code>
+</li>
+<li>reference: <a href="https://allisonhorst.github.io/palmerpenguins/reference/penguins.html" class="uri">https://allisonhorst.github.io/palmerpenguins/reference/penguins.html</a>
+</li>
+</ul>
+</li>
+<li>
+<code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>titanic</code>
+<ul>
+<li>Provides information on the fate of passengers of the Titanic, including economic status, sex, age, and survival.</li>
+<li>package: none</li>
+<li>reference: <a href="https://wilkelab.org/SDS375/" class="uri">https://wilkelab.org/SDS375/</a>
+</li>
+<li>note: we’re going to download this one rather than get it from a package</li>
+</ul>
+</li>
+</ul></section></section><section id="saving-figures" class="level2"><h2 class="anchored" data-anchor-id="saving-figures">Saving figures</h2>
+<p>For examples here, we are going to use the titanic data set again.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sauce</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://raw.githubusercontent.com/"</span>,</span>
+<span>  <span class="st">"wilkelab/SDS375/master/datasets/titanic.csv"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">titanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">sauce</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You will often want to save figures you generate in R to files that you can then insert into other documents or manuscripts for publication or in presentations. There are many ways to do this in R and RStudio (including a point and click method in the Plots pane - just click “Export”). All of them in one way or another require the specification of a graphics device, meaning a tool for encoding the visual information contained in your figure. By default, R sends figures to the <em>screen</em> device so it can appear on, well, your computer screen. For Windows, the screen device is just <code><a href="https://rdrr.io/r/grDevices/windows.html">windows()</a></code>. For Mac, it’s <code>quartz()</code>. There are also <em>file</em> devices for familiar image file formats, the most common being <code><a href="https://rdrr.io/r/grDevices/pdf.html">pdf()</a></code>, <code><a href="https://rdrr.io/r/grDevices/png.html">png()</a></code>, <code><a href="https://rdrr.io/r/grDevices/png.html">jpeg()</a></code>, and <code><a href="https://rdrr.io/r/grDevices/png.html">tiff()</a></code>. The latter three are raster-based devices, meaning they represent images as a grid with cells or pixels having specific color values. The <code><a href="https://rdrr.io/r/grDevices/pdf.html">pdf()</a></code> device is vector-based, so it represents shapes as mathematical formulas that can be used to reconstruct the image in different media. Another example of a vector-based device is <code><a href="https://rdrr.io/r/grDevices/cairo.html">svg()</a></code>, which is more commonly in simple web graphics.</p>
+<p>When working with {ggplot2}, it’s rare that you will want to work with these devices directly. Instead, you will call the function <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> and it will pick the appropriate device for you based on the file extension you specify. For instance, <code>ggsave(filename = "my-plot.png")</code> will save the figure as a PNG file using the <code><a href="https://rdrr.io/r/grDevices/png.html">png()</a></code> device and <code>ggsave(filename = "my-plot.jpeg")</code> will save the figure as a JPEG file using the <code><a href="https://rdrr.io/r/grDevices/png.html">jpeg()</a></code> device.</p>
+<p>OK, so, what device should you use? There’s no simple answer to that question, but as a general rule, I would recommend the PNG format. It uses lossless compression and thus offers a sharper image in most cases. If your sole purpose is to construct an image for print publication and it’s a fairly uncomplicated figure, you might consider the PDF format, as it is much more robust at different scales.</p>
+<p>At any rate, let’s walk through some more details of <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code>. The first thing to note is that <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> defaults to saving the last image you printed to your screen device, so you don’t have to tell it explicitly which figure you want to save. You <em>can</em> do that, if you like, you just have to assign the plot to an object and then refer to that object with the <code>plot</code> argument. That means the only argument that is strictly required is <code>filename</code>, which takes a character string specifying the file path where you want to save the image.</p>
+<p>Here are examples using the default last image displayed method and the explicit reference method.</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># method 1 - save last displayed image</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"titanic.png"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># method 2 - save image by explicit reference</span></span>
+<span><span class="va">bob</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"titanic.png"</span>, plot <span class="op">=</span> <span class="va">bob</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A common scenario when saving figures to file is to explicitly set its dimensions and resolution. These are controlled by the <code>width</code>, <code>height</code>, and <code>dpi</code> arguments respectively. Note that <code>dpi</code> does not apply to vector-based devices like PDF, as it is a way of specifying - in effect - the size of each pixel in a raster image. Here is a complete example you might see in the wild.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span></span>
+<span>  filename <span class="op">=</span> <span class="st">"titanic.png"</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  height <span class="op">=</span> <span class="fl">6</span> <span class="op">*</span> <span class="fl">0.8</span>,</span>
+<span>  dpi <span class="op">=</span> <span class="fl">300</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>There are a couple of things to draw your attention to here. First, the default unit of measure for width and height is inches, but you can use different units if you like by passing an abbreviation to the <code>units</code> argument. For instance, <code>ggsave(filename = "titanic.png", width = 5, units = "cm")</code> will produce an image that is 5 centimeters wide. Second, notice that to specify the height, I multiplied 6 (the same value as the width) by 0.8. In this case 0.8 is playing the role of the figure’s aspect ratio, meaning the ratio of the height of the figure to its width. So, for instance, a figure with a height of 8 inches and a width of 10 inches will have an aspect ratio of 8/10 or 0.8. That means any two of these measures entails the third. If you know the width and the aspect ratio, for example, you can derive the height by multiplying them (as was done in the above example). Conversely, if you know the height and aspect ratio, you can derive the width by dividing them. An aspect ratio of 1, of course, means the figure is square shaped. In terms of best practices, I think it’s a good idea to get in the habit of thinking about figure dimensions in terms of width and aspect ratio, as this will help you keep multiple figures more consistently formatted within papers or presentations.</p>
+<p>OK, so what about dimensions? What’s a good width and height for most figures? Well, again, here it just depends on what you’re trying to do, but if you’re thinking about good dimensions <em>for a scientific publication in the US</em>, it’s probably a good idea to think about figure size in terms of the dimensions of a standard piece of paper, meaning 8.5 x 11 inches, with standard margins set at 1 inch. That gives you about 6.5 inches of width to play with (unless the paper has a two column format, in which case you have about half that). So, to be safe, I would recommend saving figures at around 5 inches in width, typically with an aspect ratio around 0.7 or 0.8 (though the aspect should vary depending on what kind of figure it is).</p>
+</section><section id="here-here" class="level2"><h2 class="anchored" data-anchor-id="here-here">Here <code>here()</code>
+</h2>
+<p>Above, when we specified the file path with <code>filename</code>, <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> just assumed we wanted to save the figure to the working directory. When you’re working within an R project, the working directory will be set to the top level directory of the project (typically where the <em>.Rproj</em> file is located). This is useful because it means you can use relative paths to save your figures and other files, like tables you write to csv files. For instance,</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"figures/titanic.png"</span>, plot <span class="op">=</span> <span class="va">ggtitanic</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>will save the figure to the following location:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>C<span class="sc">:</span><span class="er">/</span>Users<span class="sc">/</span>blake<span class="sc">/</span>rstuff<span class="sc">/</span>our<span class="sc">-</span>r<span class="sc">-</span>project<span class="sc">/</span>figures<span class="sc">/</span>titanic.png</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This is useful, but there’s a catch. This assumes that all your files live in the top level directory of your project, that it has no depth in other words. But often you will want to organize your project using various sub-folders. Your R project might, for example, look like this:</p>
+<div class="cell">
+<style type="text/css">
+.dir {
+  text-transform: none;
+  tab-size: 2;
+  padding: 0.55em;
+  line-height: 1.2em;
+  margin: 0.8em 0;
+  width: 100% !important;
+  font-size: .8em;
+  background-color: rgba(233,236,239,.65);
+  border: 1px solid rgba(233,236,239,.65);
+  border-radius: 0.25rem;
+}
+
+.dir p {
+  margin-bottom: 0;
+}
+
+.dir ul {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 1rem !important;
+}
+
+.dir ul li {
+  margin: 0.5em 0;
+}
+
+.dir ul li ul {
+  list-style-type: none;
+}
+
+</style>
+</div>
+<div class="dir" style="width:630px">
+<p>📁 my-r-project</p>
+<ul>
+<li>|- 📁 _misc <strong>← the kitchen sink</strong>
+</li>
+<li>|- 📁 data
+<ul>
+<li>|- <i class="fa-solid fa-file-excel fa-" title="" aria-label="" style="color:"></i> titanic.csv<br>
+</li>
+</ul>
+</li>
+<li>|- 📁 figures
+<ul>
+<li>|- <i class="fa-solid fa-file-image fa-" title="" aria-label="" style="color:"></i> titanic.png</li>
+</ul>
+</li>
+<li>|- 📁 R
+<ul>
+<li>|- 📄 analysis.qmd<br>
+</li>
+<li>|- 📄 data-wrangling.R<br>
+</li>
+</ul>
+</li>
+<li>|- 📄 my-r-project.Rproj <strong>← this makes it an R project!</strong><br>
+</li>
+</ul>
+</div>
+<p>I happen to think this is a good setup for an R project.</p>
+<ul>
+<li>You have the <code>_misc/</code> folder, short for “miscalleneous.” You can think of this folder like that drawer in your kitchen where you just cram stuff you can’t find a place for. You let that drawer be chaos inside, so the rest of your kitchen can have order and harmony. Just so with project folders. The <code>_misc/</code> folder is for all the stuff that isn’t essential to your project, but you just can’t bring yourself to delete it entirely.</li>
+<li>The <code>data/</code> folder is, as its name suggests, where all the data for your project goes.</li>
+<li>The <code>figures/</code> folder is, again, where you save all your figures.</li>
+<li>And the <code>R/</code> folder is where all your R code goes, including .qmd files.</li>
+</ul>
+<p>Now, here’s where the catch comes in. Many files you work with, including Quarto (.qmd) documents will assume by default that the working directory is the directory of the file itself, not necessarily the top level project directory. So, if you to compile a .qmd file in your R folder, all the R code will get run in a session where the working directory is set to</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="st">"C:/Users/blake/rstuff/our-r-project/R"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>meaning the <code>R/</code> folder, not the top level project folder! That means if you try to use a relative path like</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">titanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="st">"data/titanic.csv"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>it’ll look for that data in</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="st">"C:/Users/blake/rstuff/our-r-project/R/data/titanic.csv"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>but there is no <code>our-r-project/R/data/</code> folder! Of course, there’s a <code>our-r-project/data/</code> folder, but that’s not where you’re telling R to look, so you’ll get an error saying it can’t find the data you are asking for. Issues like this are compounded like a billion times over when you start thinking about sharing your code with other people. To solve this, I recommend using the {<code>here</code>} package and, in particular, the eponymous <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code> function. This allows you to build file paths that always start at the top level of a project folder. So, for the toy project above, you’ll get this result if you run the code in the <code>R/analysis.qmd</code> file:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://here.r-lib.org/">here</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; [1] "C:/Users/blake/rstuff/our-r-project"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"titanic.csv"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "C:/Users/blake/rstuff/our-r-project/data/titanic.csv"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"figures"</span>, <span class="st">"titanic.png"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "C:/Users/blake/rstuff/our-r-project/figures/titanic.png"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>So, you can also use this to read or write data.frames and to save ggplot figures.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">titanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"titanic.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"figures"</span>, <span class="st">"titanic.png"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And, every time, it should just work. But, and this is critically important,</p>
+<blockquote class="blockquote">
+<p>⚠️ <strong>THIS ONLY WORKS IN A PROJECT FOLDER.</strong></p>
+</blockquote>
+</section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
+<ol type="1">
+<li>Create a histogram of penguin bill length using the <code>penguins</code> dataset from the <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a> package. Then do all of the following:
+<ul>
+<li>Change the number of bins (try two different options).</li>
+<li>Try specifying the bin width and boundary.</li>
+<li>Change the fill and outline color.</li>
+<li>Reset the labels to be more informative.</li>
+<li>Change the theme and remove the vertical grid lines.</li>
+<li>Save the plot to the <code>figures/</code> folder in your project directory using <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> and <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code>.</li>
+</ul>
+</li>
+<li>Repeat (1), but use the <code>DartPoints</code> dataset from the <code>{archdata}</code> package, creating a histogram of dart length (<code>Length</code> in the table).
+<ul>
+<li>Does it look like the dart types might differ in length? Or maybe they’re all basically the same?</li>
+</ul>
+</li>
+<li>Make a kernel density plot of penguin bill length using <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density()</a></code>. Then make all of the following changes:
+<ul>
+<li>Map penguin <code>species</code> to the <code>fill</code> aesthetic.</li>
+<li>Update the axis labels and plot title using <code><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs()</a></code>.</li>
+<li>Use <code>scale_fill_viridis</code> to use colorblind safe colors for the fill. Note! Species is a discrete or categorical variable, so make sure to set <code>discrete = TRUE</code>!</li>
+<li>Use <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap()</a></code> to facet by <code>species</code>.</li>
+<li>Choose a suitable theme, like <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal()</a></code>.</li>
+<li>Remove vertical grid lines.</li>
+<li>Change the legend position to bottom and make it horizontal.</li>
+<li>Remove strip text and background.<br>
+</li>
+<li>Save the plot to the <code>figures/</code> folder in your project directory using <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> and <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code>.</li>
+</ul>
+</li>
+<li>Do the same as (3), but for dart point length, and substitute dart point type for species.</li>
+<li>Make a boxplot showing the distribution of penguin body mass by island. Do all of the following:
+<ul>
+<li>Position the boxes horizontally.</li>
+<li>Change the fill color to a color of your choice.</li>
+<li>Update the labels and add a title.</li>
+<li>Change the theme to one of your choice.</li>
+<li>Remove the horizontal grid lines.</li>
+<li>Add perpendicular lines to the whiskers.</li>
+<li>Save the plot to the <code>figures/</code> folder in your project directory using <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> and <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code>.</li>
+</ul>
+</li>
+<li>Do the same as (5), but for dart point length, substituting dart type for island.</li>
+</ol>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

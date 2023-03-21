@@ -1,0 +1,15 @@
+---
+title: "Week 11: Maximum Likelihood"
+description: |
+  (Stats) Making sense of maximum likelihood. (R) Learn how to save figures. Learn how to generate robust relative paths in project folders with `here()`.
+date: 2023-03-21
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/11-maximum-likelihood-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 11 Lab](../labs/11-another-R-lab.qmd)

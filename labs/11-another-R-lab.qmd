@@ -1,0 +1,268 @@
+---
+title: "Lab 11: Another R Lab"
+description: |
+  (Stats) Making sense of maximum likelihood. (R) Learn how to save figures. Learn how to generate robust relative paths in project folders with `here()`.
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. saving ggplot figures with `ggsave()`
+2. building robust relative paths in project folders with `here()`
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [here](https://here.r-lib.org/)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [tidyverse](https://www.tidyverse.org)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+```{r}
+library(archdata)
+library(here)
+library(palmerpenguins)
+library(tidyverse)
+library(viridis)
+
+```
+
+### Data
+
+- `penguins` 
+  - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+  - package: `palmerpenguins`
+  - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+- `DartPoints`
+  - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+  - package: `archdata`
+  - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `titanic`
+    - Provides information on the fate of passengers of the Titanic, including economic status, sex, age, and survival.
+    - package: none
+    - reference: <https://wilkelab.org/SDS375/>
+    - note: we're going to download this one rather than get it from a package
+
+## Saving figures
+
+For examples here, we are going to use the titanic data set again.
+
+```{r}
+sauce <- paste0(
+  "https://raw.githubusercontent.com/",
+  "wilkelab/SDS375/master/datasets/titanic.csv"
+)
+
+titanic <- read_csv(sauce)
+
+```
+
+
+You will often want to save figures you generate in R to files that you can then insert into other documents or manuscripts for publication or in presentations. There are many ways to do this in R and RStudio (including a point and click method in the Plots pane - just click "Export"). All of them in one way or another require the specification of a graphics device, meaning a tool for encoding the visual information contained in your figure. By default, R sends figures to the _screen_ device so it can appear on, well, your computer screen. For Windows, the screen device is just `windows()`. For Mac, it's `quartz()`. There are also _file_ devices for familiar image file formats, the most common being `pdf()`, `png()`, `jpeg()`, and `tiff()`. The latter three are raster-based devices, meaning they represent images as a grid with cells or pixels having specific color values. The `pdf()` device is vector-based, so it represents shapes as mathematical formulas that can be used to reconstruct the image in different media. Another example of a vector-based device is `svg()`, which is more commonly in simple web graphics.  
+
+When working with {ggplot2}, it's rare that you will want to work with these devices directly. Instead, you will call the function `ggsave()` and it will pick the appropriate device for you based on the file extension you specify. For instance, `ggsave(filename = "my-plot.png")` will save the figure as a PNG file using the `png()` device and `ggsave(filename = "my-plot.jpeg")` will save the figure as a JPEG file using the `jpeg()` device.
+
+OK, so, what device should you use? There's no simple answer to that question, but as a general rule, I would recommend the PNG format. It uses lossless compression and thus offers a sharper image in most cases. If your sole purpose is to construct an image for print publication and it's a fairly uncomplicated figure, you might consider the PDF format, as it is much more robust at different scales. 
+
+At any rate, let's walk through some more details of `ggsave()`. The first thing to note is that `ggsave()` defaults to saving the last image you printed to your screen device, so you don't have to tell it explicitly which figure you want to save. You _can_ do that, if you like, you just have to assign the plot to an object and then refer to that object with the `plot` argument. That means the only argument that is strictly required is `filename`, which takes a character string specifying the file path where you want to save the image. 
+
+Here are examples using the default last image displayed method and the explicit reference method.
+
+```{r}
+#| eval: false
+
+# method 1 - save last displayed image
+ggplot(titanic) + geom_histogram(aes(age))
+
+ggsave(filename = "titanic.png")
+
+# method 2 - save image by explicit reference
+bob <- ggplot(titanic) + geom_histogram(aes(age))
+
+ggsave(filename = "titanic.png", plot = bob)
+
+```
+
+A common scenario when saving figures to file is to explicitly set its dimensions and resolution. These are controlled by the `width`, `height`, and `dpi` arguments respectively. Note that `dpi` does not apply to vector-based devices like PDF, as it is a way of specifying - in effect - the size of each pixel in a raster image. Here is a complete example you might see in the wild.
+
+```{r}
+#| eval: false
+
+ggplot(titanic) + geom_histogram(aes(age))
+
+ggsave(
+  filename = "titanic.png",
+  width = 6,
+  height = 6 * 0.8,
+  dpi = 300
+)
+
+```
+
+There are a couple of things to draw your attention to here. First, the default unit of measure for width and height is inches, but you can use different units if you like by passing an abbreviation to the `units` argument. For instance, `ggsave(filename = "titanic.png", width = 5, units = "cm")` will produce an image that is 5 centimeters wide. Second, notice that to specify the height, I multiplied 6 (the same value as the width) by 0.8. In this case 0.8 is playing the role of the figure's aspect ratio, meaning the ratio of the height of the figure to its width. So, for instance, a figure with a height of 8 inches and a width of 10 inches will have an aspect ratio of 8/10 or 0.8. That means any two of these measures entails the third. If you know the width and the aspect ratio, for example, you can derive the height by multiplying them (as was done in the above example). Conversely, if you know the height and aspect ratio, you can derive the width by dividing them. An aspect ratio of 1, of course, means the figure is square shaped. In terms of best practices, I think it's a good idea to get in the habit of thinking about figure dimensions in terms of width and aspect ratio, as this will help you keep multiple figures more consistently formatted within papers or presentations. 
+
+OK, so what about dimensions? What's a good width and height for most figures? Well, again, here it just depends on what you're trying to do, but if you're thinking about good dimensions _for a scientific publication in the US_, it's probably a good idea to think about figure size in terms of the dimensions of a standard piece of paper, meaning 8.5 x 11 inches, with standard margins set at 1 inch. That gives you about 6.5 inches of width to play with (unless the paper has a two column format, in which case you have about half that). So, to be safe, I would recommend saving figures at around 5 inches in width, typically with an aspect ratio around 0.7 or 0.8 (though the aspect should vary depending on what kind of figure it is).
+
+## Here `here()`
+
+Above, when we specified the file path with `filename`, `ggsave()` just assumed we wanted to save the figure to the working directory. When you're working within an R project, the working directory will be set to the top level directory of the project (typically where the _.Rproj_ file is located). This is useful because it means you can use relative paths to save your figures and other files, like tables you write to csv files. For instance,
+
+```r
+ggsave(filename = "figures/titanic.png", plot = ggtitanic)
+```
+
+will save the figure to the following location:
+
+```r
+C:/Users/blake/rstuff/our-r-project/figures/titanic.png
+```
+
+This is useful, but there's a catch. This assumes that all your files live in the top level directory of your project, that it has no depth in other words. But often you will want to organize your project using various sub-folders. Your R project might, for example, look like this:
+
+```{css}
+#| echo: false
+
+.dir {
+  text-transform: none;
+  tab-size: 2;
+  padding: 0.55em;
+  line-height: 1.2em;
+  margin: 0.8em 0;
+  width: 100% !important;
+  font-size: .8em;
+  background-color: rgba(233,236,239,.65);
+  border: 1px solid rgba(233,236,239,.65);
+  border-radius: 0.25rem;
+}
+
+.dir p {
+  margin-bottom: 0;
+}
+
+.dir ul {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 1rem !important;
+}
+
+.dir ul li {
+  margin: 0.5em 0;
+}
+
+.dir ul li ul {
+  list-style-type: none;
+}
+
+```
+
+:::{.dir style="width:630px"}  
+📁 my-r-project 
+
+- |- 📁 \_misc  __&larr; the kitchen sink__
+- |- 📁 data  
+  - |- {{< fa file-excel >}} titanic.csv  
+- |- 📁 figures  
+  - |- {{< fa file-image >}} titanic.png
+- |- 📁 R  
+  - |- 📄 analysis.qmd  
+  - |- 📄 data-wrangling.R  
+- |- 📄 my-r-project.Rproj __&larr; this makes it an R project!__  
+:::
+
+I happen to think this is a good setup for an R project. 
+
+- You have the `_misc/` folder, short for "miscalleneous." You can think of this folder like that drawer in your kitchen where you just cram stuff you can't find a place for. You let that drawer be chaos inside, so the rest of your kitchen can have order and harmony. Just so with project folders. The `_misc/` folder is for all the stuff that isn't essential to your project, but you just can't bring yourself to delete it entirely. 
+- The `data/` folder is, as its name suggests, where all the data for your project goes.
+- The `figures/` folder is, again, where you save all your figures.
+- And the `R/` folder is where all your R code goes, including .qmd files.
+
+Now, here's where the catch comes in. Many files you work with, including Quarto (.qmd) documents will assume by default that the working directory is the directory of the file itself, not necessarily the top level project directory. So, if you to compile a .qmd file in your R folder, all the R code will get run in a session where the working directory is set to 
+
+```r
+"C:/Users/blake/rstuff/our-r-project/R"
+```
+
+meaning the `R/` folder, not the top level project folder! That means if you try to use a relative path like 
+
+```r
+titanic <- read_csv("data/titanic.csv")
+```
+
+it'll look for that data in
+
+```r
+"C:/Users/blake/rstuff/our-r-project/R/data/titanic.csv"
+```
+
+but there is no `our-r-project/R/data/` folder! Of course, there's a `our-r-project/data/` folder, but that's not where you're telling R to look, so you'll get an error saying it can't find the data you are asking for. Issues like this are compounded like a billion times over when you start thinking about sharing your code with other people. To solve this, I recommend using the {`here`} package and, in particular, the eponymous `here()` function. This allows you to build file paths that always start at the top level of a project folder. So, for the toy project above, you'll get this result if you run the code in the `R/analysis.qmd` file:
+
+```r
+library(here)
+
+here() 
+#> [1] "C:/Users/blake/rstuff/our-r-project"
+
+here("data", "titanic.csv")
+#> [1] "C:/Users/blake/rstuff/our-r-project/data/titanic.csv"
+
+here("figures", "titanic.png")
+#> [1] "C:/Users/blake/rstuff/our-r-project/figures/titanic.png"
+```
+
+So, you can also use this to read or write data.frames and to save ggplot figures.
+
+```r
+titanic <- read_csv(here("data", "titanic.csv"))
+
+ggplot(titanic) + geom_histogram(aes(age))
+
+ggsave(filename = here("figures", "titanic.png"))
+```
+
+And, every time, it should just work. But, and this is critically important, 
+
+> ⚠️ __THIS ONLY WORKS IN A PROJECT FOLDER.__
+
+## Homework
+
+1. Create a histogram of penguin bill length using the `penguins` dataset from the `{palmerpenguins}` package. Then do all of the following:
+    - Change the number of bins (try two different options).
+    - Try specifying the bin width and boundary.
+    - Change the fill and outline color.
+    - Reset the labels to be more informative.
+    - Change the theme and remove the vertical grid lines.
+    - Save the plot to the `figures/` folder in your project directory using `ggsave()` and `here()`.
+2. Repeat (1), but use the `DartPoints` dataset from the `{archdata}` package, creating a histogram of dart length (`Length` in the table).  
+    - Does it look like the dart types might differ in length? Or maybe they're all basically the same?
+2. Make a kernel density plot of penguin bill length using `ggplot()` and `geom_density()`. Then make all of the following changes:
+    - Map penguin `species` to the `fill` aesthetic.
+    - Update the axis labels and plot title using `labs()`.
+    - Use `scale_fill_viridis` to use colorblind safe colors for the fill. Note! Species is a discrete or categorical variable, so make sure to set `discrete = TRUE`!
+    - Use `facet_wrap()` to facet by `species`.
+    - Choose a suitable theme, like `theme_minimal()`.
+    - Remove vertical grid lines.
+    - Change the legend position to bottom and make it horizontal.
+    - Remove strip text and background.  
+    - Save the plot to the `figures/` folder in your project directory using `ggsave()` and `here()`.
+2. Do the same as (3), but for dart point length, and substitute dart point type for species.
+2. Make a boxplot showing the distribution of penguin body mass by island. Do all of the following:
+    - Position the boxes horizontally.
+    - Change the fill color to a color of your choice.
+    - Update the labels and add a title.
+    - Change the theme to one of your choice.
+    - Remove the horizontal grid lines.
+    - Add perpendicular lines to the whiskers.
+    - Save the plot to the `figures/` folder in your project directory using `ggsave()` and `here()`.
+2. Do the same as (5), but for dart point length, substituting dart type for island.
