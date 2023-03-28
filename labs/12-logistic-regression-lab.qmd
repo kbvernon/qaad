@@ -87,7 +87,7 @@ data("DartPoints")
 
 filename <- here("data", "darts.csv")
 
-write_csv(DartPoints, filename = filename)
+write_csv(DartPoints, file = filename)
 
 darts <- read_csv(filename) |> 
   as_tibble() |> 
@@ -249,7 +249,7 @@ data("Snodgrass")
 
 filename <- here("data", "snodgrass.csv")
 
-write_csv(Snodgrass, filename = filename)
+write_csv(Snodgrass, file = filename)
 
 snodgrass <- read_csv(filename) |> 
   as_tibble() |> 
