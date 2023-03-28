@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.329">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="dcterms.date" content="2023-03-28">
+<meta name="description" content="(Stats) Modeling binary outcomes and proportions with logistic regression. Evaluating GLMs with Deviance, Information Criteria, and the Likelihood Ratio Test. (R) Fitting logistic models and evaluating them with LRT.">
+<title>Quantitative Analysis of Archaeological Data - Lab 12: Logistic Regression</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+</head>
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg navbar-dark "><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">QAAD</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../classes.html">
+ <span class="menu-text">Classes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../help.html">
+ <span class="menu-text">Help</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#outline" id="toc-outline" class="nav-link active" data-scroll-target="#outline">Outline</a>
+  <ul class="collapse">
+<li><a href="#objectives" id="toc-objectives" class="nav-link" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">R Packages</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#gaussian" id="toc-gaussian" class="nav-link" data-scroll-target="#gaussian">Gaussian</a>
+  <ul class="collapse">
+<li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#binomial" id="toc-binomial" class="nav-link" data-scroll-target="#binomial">Binomial</a>
+  <ul class="collapse">
+<li><a href="#exercises-1" id="toc-exercises-1" class="nav-link" data-scroll-target="#exercises-1">Exercises</a></li>
+  </ul>
+</li>
+  <li><a href="#homework" id="toc-homework" class="nav-link" data-scroll-target="#homework">Homework</a></li>
+  </ul></nav>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">Lab 12: Logistic Regression</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>(Stats) Modeling binary outcomes and proportions with logistic regression. Evaluating GLMs with Deviance, Information Criteria, and the Likelihood Ratio Test. (R) Fitting logistic models and evaluating them with LRT.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 28, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header><section id="outline" class="level2"><h2 class="anchored" data-anchor-id="outline">Outline</h2>
+<section id="objectives" class="level3"><h3 class="anchored" data-anchor-id="objectives">Objectives</h3>
+<p>This lab will guide you through the process of</p>
+<ol type="1">
+<li>Fitting a GLM with a
+<ul>
+<li>Gaussian distribution</li>
+<li>Binomial distribution</li>
+</ul>
+</li>
+<li>Evaluating models with a Likelihood Ratio Test</li>
+</ol></section><section id="r-packages" class="level3"><h3 class="anchored" data-anchor-id="r-packages">R Packages</h3>
+<p>We will be using the following packages:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/archdata/index.html">archdata</a></li>
+<li><a href="https://here.r-lib.org/">here</a></li>
+<li><a href="https://www.tidyverse.org">tidyverse</a></li>
+<li><a href="https://sjmgarnier.github.io/viridis/">viridis</a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">archdata</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://here.r-lib.org/">here</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/">viridis</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="data" class="level3"><h3 class="anchored" data-anchor-id="data">Data</h3>
+<ul>
+<li>
+<code>DartPoints</code>
+<ul>
+<li>Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>Handaxes</code>
+<ul>
+<li>Includes measurements of length, width, and thickness for handaxes from the Furze Platt site in England.</li>
+<li>package: <code>archdata</code>
+</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a><br>
+</li>
+</ul>
+</li>
+<li>
+<code>OxfordPots</code>
+<ul>
+<li>Includes proportions of Romano-British Oxford pottery on 30 sites and their distances from Oxford.</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+<li>
+<code>Snodgrass</code>
+<ul>
+<li>Includes measurements of size, location, and contents of 91 pit houses at the Snodgrass site in Butler County, Missouri.</li>
+<li>reference: <a href="https://cran.r-project.org/web/packages/archdata/archdata.pdf" class="uri">https://cran.r-project.org/web/packages/archdata/archdata.pdf</a>
+</li>
+</ul>
+</li>
+</ul></section></section><section id="gaussian" class="level2"><h2 class="anchored" data-anchor-id="gaussian">Gaussian</h2>
+<p>In this section and the following, I will walk you through how to make the Generalized Linear Models (or GLMs) introduced in the lecture with R. Then, in the exercises for each section, we’ll work through an additional example for each. We’ll start by fitting a model with a normal or Gaussian family distribution. The question we hope to answer is this:</p>
+<p><strong>Question</strong> Does the length of an archaic dart point vary as a function of its weight.</p>
+<p>To answer that question, we will use the <code>DartPoints</code> data collected from a site in Fort Hood, Texas.</p>
+<p>First, we will load the data into R. For practice, we’ll also write it to disk and read it back in, in each case using the <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code> function to specify relative file paths in our project folder. Note that I am going to change the name of the object to <code>darts</code>. While it’s current name is fine, I find that keeping names short - but descriptive! - and in lowercase format - as far as that is possible anyway - saves you some typing effort and reduces the potential for errors in your R code. While we’re at it, we’ll set all the variable names in the table to lower case using the base R function <code><a href="https://rdrr.io/r/base/chartr.html">tolower()</a></code> and the <code>dplyr</code> function <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with()</a></code>. Then, to make it clearer that the <code>name</code> variable is actually a dart <code>type</code>, we’ll rename it using the <code>dplyr</code> verb <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code>. Note that <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code> uses the <code>"new_name" = old_name</code> syntax. I’ll also convert it to a <code>tibble</code> with <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble()</a></code> to make it print pretty.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"DartPoints"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">filename</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"darts.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="va">DartPoints</span>, filename <span class="op">=</span> <span class="va">filename</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">darts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">filename</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="va">tolower</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span><span class="st">"type"</span> <span class="op">=</span> <span class="va">name</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">remove</a></span><span class="op">(</span><span class="va">DartPoints</span>, <span class="va">filename</span><span class="op">)</span> <span class="co"># remove these objects from your environment</span></span>
+<span></span>
+<span><span class="va">darts</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<pre><code>#&gt; # A tibble: 91 × 17
+#&gt;    type  catalog tarl  quad  length width thick…¹ b.width j.width h.len…² weight
+#&gt;    &lt;fct&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 Darl  41-0322 41CV… 26/59   42.8  15.8     5.8    11.3    10.6    11.6    3.6
+#&gt;  2 Darl  35-2946 41CV… 21/63   40.5  17.4     5.8    NA      13.7    12.9    4.5
+#&gt;  3 Darl  35-2921 41CV… 20/63   37.5  16.3     6.1    12.1    11.3     8.2    3.6
+#&gt;  4 Darl  36-3487 41CV… 10/54   40.3  16.1     6.3    13.5    11.7     8.3    4  
+#&gt;  5 Darl  36-3321 41CV… 12/58   30.6  17.1     4      12.6    11.2     8.9    2.3
+#&gt;  6 Darl  35-2959 41CV… 21/63   41.8  16.8     4.1    12.7    11.5    11      3  
+#&gt;  7 Darl  35-2866 41CV… 25/65   40.3  20.7     5.9    11.7    11.4     7.6    3.9
+#&gt;  8 Darl  41-0323 41CV… 26/59   48.5  18.7     6.9    14.7    13.4     9.2    6.2
+#&gt;  9 Darl  35-2325 41CV… 20/48   47.7  17.5     7.2    14.3    11.8     8.9    5.1
+#&gt; 10 Darl  40-0847 41CV… 05/48   33.6  15.8     5.1    NA      12.5    11.5    2.8
+#&gt; # … with 81 more rows, 6 more variables: blade.sh &lt;fct&gt;, base.sh &lt;fct&gt;,
+#&gt; #   should.sh &lt;fct&gt;, should.or &lt;fct&gt;, haft.sh &lt;fct&gt;, haft.or &lt;fct&gt;, and
+#&gt; #   abbreviated variable names ¹​thickness, ²​h.length</code></pre>
+</div>
+<p>Now, of course, we’ll want to visualize our data, in particular the relationship between dart length and weight. These are quantitative measures, so let’s make a scatter plot.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">darts</span>, </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">weight</span>, <span class="va">length</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span></span>
+<span>    size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.6</span> <span class="co"># increase transparency to address the over-plotting of points</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Weight (g)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Length (mm)"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="12-logistic-regression-lab_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>Now, let’s fit a GLM! To do that, we’ll use the <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code> function. The syntax for specifying a model with this function should be familiar to you. It’s just like fitting a linear model with <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>, albeit with one important exception. You have to specify an exponential distribution and a link function. To do that, we use the <code>family</code> argument to <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code>, providing it with a family function that itself takes a <code>link</code> argument. It looks like this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">glm_darts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span></span>
+<span>  <span class="va">length</span> <span class="op">~</span> <span class="va">weight</span>,</span>
+<span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">gaussian</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">darts</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the identity link function is the default for the <code><a href="https://rdrr.io/r/stats/family.html">gaussian()</a></code> function, so you don’t actually have to specify it. The parentheses are not strictly necessary either (for reasons beyond the scope of this class), so we could instead call the <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code> function this way:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">glm_darts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span></span>
+<span>  <span class="va">length</span> <span class="op">~</span> <span class="va">weight</span>,</span>
+<span>  family <span class="op">=</span> <span class="va">gaussian</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">darts</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That said, in all the examples that follow, I am going to use the first formulation to make it as explicit as possible that you are always, always, always including a distribution and link function when fitting a GLM.</p>
+<p>So, now we have our model. Let’s look at a summary.</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">glm_darts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; glm(formula = length ~ weight, family = gaussian(link = "identity"), </span></span>
+<span><span class="co">#&gt;     data = darts)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Deviance Residuals: </span></span>
+<span><span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span></span>
+<span><span class="co">#&gt; -10.540   -3.865   -0.598    2.249   30.255  </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error t value            Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; (Intercept)   28.971      1.328    21.8 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; weight         2.664      0.152    17.5 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; (Dispersion parameter for gaussian family taken to be 37)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Null deviance: 14599.0  on 90  degrees of freedom</span></span>
+<span><span class="co">#&gt; Residual deviance:  3294.7  on 89  degrees of freedom</span></span>
+<span><span class="co">#&gt; AIC: 590.9</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Number of Fisher Scoring iterations: 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+
+</div>
+<p>There are four things to note with this summary.</p>
+<ol type="1">
+<li>The <strong>dispersion parameter</strong> is 37. For a GLM fit with a Gaussian distribution, this is equivalent to the square of the residual standard error in a linear model, ie, the mean squared error.<br>
+</li>
+<li>The <strong>null deviance</strong> is 14599. This is the product of -2 and the difference in the log-Likelihood of an intercept-only model and a saturated model (a model with a parameter for each observation, ie, a perfect fit).<br>
+</li>
+<li>The <strong>residual deviance</strong> is 3294.7. This is the product of -2 and the difference in log-Likelihood of the fitted model and a saturated model.<br>
+</li>
+<li>The <strong>AIC</strong> (or Akaike Information Criterion) is 590.866. This is calculated using the formula:</li>
+</ol>
+<p><span class="math display">\[AIC = -2\,log\,\mathcal{L} + 2p\]</span></p>
+<p>where <span class="math inline">\(log\,\mathcal{L}\)</span> is the log-Likelihood and <span class="math inline">\(p\)</span> is the number of parameters in the model (+1 for the estimate of the error variance). In this case, the model has an intercept, one covariate, <code>weight</code>, and the error variance, so <span class="math inline">\(p = 3\)</span>.</p>
+<p>These are all ways of evaluating the model’s goodness-of-fit, but as always, we would like to know if the increased complexity is worth it. There are two ways we can try to answer this question. The first is simply to compare the AIC score of the model we have just proposed to an intercept-only model, as the AIC incorporates a penalty for complexity. As this compares 2 times the negative log-Likelihood (ie the deviance), a smaller score is always better, so we want the AIC of our proposed model to be less than the AIC of the null model. To extract the AIC estimate from a model, we use <code><a href="https://rdrr.io/r/stats/AIC.html">AIC()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">glm_null</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span></span>
+<span>  <span class="va">length</span> <span class="op">~</span> <span class="fl">1</span>,</span>
+<span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">gaussian</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"identity"</span><span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">darts</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># is the AIC of the proposed model less than the AIC of the null model?</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">glm_darts</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">glm_null</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That’s a bingo! But, let’s take this idea a bit further and try some inference with it. In particular, let’s use an ANOVA (specifically, a Likelihood Ratio Test or LRT) to compare the ratio of the likelihoods of these models to a <span class="math inline">\(\chi^2\)</span> distribution. This will tell us if they are significantly different. To do that in R, we use the <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> function, setting its <code>test</code> argument to <code>"LRT"</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">glm_null</span>, <span class="va">glm_darts</span>, test <span class="op">=</span> <span class="st">"LRT"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Analysis of Deviance Table</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model 1: length ~ 1</span></span>
+<span><span class="co">#&gt; Model 2: length ~ weight</span></span>
+<span><span class="co">#&gt;   Resid. Df Resid. Dev Df Deviance            Pr(&gt;Chi)    </span></span>
+<span><span class="co">#&gt; 1        90      14599                                    </span></span>
+<span><span class="co">#&gt; 2        89       3295  1    11304 &lt;0.0000000000000002 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Because the p-value here is significantly less than the critical value <span class="math inline">\(\alpha = 0.05\)</span>, we can reject the null hypothesis that there is <em>no</em> significant difference in the log-Likelihood of these models. So, our model of dart length as a function of dart weight does indeed fit the data (re: explain the data) better than an intercept-only null model.</p>
+<section id="exercises" class="level3"><h3 class="anchored" data-anchor-id="exercises">Exercises</h3>
+<p>For these exercises, we’ll use the <code>Handaxes</code> dataset from the <code>archdata</code> package. We are going to see if we can predict handaxe length as a function of thickness.</p>
+<ol type="1">
+<li>First, load the <code>Handaxes</code> table with <code>data("Handaxes")</code>.</li>
+<li>Now, let’s do some data wrangling with this table. Bonus points if you can put this all through one pipe. And make sure to assign it back to your table, so that it saves the changes!
+<ul>
+<li>Change all the names to lowercase with <code>rename_with(tolower)</code>.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> to grab the catalog number (<code>catalog</code>), length (<code>l</code>), breadth (<code>b</code>), and thickness (<code>t</code>) variables.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code> to rename <code>l</code>, <code>b</code>, and <code>t</code> to <code>length</code>, <code>width</code>, and <code>thickness</code>, respectively. This will make it clearer what these variables are. Hint: use the <code>"new_name" = old_name</code> syntax, for example, <code>"length" = l</code>.</li>
+</ul>
+</li>
+<li>Practice writing the data to disk and reading it back in using <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> and <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code>. Use <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code> to set the file path. While you do it, replace <code>Handaxes</code> with <code>handaxes</code>, and <code>remove(Handaxes)</code>.</li>
+<li>Make a scatter plot of the data.<br>
+</li>
+<li>Build a GLM of handaxe length as a function of thickness using a Gaussian distribution and the identity link.</li>
+<li>Build an intercept-only GLM of handaxe length using the same distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?</li>
+</ul>
+</li>
+<li>Now compare these models using a Likelihood Ratio Test with <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul>
+</li>
+</ol></section></section><section id="binomial" class="level2"><h2 class="anchored" data-anchor-id="binomial">Binomial</h2>
+<p>We’re going to do the exact same thing we just did with a Gaussian GLM, but we’re going to do it with a binary response variable. That means logistic regression, which requires that we specify a binomial distribution with a logit link. Here, we’ll be using the <code>Snodgrass</code> data to answer the following</p>
+<p><strong>Question</strong> Does the size of a house structure (measured in square feet) make it more or less likely that the structure is found inside the inner walls of the site?</p>
+<p>So, first, we’ll load in the data. Again, we’ll write it to disk and read it back in, changing the name to <code>snodgrass</code> and remove <code>Snodgrass</code> from our environment. When we read it back, we’ll also convert it to a <code>tibble</code> and convert all the variable names to lowercase. Note that <code>Snodgrass</code> has a number of additional variables we don’t actually need for this exercise, so we’ll subset the table using <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> to grab only the variables of interest, namely the response variable <code>inside</code> and our predictor <code>area</code>. In its current form, the response variable <code>inside</code> is a character variable consisting of two values <code>"Inside"</code> and <code>"Outside"</code>. We’ll want to convert this to a binary numeric variable with a value <code>1</code> if <code>"Inside"</code> and a value <code>0</code> if <code>"Outside"</code>. We’ll use <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> and a really nice programming function called <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> to do that.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"Snodgrass"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">filename</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://here.r-lib.org//reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"snodgrass.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="va">Snodgrass</span>, filename <span class="op">=</span> <span class="va">filename</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">snodgrass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">filename</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="va">tolower</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">inside</span>, <span class="va">area</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>inside <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">inside</span> <span class="op">==</span> <span class="st">"Inside"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="co"># read as "if Inside, set to 1, else 0"</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">remove</a></span><span class="op">(</span><span class="va">Snodgrass</span>, <span class="va">filename</span><span class="op">)</span>  </span>
+<span></span>
+<span><span class="va">snodgrass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<pre><code>#&gt; # A tibble: 91 × 2
+#&gt;    inside  area
+#&gt;     &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1      0  144 
+#&gt;  2      0  256 
+#&gt;  3      1  306 
+#&gt;  4      1  452.
+#&gt;  5      1  410 
+#&gt;  6      1  264 
+#&gt;  7      1  342 
+#&gt;  8      1  399 
+#&gt;  9      0   60 
+#&gt; 10      0  217 
+#&gt; # … with 81 more rows</code></pre>
+</div>
+<p>As before, we’ll plot these data using a scatterplot.</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">snodgrass</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">area</span>, <span class="va">inside</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span></span>
+<span>    size <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.6</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="st">"Area (sq ft)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Inside inner wall"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="12-logistic-regression-lab_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="480"></p>
+</div>
+</div>
+<p>Notice anything suspicious? Well, let’s confirm (or deny) that suspicion with a GLM! Again, we’ll specify an exponential distribution and a link function using the <code>family</code> argument to <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code>, providing it with a family function that itself takes a <code>link</code> argument. It looks like this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">glm_snodgrass</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span></span>
+<span>  <span class="va">inside</span> <span class="op">~</span> <span class="va">area</span>,</span>
+<span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">snodgrass</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">glm_snodgrass</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; glm(formula = inside ~ area, family = binomial(link = "logit"), </span></span>
+<span><span class="co">#&gt;     data = snodgrass)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Deviance Residuals: </span></span>
+<span><span class="co">#&gt;    Min      1Q  Median      3Q     Max  </span></span>
+<span><span class="co">#&gt; -2.110  -0.481  -0.184   0.288   2.571  </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error z value  Pr(&gt;|z|)    </span></span>
+<span><span class="co">#&gt; (Intercept) -8.66307    1.81844   -4.76 0.0000019 ***</span></span>
+<span><span class="co">#&gt; area         0.03476    0.00751    4.63 0.0000037 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     Null deviance: 123.669  on 90  degrees of freedom</span></span>
+<span><span class="co">#&gt; Residual deviance:  57.728  on 89  degrees of freedom</span></span>
+<span><span class="co">#&gt; AIC: 61.73</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Number of Fisher Scoring iterations: 6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Looks like our intercept and slope estimates are significant. How about the deviance? Let’s compare the AIC of this model to the AIC of an intercept-only model and use LRT to see if this model is significantly better than an intercept-only model.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">glm_null</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span></span>
+<span>  <span class="va">inside</span> <span class="op">~</span> <span class="fl">1</span>,</span>
+<span>  family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">snodgrass</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">glm_snodgrass</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">glm_null</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">glm_null</span>, <span class="va">glm_snodgrass</span>, test <span class="op">=</span> <span class="st">"LRT"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Analysis of Deviance Table</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model 1: inside ~ 1</span></span>
+<span><span class="co">#&gt; Model 2: inside ~ area</span></span>
+<span><span class="co">#&gt;   Resid. Df Resid. Dev Df Deviance            Pr(&gt;Chi)    </span></span>
+<span><span class="co">#&gt; 1        90      123.7                                    </span></span>
+<span><span class="co">#&gt; 2        89       57.7  1     65.9 0.00000000000000046 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A bingo two-times!</p>
+<section id="exercises-1" class="level3"><h3 class="anchored" data-anchor-id="exercises-1">Exercises</h3>
+<p>For these exercises, we’ll use the <code>DartPoints</code> dataset from the <code>archdata</code> package. We are going to use length to see if we can discriminate Pedernales dart points from the other dart points.</p>
+<ol type="1">
+<li>First, load the <code>DartPoints</code> table with <code>data("DartPoints")</code>.</li>
+<li>Now, let’s do some data wrangling with this table. Make sure to assign it back to your table, so that it saves the changes!And bonus points if you can put this all through one pipe!
+<ul>
+<li>Change all the names to lowercase with <code>rename_with(tolower)</code>.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> to grab the name (<code>name</code>) and length (<code>length</code>) variables.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code> to rename <code>name</code> to <code>type</code>. Hint: use the <code>"new_name" = old_name</code> syntax, for example, <code>"length" = l</code>.</li>
+<li>
+<strong>THIS IS IMPORTANT!!!</strong> Use <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> and <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> to add a column <code>pedernales</code> that is <code>1</code> if the type is <code>Pedernales</code> and 0 otherwise. Hint: fill in the ellipsis in <code>mutate(pedernales = ifelse(type == ...))</code>.</li>
+</ul>
+</li>
+<li>Practice writing the data to disk and reading it back in using <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> and <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code>. Use <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code> to set the file path. While you do it, replace <code>DartPoints</code> with <code>darts</code>, and <code>remove(DartPoints)</code>.</li>
+<li>Make a scatter plot of the data.<br>
+</li>
+<li>Build a GLM of the Pedernales type as a function of dart length using a Binomial distribution and the logit link.</li>
+<li>Build an intercept-only GLM of the Pedernales type using the same distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?</li>
+</ul>
+</li>
+<li>Now compare these models using a Likelihood Ratio Test with <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul>
+</li>
+</ol></section></section><section id="homework" class="level2"><h2 class="anchored" data-anchor-id="homework">Homework</h2>
+<p>For the homework, we’ll use the <code>OxfordPots</code> dataset from the <code>archdata</code> package. We are going to see if we can estimate the fraction of Romano-British pottery as a function of distance from Oxford.</p>
+<ol type="1">
+<li>First, load the <code>OxfordPots</code> table with <code>data("OxfordPots")</code>.</li>
+<li>Now, let’s do some data wrangling with this table. Make sure to assign it back to your table, so that it saves the changes!And bonus points if you can put this all through one pipe!
+<ul>
+<li>Change all the names to lowercase with <code>rename_with(tolower)</code>.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> to grab the fraction of Romano-British pots (<code>OxfordPct</code>) and distance (<code>OxfordDst</code>) from Oxford variables.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code> to rename <code>OxfordPct</code> to <code>proportion</code> and <code>OxfordDst</code> to <code>distance</code>. Hint: use the <code>"new_name" = old_name</code> syntax, for example, <code>"proportion" = OxfordPct</code>.</li>
+<li>
+<strong>THIS IS IMPORTANT!!!</strong> The <code>OxfordPct</code> or <code>proportion</code> variable is currently a percentage, but a GLM with a binomial response wants the range of the response to be between 0 and 1, not 0 and 100. So, we need to divide the percentage values by 100. To do this, use <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code>. Hint: fill in the ellipsis in <code>mutate(proportion = ...)</code>.</li>
+</ul>
+</li>
+<li>Practice writing the data to disk and reading it back in using <code><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv()</a></code> and <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code>. Use <code><a href="https://here.r-lib.org//reference/here.html">here()</a></code> to set the file path. While you do it, replace <code>DartPoints</code> with <code>darts</code>, and <code>remove(DartPoints)</code>.</li>
+<li>Make a scatter plot of the data.<br>
+</li>
+<li>Build a GLM of the proportion of Romano-British pots as a function of distance from Oxford using a Binomial distribution and the logit link.</li>
+<li>Build an intercept-only GLM using the same distribution and link.</li>
+<li>Compare the AIC of these two models.
+<ul>
+<li>Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?</li>
+</ul>
+</li>
+<li>Now compare these models using a Likelihood Ratio Test with <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code> and <code>test = "LRT"</code>.
+<ul>
+<li>What is the result? Is there a significant improvement?</li>
+</ul>
+</li>
+</ol>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+      <div class="nav-footer-center">© 2023 Kenneth B. Vernon. Powered by <a href="https://quarto.org/">Quarto</a>.<br>
+The source code for this site can be found at its <a href="https://github.com/kbvernon/qaad">Github repository</a>.</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

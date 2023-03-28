@@ -1,0 +1,352 @@
+---
+title: "Lab 12: Logistic Regression"
+description: |
+  (Stats) Modeling binary outcomes and proportions with logistic regression. Evaluating GLMs with Deviance, Information Criteria, and the Likelihood Ratio Test. (R) Fitting logistic models and evaluating them with LRT.
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. Fitting a GLM with a
+    - Gaussian distribution
+    - Binomial distribution
+2. Evaluating models with a Likelihood Ratio Test
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [here](https://here.r-lib.org/)
+- [tidyverse](https://www.tidyverse.org)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+```{r}
+library(archdata)
+library(here)
+library(tidyverse)
+library(viridis)
+
+```
+
+### Data
+
+- `DartPoints`
+    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `Handaxes`
+    - Includes measurements of length, width, and thickness for handaxes from the Furze Platt site in England.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>  
+- `OxfordPots`
+    - Includes proportions of Romano-British Oxford pottery on 30 sites and their distances from Oxford.
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `Snodgrass`
+    - Includes measurements of size, location, and contents of 91 pit houses at the Snodgrass site in Butler County, Missouri.
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+
+## Gaussian 
+
+In this section and the following, I will walk you through how to make the Generalized Linear Models (or GLMs) introduced in the lecture with R. Then, in the exercises for each section, we'll work through an additional example for each. We'll start by fitting a model with a normal or Gaussian family distribution. The question we hope to answer is this:
+
+**Question** Does the length of an archaic dart point vary as a function of its weight.
+
+To answer that question, we will use the `DartPoints` data collected from a site in Fort Hood, Texas.
+
+First, we will load the data into R. For practice, we'll also write it to disk and read it back in, in each case using the `here()` function to specify relative file paths in our project folder. Note that I am going to change the name of the object to `darts`. While it's current name is fine, I find that keeping names short - but descriptive! - and in lowercase format - as far as that is possible anyway - saves you some typing effort and reduces the potential for errors in your R code. While we're at it, we'll set all the variable names in the table to lower case using the base R function `tolower()` and the `dplyr` function `rename_with()`. Then, to make it clearer that the `name` variable is actually a dart `type`, we'll rename it using the `dplyr` verb `rename()`. Note that `rename()` uses the `"new_name" = old_name` syntax. I'll also convert it to a `tibble` with `as_tibble()` to make it print pretty.
+
+```{r}
+#| echo = FALSE
+
+data("DartPoints")
+
+darts <- DartPoints |> 
+  rename_with(tolower) |> 
+  rename("type" = name) |> 
+  as_tibble()
+
+remove(DartPoints)
+
+```
+
+```{r}
+#| eval = FALSE
+
+data("DartPoints")
+
+filename <- here("data", "darts.csv")
+
+write_csv(DartPoints, filename = filename)
+
+darts <- read_csv(filename) |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  rename("type" = name)
+
+remove(DartPoints, filename) # remove these objects from your environment
+
+darts
+
+```
+
+```{r}
+#| echo = FALSE
+darts
+```
+
+Now, of course, we'll want to visualize our data, in particular the relationship between dart length and weight. These are quantitative measures, so let's make a scatter plot.
+
+```{r}
+ggplot(
+  darts, 
+  aes(weight, length)
+) +
+  geom_point(
+    size = 3,
+    alpha = 0.6 # increase transparency to address the over-plotting of points
+  ) +
+  labs(
+    x = "Weight (g)",
+    y = "Length (mm)"
+  )
+
+```
+
+Now, let's fit a GLM! To do that, we'll use the `glm()` function. The syntax for specifying a model with this function should be familiar to you. It's just like fitting a linear model with `lm()`, albeit with one important exception. You have to specify an exponential distribution and a link function. To do that, we use the `family` argument to `glm()`, providing it with a family function that itself takes a `link` argument. It looks like this:
+
+```{r}
+glm_darts <- glm(
+  length ~ weight,
+  family = gaussian(link = "identity"),
+  data = darts
+)
+
+```
+
+Note that the identity link function is the default for the `gaussian()` function, so you don't actually have to specify it. The parentheses are not strictly necessary either (for reasons beyond the scope of this class), so we could instead call the `glm()` function this way:
+
+```{r}
+#| eval = FALSE
+
+glm_darts <- glm(
+  length ~ weight,
+  family = gaussian,
+  data = darts
+)
+
+```
+
+That said, in all the examples that follow, I am going to use the first formulation to make it as explicit as possible that you are always, always, always including a distribution and link function when fitting a GLM.  
+
+So, now we have our model. Let's look at a summary.
+
+```{r}
+summary(glm_darts)
+
+```
+
+```{r}
+#| echo = FALSE
+
+bob <- summary(glm_darts)
+
+dispersion <- round(bob$dispersion, 0)
+deviance_n <- round(bob$null.deviance, 1)
+deviance_r <- round(bob$deviance, 1)
+
+```
+
+There are four things to note with this summary.
+
+1.  The **dispersion parameter** is `r dispersion`. For a GLM fit with a Gaussian distribution, this is equivalent to the square of the residual standard error in a linear model, ie, the mean squared error.  
+2.  The **null deviance** is `r as.character(deviance_n)`. This is the product of -2 and the difference in the log-Likelihood of an intercept-only model and a saturated model (a model with a parameter for each observation, ie, a perfect fit).  
+3.  The **residual deviance** is `r deviance_r`. This is the product of -2 and the difference in log-Likelihood of the fitted model and a saturated model.  
+4.  The **AIC** (or Akaike Information Criterion) is `r AIC(glm_darts)`. This is calculated using the formula:  
+
+$$AIC = -2\,log\,\mathcal{L} + 2p$$
+
+where $log\,\mathcal{L}$ is the log-Likelihood and $p$ is the number of parameters in the model (+1 for the estimate of the error variance). In this case, the model has an intercept, one covariate, `weight`, and the error variance, so $p = 3$.
+
+These are all ways of evaluating the model's goodness-of-fit, but as always, we would like to know if the increased complexity is worth it. There are two ways we can try to answer this question. The first is simply to compare the AIC score of the model we have just proposed to an intercept-only model, as the AIC incorporates a penalty for complexity. As this compares 2 times the negative log-Likelihood (ie the deviance), a smaller score is always better, so we want the AIC of our proposed model to be less than the AIC of the null model. To extract the AIC estimate from a model, we use `AIC()`.
+
+```{r}
+glm_null <- glm(
+  length ~ 1,
+  family = gaussian(link = "identity"),
+  data = darts
+)
+
+# is the AIC of the proposed model less than the AIC of the null model?
+AIC(glm_darts) < AIC(glm_null)
+
+```
+
+That's a bingo! But, let's take this idea a bit further and try some inference with it. In particular, let's use an ANOVA (specifically, a Likelihood Ratio Test or LRT) to compare the ratio of the likelihoods of these models to a $\chi^2$ distribution. This will tell us if they are significantly different. To do that in R, we use the `anova()` function, setting its `test` argument to `"LRT"`.
+
+```{r}
+anova(glm_null, glm_darts, test = "LRT")
+
+```
+
+Because the p-value here is significantly less than the critical value $\alpha = 0.05$, we can reject the null hypothesis that there is *no* significant difference in the log-Likelihood of these models. So, our model of dart length as a function of dart weight does indeed fit the data (re: explain the data) better than an intercept-only null model.
+
+### Exercises
+
+For these exercises, we'll use the `Handaxes` dataset from the `archdata` package. We are going to see if we can predict handaxe length as a function of thickness.
+
+1. First, load the `Handaxes` table with `data("Handaxes")`.
+2. Now, let's do some data wrangling with this table. Bonus points if you can put this all through one pipe. And make sure to assign it back to your table, so that it saves the changes!
+    - Change all the names to lowercase with `rename_with(tolower)`.
+    - Use `select()` to grab the catalog number (`catalog`), length (`l`), breadth (`b`), and thickness (`t`) variables.
+    - Use `rename()` to rename `l`, `b`, and `t` to `length`, `width`, and `thickness`, respectively. This will make it clearer what these variables are. Hint: use the `"new_name" = old_name` syntax, for example, `"length" = l`.
+3. Practice writing the data to disk and reading it back in using `write_csv()` and `read_csv()`. Use `here()` to set the file path. While you do it, replace `Handaxes` with `handaxes`, and `remove(Handaxes)`.
+3. Make a scatter plot of the data.  
+4. Build a GLM of handaxe length as a function of thickness using a Gaussian distribution and the identity link.
+5. Build an intercept-only GLM of handaxe length using the same distribution and link.
+6. Compare the AIC of these two models.
+    - Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?
+7. Now compare these models using a Likelihood Ratio Test with `anova()` and `test = "LRT"`.
+    - What is the result? Is there a significant improvement?
+
+## Binomial
+
+We're going to do the exact same thing we just did with a Gaussian GLM, but we're going to do it with a binary response variable. That means logistic regression, which requires that we specify a binomial distribution with a logit link. Here, we'll be using the `Snodgrass` data to answer the following
+
+**Question** Does the size of a house structure (measured in square feet) make it more or less likely that the structure is found inside the inner walls of the site?
+
+So, first, we'll load in the data. Again, we'll write it to disk and read it back in, changing the name to `snodgrass` and remove `Snodgrass` from our environment. When we read it back, we'll also convert it to a `tibble` and convert all the variable names to lowercase. Note that `Snodgrass` has a number of additional variables we don't actually need for this exercise, so we'll subset the table using `select()` to grab only the variables of interest, namely the response variable `inside` and our predictor `area`. In its current form, the response variable `inside` is a character variable consisting of two values `"Inside"` and `"Outside"`. We'll want to convert this to a binary numeric variable with a value `1` if `"Inside"` and a value `0` if `"Outside"`. We'll use `mutate()` and a really nice programming function called `ifelse()` to do that.
+
+```{r}
+#| echo = FALSE
+
+data("Snodgrass")
+
+snodgrass <- Snodgrass |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  select(inside, area) |> 
+  mutate(inside = ifelse(inside == "Inside", 1, 0))
+
+remove(Snodgrass)
+
+```
+
+```{r}
+#| eval = FALSE
+
+data("Snodgrass")
+
+filename <- here("data", "snodgrass.csv")
+
+write_csv(Snodgrass, filename = filename)
+
+snodgrass <- read_csv(filename) |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  select(inside, area) |> 
+  mutate(inside = ifelse(inside == "Inside", 1, 0)) # read as "if Inside, set to 1, else 0"
+
+remove(Snodgrass, filename)  
+
+snodgrass
+
+```
+
+```{r}
+#| echo = FALSE
+snodgrass
+```
+
+As before, we'll plot these data using a scatterplot.
+
+```{r}
+ggplot(snodgrass, aes(area, inside)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Area (sq ft)",
+    y = "Inside inner wall"
+  )
+
+```
+
+Notice anything suspicious? Well, let's confirm (or deny) that suspicion with a GLM! Again, we'll specify an exponential distribution and a link function using the `family` argument to `glm()`, providing it with a family function that itself takes a `link` argument. It looks like this:
+
+```{r}
+glm_snodgrass <- glm(
+  inside ~ area,
+  family = binomial(link = "logit"),
+  data = snodgrass
+)
+
+summary(glm_snodgrass)
+
+```
+
+Looks like our intercept and slope estimates are significant. How about the deviance? Let's compare the AIC of this model to the AIC of an intercept-only model and use LRT to see if this model is significantly better than an intercept-only model.
+
+```{r}
+glm_null <- glm(
+  inside ~ 1,
+  family = binomial(link = "logit"),
+  data = snodgrass
+)
+
+AIC(glm_snodgrass) < AIC(glm_null)
+
+anova(glm_null, glm_snodgrass, test = "LRT")
+
+```
+
+A bingo two-times!
+
+### Exercises
+
+For these exercises, we'll use the `DartPoints` dataset from the `archdata` package. We are going to use length to see if we can discriminate Pedernales dart points from the other dart points.
+
+1. First, load the `DartPoints` table with `data("DartPoints")`.
+2. Now, let's do some data wrangling with this table. Make sure to assign it back to your table, so that it saves the changes!And bonus points if you can put this all through one pipe!
+    - Change all the names to lowercase with `rename_with(tolower)`.
+    - Use `select()` to grab the name (`name`) and length (`length`) variables.
+    - Use `rename()` to rename `name` to `type`. Hint: use the `"new_name" = old_name` syntax, for example, `"length" = l`.
+    - **THIS IS IMPORTANT!!!** Use `mutate()` and `ifelse()` to add a column `pedernales` that is `1` if the type is `Pedernales` and 0 otherwise. Hint: fill in the ellipsis in `mutate(pedernales = ifelse(type == ...))`.
+3. Practice writing the data to disk and reading it back in using `write_csv()` and `read_csv()`. Use `here()` to set the file path. While you do it, replace `DartPoints` with `darts`, and `remove(DartPoints)`.
+3. Make a scatter plot of the data.  
+4. Build a GLM of the Pedernales type as a function of dart length using a Binomial distribution and the logit link.
+5. Build an intercept-only GLM of the Pedernales type using the same distribution and link.
+6. Compare the AIC of these two models.
+    - Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?
+7. Now compare these models using a Likelihood Ratio Test with `anova()` and `test = "LRT"`.
+    - What is the result? Is there a significant improvement?
+
+## Homework
+
+For the homework, we'll use the `OxfordPots` dataset from the `archdata` package. We are going to see if we can estimate the fraction of Romano-British pottery as a function of distance from Oxford. 
+
+1. First, load the `OxfordPots` table with `data("OxfordPots")`.
+2. Now, let's do some data wrangling with this table. Make sure to assign it back to your table, so that it saves the changes!And bonus points if you can put this all through one pipe!
+    - Change all the names to lowercase with `rename_with(tolower)`.
+    - Use `select()` to grab the fraction of Romano-British pots (`OxfordPct`) and distance (`OxfordDst`) from Oxford variables.
+    - Use `rename()` to rename `OxfordPct` to `proportion` and `OxfordDst` to `distance`. Hint: use the `"new_name" = old_name` syntax, for example, `"proportion" = OxfordPct`.
+    - **THIS IS IMPORTANT!!!** The `OxfordPct` or `proportion` variable is currently a percentage, but a GLM with a binomial response wants the range of the response to be between 0 and 1, not 0 and 100. So, we need to divide the percentage values by 100. To do this, use `mutate()`. Hint: fill in the ellipsis in `mutate(proportion = ...)`.
+3. Practice writing the data to disk and reading it back in using `write_csv()` and `read_csv()`. Use `here()` to set the file path. While you do it, replace `DartPoints` with `darts`, and `remove(DartPoints)`.
+3. Make a scatter plot of the data.  
+4. Build a GLM of the proportion of Romano-British pots as a function of distance from Oxford using a Binomial distribution and the logit link.
+5. Build an intercept-only GLM using the same distribution and link.
+6. Compare the AIC of these two models.
+    - Is the AIC of the proposed model less than or greater than the AIC of the intercept-only model?
+7. Now compare these models using a Likelihood Ratio Test with `anova()` and `test = "LRT"`.
+    - What is the result? Is there a significant improvement?

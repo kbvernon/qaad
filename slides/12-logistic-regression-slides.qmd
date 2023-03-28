@@ -1,0 +1,937 @@
+---
+title: "Lecture 12: Logistic Regression"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+model_table_defaults <- function(x){
+
+  tab_options(
+    x,
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(100)
+  )
+  
+}
+
+library(archdata)
+
+data("Snodgrass")
+
+snodgrass <- Snodgrass |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  select(inside, area) |> 
+  mutate(inside = ifelse(inside == "Inside", 1, 0))
+
+data("DartPoints")
+
+darts <- DartPoints |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  select(name, length, width, thickness, weight) |> 
+  filter(weight < 20)
+
+data("OxfordPots")
+
+oxford <- OxfordPots |> 
+  as_tibble() |> 
+  rename(
+    "p" = OxfordPct,
+    "distance" = OxfordDst
+  ) |> 
+  select(p, distance) |> 
+  mutate(p = p/100)
+
+remove(Snodgrass, DartPoints, OxfordPots)
+
+```
+
+## 📋 Lecture Outline
+
+- General Linear Model
+- Generalized Linear Model
+    - Distribution function
+    - Linear predictor
+    - Link function
+- Gaussian outcomes
+- Bernoulli outcomes
+- Proportional outcomes
+- Deviance
+- Information Criteria
+- ANOVE _aka_ Likelihood Ratio Test
+
+## General Linear Models
+
+$$y = E(Y) + \epsilon$$
+$$E(Y) = \mu = \beta X$$
+
+- $E(Y)$ is the expected value (equal to the conditional mean, $\mu$)  
+- $\beta X$ is the linear predictor  
+- Error is normal, $\epsilon \sim N(0, \sigma^2)$
+
+## Generalized Linear Models
+
+$$y = E(Y) + \epsilon$$
+$$E(Y) = g(\mu) = \beta X$$
+
+- $g$ is the link function, makes the relationship linear 
+- $\beta X$ is the linear predictor
+- Error is exponential, $\epsilon \sim Exponential$
+
+## Generalized Linear Models
+
+```{css}
+
+@media (min-width: 30em) {
+
+  .panel-tabset {
+  	display: grid;
+  	grid-gap: 1em;
+  	grid-template-columns: 25% 75%;
+  }
+  
+  .panel-tabset-tabby {
+    border-bottom: none !important;
+  	border-right: 1px solid #bbb; 
+  }
+  
+  .panel-tabset [role=tab][aria-selected=true] {
+    background-color: transparent;
+    border: 1px solid #bbb !important;
+  }
+  
+  h3 {
+  	margin-top: 0;
+  }
+  
+}
+
+```
+
+:::::: {.panel-tabset}
+
+### Exponential
+
+- A family of distributions: 
+    - **Normal** - continuous and unbounded
+    - **Gamma** - continuous and non-negative
+    - **Binomial** - binary (yes/no) or proportional (0-1) 
+    - **Poisson** - count data
+- Describes the distribution of the response
+- Two parameters: mean and variance
+- Variance is a function of the mean:
+
+$$Var(\epsilon) = \phi \mu$$
+
+where $\phi$ is a scaling parameter, assumed to be equal to 1, meaning the variance is assumed to be equal to the mean.
+
+### Linear predictor
+
+- Incorporates information about independent variables  
+- Combination of $x$ variables and associated coefficients  
+
+$$\beta X = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \ldots + \beta_n x_n$$
+
+- Commonly denoted with Greek letter "eta", as in $\eta = \beta X$
+
+### Link function
+
+- $g()$ modifies relationship between predictors and expected value.  
+- Makes this relationship linear
+
+```{css}
+
+.bob table td {
+  height: 70px;
+  vertical-align: middle;
+}
+
+```
+
+::: {.bob}
+
+| Distribution | Name     | Link                                            | Mean                                 |
+|--------------|----------|-------------------------------------------------|--------------------------------------|
+| Normal       | Identity | $\beta X = \mu$                                 | $\mu = \beta X$                      |
+| Gamma        | Inverse  | $\beta X = \mu^{-1}$                            | $\mu = (\beta X)^{-1}$               |
+| Poisson      | Log      | $\beta X = ln\,(\mu)$                           | $\mu = exp\, (\beta X)$              |
+| Binomial     | Logit    | $\beta X = ln\, \left(\frac{\mu}{1-\mu}\right)$ | $\mu = \frac{1}{1+exp\, (-\beta X)}$ |
+
+:::
+
+::::::
+
+## Gaussian response
+
+```{r}
+
+log_likelihood <- function(e){
+  
+  n <- length(e)
+  
+  sigma <- sqrt(sum(e^2)/n)
+  
+  sum(dnorm(e, mean = 0, sd = sigma, log = TRUE))
+
+}
+
+darts_glm <- glm(length ~ weight, data = darts)
+
+b0 <- coefficients(darts_glm)[["(Intercept)"]]
+b1 <- coefficients(darts_glm)[["weight"]]
+
+```
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+darts_gg <- ggplot(darts, aes(weight, length)) +
+  labs(
+    x = "Weight (g)",
+    y = "Length (mm)"
+  )
+
+darts_gg + geom_point(size = 3, alpha = 0.6)
+
+```
+
+:::::
+::::: {.column}
+
+Assume length is Gaussian with
+
+$Var(\epsilon) = \sigma^2$  
+$E(Y) = \mu = \beta X$  
+
+__Question__ What is the probability that we observe these data given a model with parameters $\beta$ and $\sigma^2$? 
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in-then-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+b0_hat <- round(b0 - 2, digits = 2)
+b1_hat <- round(b1 - 1, digits = 2)
+
+yhat <- b0_hat + b1_hat * darts$weight
+
+errors <- with(darts, length - yhat)
+
+sigma <- sqrt(sum(errors^2)/length(errors))
+
+ll <- round(log_likelihood(errors), digits = 2)
+
+darts_gg +
+  geom_segment(
+    data = tibble(
+      x = darts$weight,
+      y = darts$length,
+      xend = x,
+      yend = yhat
+    ),
+    aes(x, y, xend = xend, yend = yend),
+    color = "gray60",
+    linetype = "dashed"
+  ) +
+  geom_abline(
+    intercept = b0_hat,
+    slope = b1_hat
+  ) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_text(
+    data = tibble(
+      x = min(darts$weight), 
+      y = with(darts, c(max(length), max(length) - 5)), 
+      label = c(
+        paste0("\U03B2", "0 = ", b0_hat),
+        paste0("\U03B2", "1 = ", b1_hat)
+      )
+    ),
+    aes(x, y, label = label),
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+```{r}
+
+ggplot() + 
+  geom_histogram(
+    data = tibble(x = errors),
+    aes(x, y = after_stat(density)),
+    bins = 15,
+    color = "black",
+    fill = "gray65"
+  ) +
+  geom_polygon(
+    data = bind_rows(
+      c(x = -10, y = 0),
+      tibble(
+        x = seq(-10, 45, length = 300), 
+        y = dnorm(x, sd = sigma)
+      )
+    ),
+    aes(x, y),
+    color = qcolors("sapphire"),
+    fill = alpha(qcolors("sapphire"), 0.5),
+    linewidth = 1
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    y = 0,
+    xend = 0,
+    yend = dnorm(1, 0, sigma),
+    color = qcolors("kobe"),
+    linewidth = 1.5
+  ) +
+  labs(
+    x = "Residuals",
+    y = "Density"
+  ) +
+  coord_cartesian(
+    xlim = c(-10, 45)
+  ) +
+  annotate(
+    "text",
+    label = paste0("logLik", " = ", ll),
+    x = Inf,
+    y = Inf,
+    hjust = 1.1,
+    vjust = 2,
+    size = 12/.pt
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in-then-out fragment-index=1 .w100}
+::::: {.column}
+
+```{r}
+
+b0_hat <- round(b0 - 1, digits = 2)
+b1_hat <- round(b1 - 0.5, digits = 2)
+
+yhat <- b0_hat + b1_hat * darts$weight
+
+errors <- with(darts, length - yhat)
+
+sigma <- sqrt(sum(errors^2)/length(errors))
+
+ll <- round(log_likelihood(errors), digits = 2)
+
+darts_gg +
+  geom_segment(
+    data = tibble(
+      x = darts$weight,
+      y = darts$length,
+      xend = x,
+      yend = yhat
+    ),
+    aes(x, y, xend = xend, yend = yend),
+    color = "gray60",
+    linetype = "dashed"
+  ) +
+  geom_abline(
+    intercept = b0_hat,
+    slope = b1_hat
+  ) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_text(
+    data = tibble(
+      x = min(darts$weight), 
+      y = with(darts, c(max(length), max(length) - 5)), 
+      label = c(
+        paste0("\U03B2", "0 = ", b0_hat),
+        paste0("\U03B2", "1 = ", b1_hat)
+      )
+    ),
+    aes(x, y, label = label),
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+```{r}
+
+ggplot() + 
+  geom_histogram(
+    data = tibble(x = errors),
+    aes(x, y = after_stat(density)),
+    bins = 15,
+    color = "black",
+    fill = "gray65"
+  ) +
+  geom_polygon(
+    data = bind_rows(
+      c(x = -10, y = 0),
+      tibble(
+        x = seq(-10, 45, length = 300), 
+        y = dnorm(x, sd = sigma)
+      )
+    ),
+    aes(x, y),
+    color = qcolors("sapphire"),
+    fill = alpha(qcolors("sapphire"), 0.5),
+    linewidth = 1
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    y = 0,
+    xend = 0,
+    yend = dnorm(1, 0, sigma),
+    color = qcolors("kobe"),
+    linewidth = 1.5
+  ) +
+  labs(
+    x = "Residuals",
+    y = "Density"
+  ) +
+  coord_cartesian(
+    xlim = c(-10, 45)
+  ) +
+  annotate(
+    "text",
+    label = paste0("logLik", " = ", ll),
+    x = Inf,
+    y = Inf,
+    hjust = 1.1,
+    vjust = 2,
+    size = 12/.pt
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in fragment-index=2 .w100}
+::::: {.column}
+
+```{r}
+
+b0_hat <- round(b0 - 0, digits = 2)
+b1_hat <- round(b1 - 0, digits = 2)
+
+yhat <- b0_hat + b1_hat * darts$weight
+
+errors <- with(darts, length - yhat)
+
+sigma <- sqrt(sum(errors^2)/length(errors))
+
+ll <- round(log_likelihood(errors), digits = 2)
+
+darts_gg +
+  geom_segment(
+    data = tibble(
+      x = darts$weight,
+      y = darts$length,
+      xend = x,
+      yend = yhat
+    ),
+    aes(x, y, xend = xend, yend = yend),
+    color = "gray60",
+    linetype = "dashed"
+  ) +
+  geom_abline(
+    intercept = b0_hat,
+    slope = b1_hat
+  ) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_text(
+    data = tibble(
+      x = min(darts$weight), 
+      y = with(darts, c(max(length), max(length) - 5)), 
+      label = c(
+        paste0("\U03B2", "0 = ", b0_hat),
+        paste0("\U03B2", "1 = ", b1_hat)
+      )
+    ),
+    aes(x, y, label = label),
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+```{r}
+
+ggplot() + 
+  geom_histogram(
+    data = tibble(x = errors),
+    aes(x, y = after_stat(density)),
+    bins = 15,
+    color = "black",
+    fill = "gray65"
+  ) +
+  geom_polygon(
+    data = bind_rows(
+      c(x = -10, y = 0),
+      tibble(
+        x = seq(-10, 45, length = 300), 
+        y = dnorm(x, sd = sigma)
+      )
+    ),
+    aes(x, y),
+    color = qcolors("sapphire"),
+    fill = alpha(qcolors("sapphire"), 0.5),
+    linewidth = 1
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    y = 0,
+    xend = 0,
+    yend = dnorm(1, 0, sigma),
+    color = qcolors("kobe"),
+    linewidth = 1.5
+  ) +
+  labs(
+    x = "Residuals",
+    y = "Density"
+  ) +
+  coord_cartesian(
+    xlim = c(-10, 45)
+  ) +
+  annotate(
+    "text",
+    label = paste0("logLik", " = ", ll),
+    x = Inf,
+    y = Inf,
+    hjust = 1.1,
+    vjust = 2,
+    size = 12/.pt
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+:::::
+::::::
+
+:::::::::
+
+::: aside
+_Archaic dart points. Sample from Fort Hood, Texas_
+:::
+
+## Log Odds
+
+::: {.bob style="width:65%;"}
+
+Location of residential features at the Snodgrass sites
+
+|             | Inside wall                       | Outside wall                      | Total |
+|-------------|-----------------------------------|-----------------------------------|-------|
+| Count       | 38                                | 53                                | 91    |
+| Probability | &nbsp; 0.42 = $\frac{38}{91}$     | &nbsp; 0.58 = $\frac{53}{91}$     | 1     |
+| Odds        | &nbsp; 0.72 = $\frac{0.42}{0.58}$ | &nbsp; 1.40 = $\frac{0.58}{0.42}$ |       |
+| Log Odds    | -0.33 = log(0.72)                 | &nbsp; 0.33 = log(1.40)           |       |
+
+:::
+
+**Why Log Odds?**  
+Because the distribution of odds can be highly skewed, and taking the log normalizes it (makes it more symmetric).    
+
+## Bernoulli response
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+snodgrass_gg <- ggplot(snodgrass, aes(area, inside)) +
+  labs(
+    x = "Area of House Structure (sq ft)",
+    y = "Inside Inner Wall"
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 0.5, 1),
+    labels = c(0, 0.5, 1)
+  )
+
+snodgrass_gg + geom_point(size = 3, alpha = 0.4)
+
+```
+
+:::::
+::::: {.column}
+
+Location inside or outside of the inner wall at the Snodgrass site is a Bernoulli variable and has expectation $E(Y) = p$ where
+
+$$p = \frac{1}{1 + exp(-\beta X)}$$
+This defines a [logistic curve](https://en.wikipedia.org/wiki/Logistic_function) or sigmoid, with $p$ being the probability of success. This constrains the estimate $E(Y)$ to be in the range 0 to 1.
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in-then-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+snodgrass_gg + geom_point(size = 3, alpha = 0.4)
+
+```
+
+:::::
+::::: {.column}
+
+Taking the log of $p$ gives us
+
+$$log(p) = log\left(\frac{p}{1 - p}\right) = \beta X$$
+
+This is known as the "logit" or [log odds](https://en.wikipedia.org/wiki/Logit). 
+
+__Question__ What is the probability that we observe these data (these inside features) given a model with parameters $\beta$? 
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in fragment-index=1 .w100}
+::::: {.column}
+
+```{r}
+
+snodgrass_glm <- glm(
+  inside ~ area,
+  family = binomial(link = "logit"),
+  data = snodgrass
+)
+
+b0 <- coefficients(snodgrass_glm)[["(Intercept)"]]
+b1 <- coefficients(snodgrass_glm)[["area"]]
+
+ll <- logLik(snodgrass_glm)
+
+snodgrass_gg + 
+  geom_point(size = 3, alpha = 0.4) +
+  geom_line(
+    data = tibble(
+      x = snodgrass$area,
+      y = predict(snodgrass_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qcolors("kobe"),
+    linewidth = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+For these, the log Likelihood is
+
+$\mathcal{l} = `r ll`$  
+
+:::::
+::::::
+:::::::::
+
+::: aside
+*Data from the Snodgrass site in Butler County, MS*
+:::
+
+## Interpretation
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+snodgrass_gg + 
+  geom_point(size = 3, alpha = 0.4) +
+  geom_line(
+    data = tibble(
+      x = snodgrass$area,
+      y = predict(snodgrass_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qcolors("kobe"),
+    linewidth = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+Note that these coefficient estimates are log-odds! To get the odds, we take the exponent.   
+
+$\beta_0 = exp(`r b0`) = `r exp(b0)`$  
+$\beta_1 = exp(`r b1`) = `r exp(b1)`$  
+
+For a one unit increase in area, the odds of being in the inside wall increase by `r exp(b1)`.
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+est <- predict(
+  snodgrass_glm, 
+  newdata = tibble(area = 300), 
+  type = "response"
+)
+
+snodgrass_gg + 
+  geom_point(size = 3, alpha = 0.4) +
+  geom_line(
+    data = tibble(
+      x = snodgrass$area,
+      y = predict(snodgrass_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  annotate(
+    "segment",
+    x = 300,
+    xend = 300,
+    y = 0,
+    yend = est,
+    linetype = "dashed",
+    color = "gray50"
+  ) +
+  annotate(
+    "segment",
+    x = min(snodgrass$area),
+    xend = 300,
+    y = est,
+    yend = est,
+    linetype = "dashed",
+    color = "gray50"
+  ) +
+  annotate(
+    "point", 
+    x = 300,
+    y = est,
+    size = 5
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+To get the probability, we can use the mean function (also known as the inverse link):
+
+$$p = \frac{1}{1+exp(-\beta X)}$$
+
+For a house structure with an area of 300 square feet, the estimated probability that it occurs inside the inner wall is `r est`.
+
+:::::
+::::::
+:::::::::
+
+::: aside
+*Data from the Snodgrass site in Butler County, MS*
+:::
+
+## Proportional response
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+oxford_gg <- ggplot(oxford, aes(distance, p)) +
+  labs(
+    x = "Distance from Oxford (miles)",
+    y = "Proportion of Roman Pots"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 0.23),
+    breaks = c(0, 0.1, 0.2),
+    labels = c(0, 0.1, 0.2)
+  )
+
+oxford_gg + geom_point(size = 3, alpha = 0.4)
+
+```
+
+:::::
+::::: {.column}
+
+Proportion of Roman pottery is a binomial variable and has expectation $E(Y) = p$ where
+
+$$p = \frac{1}{1 + exp(-\beta X)}$$
+This defines a [logistic curve](https://en.wikipedia.org/wiki/Logistic_function) or sigmoid, with $p$ being the proportion of successful Bernoulli trials. This constrains the estimate $E(Y)$ to be in the range 0 to 1.
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in-then-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+oxford_gg + geom_point(size = 3, alpha = 0.4)
+
+```
+
+:::::
+::::: {.column}
+
+Taking the log of $p$ gives us
+
+$$log(p) = log\left(\frac{p}{1 - p}\right) = \beta X$$
+
+This is known as the "logit" or [log odds](https://en.wikipedia.org/wiki/Logit). 
+
+__Question__ What is the probability that we observe these data (these proportions) given a model with parameters $\beta$? 
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in fragment-index=1 .w100}
+::::: {.column}
+
+```{r}
+
+oxford_glm <- glm(
+  p ~ distance,
+  family = binomial(link = "logit"),
+  data = oxford
+)
+
+b0 <- coefficients(oxford_glm)[["(Intercept)"]]
+b1 <- coefficients(oxford_glm)[["distance"]]
+
+ll <- logLik(oxford_glm)
+
+oxford_gg + 
+  geom_point(size = 3, alpha = 0.4) +
+  geom_line(
+    data = tibble(
+      x = oxford$distance,
+      y = predict(oxford_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qcolors("kobe"),
+    linewidth = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+For these, the log Likelihood is
+
+$\mathcal{l} = `r ll`$  
+
+:::::
+::::::
+:::::::::
+
+::: aside
+*Data from Fulford and Hodder (1974). A Regression Analysis of Some Late Romano-British Pottery: A
+Case Study*
+:::
+
+## Deviance
+
+- Measure of goodness of fit, so __smaller is better__
+- Gives the difference in log-Likelihood between a model $M$ and a __saturated__ model $M_S$
+    - $M_S$ has a parameter for each observation (i.e., zero degrees of freedom)
+
+$$D = -2\,\Big[\,log\,\mathcal{L}(M_1) - log\,\mathcal{L}(M_S)\,\Big]$$
+
+- __Residual deviance__ = deviance of proposed model
+- __Null deviance__ = deviance of null model (ie, intercept-only model)
+
+## Information Criteria
+
+- A function of the deviance, so __smaller is better__
+- Two penalties: 
+    - $n$ = number of observations 
+    - $p$ = number of parameters
+- Akaike Information Criteria
+    - $AIC = D + 2p$
+- Bayesian Information Criteria 
+    - $BIC = D + (p \cdot log(n))$
+
+## ANOVA
+
+- Analysis of Deviance _aka_ Likelihood Ratio Test
+- For Binomial and Poisson models
+- Test statistic is the logged ratio of likelihoods between proposed, $M_1$, and null, $M_0$, models
+
+$$
+\begin{aligned}
+\chi^2 &= -2\,log\,\frac{\mathcal{L}(M_0)}{\mathcal{L}(M_1)}\\\\
+&= -2\,\Big[\,log\,\mathcal{L}(M_0) - log\,\mathcal{L}(M_1)\,\Big]
+\end{aligned}
+$$
+
+- Compare to a $\chi^2$ distribution with $k$ degrees of freedom - asks what the probability is of getting a value greater than the observed $\chi^2$ value.
+- Null hypothesis is no difference in log-Likelihood.

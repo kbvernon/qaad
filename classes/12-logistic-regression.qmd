@@ -1,0 +1,15 @@
+---
+title: "Week 12: Logistic Regression"
+description: |
+  (Stats) Modeling binary outcomes and proportions with logistic regression. Evaluating GLMs with Deviance, Information Criteria, and the Likelihood Ratio Test. (R) Fitting logistic models and evaluating them with LRT.
+date: 2023-03-28
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/12-logistic-regression-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 12 Lab](../labs/12-logistic-regression-lab.qmd)
