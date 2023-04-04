@@ -1,0 +1,280 @@
+---
+title: "Lab 13: Poisson Regression"
+description: |
+  (Stats) Modeling count data with Poisson regression. Testing for dispersion and using a negative binomial to account for it. Log offsets. (R) Fitting Poisson and negative binomials models, testing for dispersion, and evaluating models with LRT.
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. Fitting a GLM with a
+    - Gaussian distribution
+    - Poisson distribution
+2. Offsets
+2. Dispersion
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [here](https://here.r-lib.org/)
+- [MASS]()
+- [tidyverse](https://www.tidyverse.org)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+```{r}
+library(archdata)
+library(here)
+library(MASS)
+library(tidyverse)
+library(viridis)
+
+```
+
+### Data
+
+- `grave_goods`
+    - A hypothetical dataset including counts of grave goods and measures of distance (in meters) from a great house in the American Southwest.
+    - package: NA
+    - reference: <https://github.com/kbvernon/qaad/tree/master/datasets>
+- `site_counts`
+    - A hypothetical dataset including site counts per kilometer and estimates of elevation (in meters) on an east-west transect through the state of Utah.
+    - package: NA
+    - reference: <https://github.com/kbvernon/qaad/tree/master/datasets>
+
+## Poisson regression
+
+Here, we're going to work with a response variable consisting of counts. That means poisson regression, which requires that we specify a poisson distribution with a log link. Here, we'll be using the `grave_goods` data to answer the following
+
+**Question** Does distance from a great house (measured in kilometers) drive variation in the number of grave goods at archaeological sites?
+
+So, first, we'll load in the data. In this case, we'll have to pull the data in from a remote source. This is a made-up data set, so you should not draw any conclusions from it. It does have some intuition behind it, but it's mainly for illustration purposes.  
+
+```{r}
+file_url <- "https://raw.githubusercontent.com/kbvernon/qaad/master/labs/grave_goods.csv"
+
+grave_goods <- read_csv(file_url)
+
+grave_goods
+
+```
+
+As always, we'll plot these data using a scatterplot. Note that I use `scale_y_continuous()` to change the breaks and labels on the y-axis to remove any decimal values. That's just to emphasize that this is count data.
+
+```{r}
+ggplot(grave_goods, aes(distance, goods)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 10, by = 2),
+    labels = seq(0, 10, by = 2)
+  ) +
+  labs(
+    x = "Distance from great house (km)",
+    y = "Number of grave goods"
+  )
+
+```
+
+Looks like there could be a trend, maybe... Let's use a GLM to find out! Again, we'll specify an exponential distribution and a link function using the `family` argument to `glm()`, providing it with a family function that itself takes a `link` argument. It looks like this:
+
+```{r}
+glm_goods <- glm(
+  goods ~ distance,
+  family = poisson(link = "log"),
+  data = grave_goods
+)
+
+```
+
+Recall that you do not have to explicitly state the link argument as the log link is the default for `poisson()`, so you could also specify the model this way:
+
+```{r}
+glm_goods <- glm(
+  goods ~ distance,
+  family = poisson,
+  data = grave_goods
+)
+
+summary(glm_goods)
+
+```
+
+Looks like our intercept and slope estimates are significant. How about the deviance? To put that in slightly less cryptic terms. We have tests for the model parameters (the coefficients), but how does the model as a whole do at describing the data? To answer that question, let's first compare the AIC of our target model to the AIC of an intercept-only model. Then we'll use the Likelihood Ratio Test to see if this model is significantly better than an intercept-only model. 
+
+```{r}
+glm_null <- glm(
+  goods ~ 1,
+  family = poisson(link = "log"),
+  data = grave_goods
+)
+
+AIC(glm_goods) < AIC(glm_null)
+
+anova(glm_goods, test = "LRT")
+
+```
+
+Looks like we got the result we're looking for! How fortunate!
+
+## Offset
+
+In Poisson regression, we assume that the counts are the result of an underlying process (a "Poisson process" if you prefer statistical jargon). The mean or central tendency of that process is assumed to be a log-linear function of some covariates. In the example above, we used distance from great house as our covariate. It's not that distance per se is the underlying cause or explanation, but it may be a good approximation to the cause. For instance, proximity to the great house can indicate status and status can lead to increased wealth and increased wealth can lead to more grave goods. But, that might not be the only reason we find more grave goods nearer to great houses. It might be that goods nearer to the great house have better preservation. Or, it could be that as archaeologists we are more interested in things happening around the great house and are, thus, more inclined to sample archaeological materials nearer to the great house. That is to say, the counts in our sample may not just be a function of the underlying process (ie status and wealth) but also a function of sampling intensity. To account for differences in sampling intensity or to "control" for sampling intensity, we can include a constant offset. 
+
+To illustrate the use of offsets, consider a model of site counts. With this model, we are trying to assess whether some relationship exists between the number of sites and elevation, perhaps because elevation is a good proxy for environmental productivity in our study region. However, we also know that we surveyed more intensely in some places than others. As a simple measure of differences in survey intensity, we have the size or area of each of our survey blocks. And, so we want to weight the site counts in each survey block by the area of the block. In effect, we want a measure of density, of counts per unit area. In a log linear model, that has this form:
+
+$$
+\begin{align}
+log\; (\lambda_i/A_i) &= \beta X_i \\
+log\; (\lambda_i) - log\; (A_i) &= \beta X_i \\
+log\; (\lambda_i) &= \beta X_i + log\; (A_i)
+\end{align}
+$$
+
+where $A_i$ is the area of survey block $i$ and $\lambda_i$ is the count at $i$.  
+
+Notice that this is still a log-linear model of the counts $\lambda_i$. However, we now include as a constant offset $log\; (A_i)$. We say constant offset because the coefficient for this term is just 1. Importantly, the constant offset is *added* to the effect of the covariates, so you can read the equation as saying that greater sampling intensity leads to larger counts. It's also worth noting that we are using a spatial measure to describe our sampling intensity, but we could have used time as well. 
+
+So, now the question: how do we add these in R? There are a few ways to do this, but I'm going to show you my preferred way, which is to incorporate the offset as a term in the model formula using the `offset()` function. I prefer doing it this way because it's more expressive of the underlying logic. 
+
+OK, to see how this works, let's first download our survey data.
+
+```{r}
+file_url <- "https://raw.githubusercontent.com/kbvernon/qaad/master/slides/surveys.csv"
+
+surveys <- read_csv(file_url)
+
+surveys
+
+```
+
+Let's visualize the counts first.
+
+```{r}
+ggplot(surveys, aes(elevation, sites)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Elevation (km)",
+    y = "Number of sites"
+  )
+
+```
+
+It kinda looks like there might be a trend there. What if we control for the area of each survey location?
+
+```{r}
+ggplot(surveys, aes(elevation, sites/area)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Elevation (km)",
+    y = "Density of sites (n/km2)"
+  )
+
+```
+
+Now, we fit a model with the offset included. It looks like this:
+
+```{r}
+glm_surveys <- glm(
+  sites ~ elevation + offset(log(area)),
+  family = poisson,
+  data = surveys
+)
+
+summary(glm_surveys)
+
+```
+
+A couple of things to note here. First, we specify the log of the area as this is a log-linear model. Wrapping that in the `offset()` function simply tells R to keep it's coefficient held fixed at 1. That is, to make it a constant offset. Second, the area does not occur as a term in the coefficients table. That's because it is incorporated into the model as a constant offset.
+
+Now, let's see how this model that controls for sampling intensity compares to a model that doesn't. In this case, we do not do a Likelihood Ratio Test, as the degrees of freedom are the same in both cases (the offset does not add to model complexity), so a simple comparison of the AIC is sufficient.
+
+```{r}
+glm_null <- glm(
+  sites ~ elevation,
+  family = poisson,
+  data = surveys
+)
+
+AIC(glm_surveys) < AIC(glm_null)
+
+```
+
+Notice, too, that adding the offset changes coefficient estimates, quite substantially in the case of the intercept.  
+
+```{r}
+summary(glm_null)
+summary(glm_surveys)
+```
+
+## Dispersion
+
+A key assumption of Poisson regression and exponential models generally, is that the variance of the errors is equal to the mean response weighted by a scaling parameter $\phi$, which is assumed to be 1.
+
+$$Var(\epsilon) = \phi\mu$$
+
+When $\phi > 1$, you get over-dispersion. This is important because it artificially shrinks the standard errors of the coefficients and, thus, reduces the p-values, biasing our inferences about the coefficients. 
+
+There are a couple of ways to check for over-dispersion. Unfortunately, base R doesn't provide any functions that do that for you, so you have to do it manually. That said, this does give you an opportunity to interact more with a model object and to understand how to access its components.
+
+Here, we're going to compare the dispersion estimate (calculated by squaring the deviance residuals) and comparing that to the residual degrees of freedom. Values greater than one are indicative of over-dispersion.
+
+```{r}
+# get deviance residuals
+dev.res <- residuals(glm_surveys, type = "deviance")
+
+# calculate dispersion
+dispersion <- sum(dev.res^2)
+
+# get residual degrees of freedom
+df <- df.residual(glm_surveys)
+
+dispersion/df
+
+```
+
+You can also use a $\chi^2$ test to evaluate whether the estimate is significantly different than 1. 
+
+```{r}
+1 - pchisq(dispersion, df)
+
+```
+
+So, looks like there's dispersion. How do we account for this? My suggestion is to use a negative binomial model as it still uses Maximum Likelihood Estimation, meaning you get all the measures you need for inference on the model. The one downside to this is that the base R `stats` package does not provide for a GLM with a negative binomial error distribution. For that, you have to go to another package, in this case the venerable `MASS` package. The syntax is a smidge different, too, showing some of the age of R. Or, I should say, some of the historical constraints of R owing to its lengthy evolution.
+
+```{r}
+glmnb_surveys <- glm.nb(
+  sites ~ elevation + offset(log(area)),
+  data = surveys
+)
+
+summary(glmnb_surveys)
+summary(glm_surveys)
+
+```
+
+Not much change between the two models in terms of coefficient estimates, but notice that the standard errors for the coefficients are considerably larger in the case of the negative binomial model. This is to be expected since over-dispersion shrinks the standard errors. In the case of the negative binomial, we can be much more confident that the coefficient estimates are significantly different than zero.
+
+## Homework
+
+No homework this week!
+

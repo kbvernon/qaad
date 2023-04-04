@@ -1,0 +1,15 @@
+---
+title: "Week 13: Poisson Regression"
+description: |
+  (Stats) Modeling count data with Poisson regression. Testing for dispersion and using a negative binomial to account for it. Log offsets. (R) Fitting Poisson and negative binomials models, testing for dispersion, and evaluating models with LRT.
+date: 2023-04-04
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+<iframe class="slide-deck" src="../slides/13-poisson-regression-slides.html"></iframe> 
+
+## 🔬 Lab Exercises
+
+[Week 13 Lab](../labs/13-poisson-regression-lab.qmd)

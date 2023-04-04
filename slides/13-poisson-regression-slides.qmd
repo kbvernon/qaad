@@ -1,0 +1,697 @@
+---
+title: "Lecture 13: Poisson Regression"  
+date: 'Last updated: `r Sys.Date()`'
+---
+
+```{r setup}
+#| include: false
+
+here::here("slides", "_setup.R") |> source()
+
+library(modelsummary)
+
+model_table_defaults <- function(x){
+
+  tab_options(
+    x,
+    column_labels.font.weight = "bold",
+    container.width = pct(100),
+    table.border.top.style = "hidden",
+    table.font.size = px(20),
+    table.width = pct(100)
+  )
+  
+}
+
+library(archdata)
+
+data("DartPoints")
+
+darts <- DartPoints |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  select(name, length, width, thickness, weight) |> 
+  filter(weight < 20)
+
+remove(DartPoints)
+
+sites <- here("slides", "site_counts.csv") |> read_csv()
+
+surveys <- here("slides", "surveys.csv") %>% read_csv()
+
+```
+
+## 📋 Lecture Outline
+
+1. Gaussian v Poisson
+2. Assumptions
+2. Gaussian outcomes
+2. Poisson outcomes
+2. Offset
+2. Dispersion
+
+## Gaussian v Poisson
+
+```{r}
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 4.8
+
+set.seed(0)
+dat <- data.frame(x=(x=runif(10000, 0, 50)),
+                  y=rnorm(10000, 10*x, 100))
+
+## breaks: where you want to compute densities
+breaks <- seq(0, max(dat$x), len=5)
+dat$section <- cut(dat$x, breaks)
+
+## Get the residuals
+dat$res <- residuals(lm(y ~ x, data=dat))
+
+## Compute densities for each section, flip the axes, add means 
+## of sections.  Note: densities need to be scaled in relation 
+## to section size (2000 here)
+dens <- do.call(rbind, lapply(split(dat, dat$section), function(x) {
+  d <- density(x$res, n=5000)
+  res <- data.frame(x=max(x$x)- d$y*1000, y=d$x+mean(x$y))
+  res <- res[order(res$y), ]
+  ## Get some data for normal lines as well
+  xs <- seq(min(x$res), max(x$res), len=5000)
+  res <- rbind(
+    res, 
+    data.frame(
+      y = xs + mean(x$y),
+      x = max(x$x) - 1000 * dnorm(xs, 0, sd(x$res))
+    )
+  )
+  res$type <- rep(c("empirical", "normal"), each=5000)
+  res
+}))
+
+dens$section <- rep(levels(dat$section), each=10000)
+
+ols_assume <- ggplot(dat, aes(x, y)) +
+  geom_point(
+    size = 0.1, 
+    alpha = 0.25
+  ) +
+  geom_smooth(
+    method = "lm", 
+    fill = NA, 
+    linewidth = 2,
+    color = qcolors("blue")
+  ) +
+  geom_path(
+    data = dens |> filter(type == "normal"), 
+    aes(x, y, group=section), 
+    color = qcolors("kobe"), 
+    linewidth = 1.1
+  ) +
+  geom_vline(
+    xintercept = breaks, 
+    linetype = 2
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank()
+  ) +
+  ggtitle("Linear Regression")
+
+# Now make Poisson regression picture
+set.seed(0)
+dat <- data.frame(x=(x=runif(1000, 0, 20)),
+                  y=rpois(1000, exp(.1*x)))
+## breaks: where you want to compute densities
+breaks <- seq(2, max(dat$x), len=5)
+dat$section <- cut(dat$x, breaks)
+## Get the residuals
+dat$res <- dat$y - .1*dat$x
+## Compute densities for each section, flip the axes, add means
+## of sections.  Note: densities need to be scaled in relation 
+## to section size
+dens <- do.call(rbind, lapply(split(dat, dat$section), function(x) {
+  d <- density(x$res, n=500)
+  res <- data.frame(x=max(x$x)- d$y*10, y=d$x+mean(x$y))
+  res <- res[order(res$y), ]
+  ## Get some data for poisson lines as well
+  xs <- seq(min(x$y), max(x$y), len=500)
+  res <- rbind(res, data.frame(y=xs,
+          x=max(x$x) - 10*dpois(round(xs), exp(.1*max(x$x)))))
+  res$type <- rep(c("empirical", "poisson"), each=500)
+  res
+}))
+
+dens$section <- rep(levels(dat$section), each=1000)
+
+pois_assume <- ggplot(dat, aes(x, jitter(y, .25))) +
+  geom_point(size = 0.1) +
+  geom_smooth(
+    method = "loess", 
+    fill = NA, 
+    linewidth = 2,
+    color = qcolors("blue")
+  ) +
+  geom_path(
+    data = dens |> filter(type == "poisson"), 
+    aes(x, y, group=section), 
+    color = qcolors("kobe"), 
+    linewidth = 1.1
+  ) +
+  geom_vline(
+    xintercept = breaks, 
+    linetype = 2
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank()
+  ) +
+  ggtitle("Poisson Regression")
+
+ols_assume + pois_assume
+
+```
+
+## Assumptions
+
+:::::: {.columns}
+::::: {.column}
+
+**Gaussian**
+
+1. Linearity
+2. Homoscedasticity
+2. Normality
+2. Independence
+
+::::: 
+::::: {.column}
+
+**Poisson**
+
+1. Log-linearity
+2. Mean = Variance
+2. Poisson
+2. Independence
+
+:::::
+::::::
+
+## Gaussian response
+
+```{r}
+
+log_likelihood <- function(e){
+  
+  n <- length(e)
+  
+  sigma <- sqrt(sum(e^2)/n)
+  
+  sum(dnorm(e, mean = 0, sd = sigma, log = TRUE))
+
+}
+
+darts_glm <- glm(length ~ weight, data = darts)
+
+b0 <- coefficients(darts_glm)[["(Intercept)"]]
+b1 <- coefficients(darts_glm)[["weight"]]
+
+```
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+darts_gg <- ggplot(darts, aes(weight, length)) +
+  labs(
+    x = "Weight (g)",
+    y = "Length (mm)"
+  )
+
+darts_gg + geom_point(size = 3, alpha = 0.6)
+
+```
+
+:::::
+::::: {.column}
+
+Assume length is Gaussian with
+
+$Var(\epsilon) = \sigma^2$  
+$E(Y) = \mu = \beta X$  
+
+__Question__ What is the probability that we observe these data given a model with parameters $\beta$ and $\sigma^2$? 
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+b0_hat <- round(b0 - 0, digits = 2)
+b1_hat <- round(b1 - 0, digits = 2)
+
+yhat <- b0_hat + b1_hat * darts$weight
+
+errors <- with(darts, length - yhat)
+
+sigma <- sqrt(sum(errors^2)/length(errors))
+
+ll <- round(log_likelihood(errors), digits = 2)
+
+darts_gg +
+  geom_segment(
+    data = tibble(
+      x = darts$weight,
+      y = darts$length,
+      xend = x,
+      yend = yhat
+    ),
+    aes(x, y, xend = xend, yend = yend),
+    color = "gray60",
+    linetype = "dashed"
+  ) +
+  geom_abline(
+    intercept = b0_hat,
+    slope = b1_hat
+  ) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_text(
+    data = tibble(
+      x = min(darts$weight), 
+      y = with(darts, c(max(length), max(length) - 5)), 
+      label = c(
+        paste0("\U03B2", "0 = ", b0_hat),
+        paste0("\U03B2", "1 = ", b1_hat)
+      )
+    ),
+    aes(x, y, label = label),
+    size = 12/.pt,
+    hjust = 0,
+    vjust = 1
+  )
+
+```
+
+:::::
+::::: {.column}
+
+```{r}
+
+ggplot() + 
+  geom_histogram(
+    data = tibble(x = errors),
+    aes(x, y = after_stat(density)),
+    bins = 15,
+    color = "black",
+    fill = "gray65"
+  ) +
+  geom_polygon(
+    data = bind_rows(
+      c(x = -10, y = 0),
+      tibble(
+        x = seq(-10, 45, length = 300), 
+        y = dnorm(x, sd = sigma)
+      )
+    ),
+    aes(x, y),
+    color = qcolors("sapphire"),
+    fill = alpha(qcolors("sapphire"), 0.5),
+    linewidth = 1
+  ) +
+  annotate(
+    "segment",
+    x = 0,
+    y = 0,
+    xend = 0,
+    yend = dnorm(1, 0, sigma),
+    color = qcolors("kobe"),
+    linewidth = 1.5
+  ) +
+  labs(
+    x = "Residuals",
+    y = "Density"
+  ) +
+  coord_cartesian(
+    xlim = c(-10, 45)
+  ) +
+  annotate(
+    "text",
+    label = paste0("logLik", " = ", ll),
+    x = Inf,
+    y = Inf,
+    hjust = 1.1,
+    vjust = 2,
+    size = 12/.pt
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(accuracy = 0.01)
+  )
+
+```
+
+:::::
+::::::
+
+:::::::::
+
+::: aside
+_Archaic dart points. Sample from Fort Hood, Texas_
+:::
+
+## Poisson GLM
+
+```{r}
+
+sites_glm <- glm(
+  sites ~ elevation,
+  family = poisson,
+  data = sites
+)
+
+b0 <- coefficients(sites_glm)[["(Intercept)"]]
+b1 <- coefficients(sites_glm)[["elevation"]]
+
+ll <- logLik(sites_glm)
+
+```
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+sites_gg <- ggplot(sites, aes(elevation, sites)) +
+  labs(
+    x = "Elevation (km)",
+    y = "Site count"
+  )
+
+sites_gg + 
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Counts arise from a Poisson process with expectation $E(Y) = \lambda$ and
+
+$$log\,\lambda = \beta X$$
+
+By taking the log, this constrains the expected count to be greater than zero.
+
+:::::
+::::::
+
+:::::: {.columns .fragment .fade-in fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+sites_gg + 
+  geom_line(
+    data = tibble(
+      x = sites$elevation,
+      y = predict(sites_glm, type = "response")
+    ),
+    aes(x, y),
+    color = qcolors("kobe"),
+    linewidth = 1
+  ) +
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+⚠️ Coefficients are on the log scale! To get counts, need the exponent.   
+
+$\beta_0 = exp(`r b0`) = `r exp(b0)`$  
+$\beta_1 = exp(`r b1`) = `r exp(b1)`$  
+
+For a one unit increase in elevation, the count of sites increases by `r exp(b1)`.
+
+:::::
+::::::
+::::::::: 
+
+## A count relative to what?
+
+Survey blocks? Need to account for area in our sampling strategy!
+
+![](images/survey-polygons.png){out-width="70%"}
+
+## Offset
+
+```{r}
+
+surveys_glm <- glm(
+  sites ~ elevation + offset(log(area)),
+  family = poisson,
+  data = surveys
+)
+
+b0 <- coefficients(surveys_glm)[["(Intercept)"]]
+b1 <- coefficients(surveys_glm)[["elevation"]]
+
+ll <- logLik(surveys_glm)
+
+trend <- tibble(
+  x = surveys$elevation,
+  y = fitted(surveys_glm),
+  area = surveys$area
+)
+
+```
+
+::::::::: {.r-stack .flt}
+:::::: {.columns .fragment .fade-out fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+ggplot(surveys, aes(elevation, sites/area)) +
+  labs(
+    x = "Elevation (km)",
+    y = "Site density (n/km2)"
+  ) + 
+  geom_point(
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Model the density
+
+$$log\;(\lambda_i/area_i) = \beta X$$
+Equivalent to 
+
+$$log\;(\lambda_i) = \beta X + log\;(area_i)$$
+
+Still linear! Still modeling counts! 
+
+:::::
+::::::
+:::::: {.columns .fragment .fade-in fragment-index=0 .w100}
+::::: {.column}
+
+```{r}
+
+ggplot() +
+  labs(
+    x = "Elevation (km)",
+    y = "Site density (n/km2)"
+  ) + 
+  geom_line(
+    data = trend,
+    aes(x, y/area),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  geom_point(
+    data = surveys, 
+    aes(elevation, sites/area),
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Estimated coefficients: 
+
+$\beta_0 = `r b0`$  
+$\beta_1 = `r b1`$   
+
+For these, the log Likelihood is
+
+$\mathcal{l} = `r ll`$  
+:::::
+::::::
+:::::::::
+
+## Over-dispersion
+
+- For exponential family of distributions, variance is a function of the mean:
+
+$$Var(\epsilon) = \phi \mu$$
+
+where $\phi$ is a scaling parameter, assumed to be equal to 1, meaning the variance is assumed to be equal to the mean.
+
+- When $\phi > 1$, this is called _over-dispersion_. When $\phi < 1$, it's under-dispersion.
+
+## Check for over-dispersion
+
+::::::::: {.r-stack .flt}
+:::::: {.fragment .fade-out fragment-index=0 .w100}
+
+Rule of thumb: compare model's residual deviance to its degrees of freedom. Values greater than one indicate over-dispersion.
+
+```{r}
+
+bob <- summary(surveys_glm)
+
+```
+
+For our site count model, that's
+
+$D = `r bob$deviance`$  
+$df = `r bob$df.residual`$  
+
+$D/df = `r bob$deviance/bob$df.residual`$
+
+::::::
+:::::: {.fragment .fade-in fragment-index=0 .w100}
+
+Can also test for dispersion using a simple linear model where
+
+$$Var(\epsilon) = \mu + \alpha \mu$$
+
+If variance is equal to the mean, then $\alpha = 0$. 
+
+::: {width=50%}
+
+```{r}
+
+# code adopted from AER::dispersiontest()
+
+y <- model.response(model.frame(surveys_glm))
+yhat <- fitted(surveys_glm)
+
+variance <- ((y - yhat)^2 - y)/yhat
+
+dispersion_model <- lm(variance ~ 1)
+
+tibble(
+  estimate = as.vector(coefficients(dispersion_model)[1]),
+  statistic = as.vector(summary(dispersion_model)$coef[1, 3]),
+  null = 0,
+  p.value = pnorm(statistic, lower.tail = FALSE)
+) |> 
+  gt() |> 
+  fmt_number(columns = everything(), decimals = 4) |> 
+  model_table_defaults()
+
+```
+
+:::
+:::::
+:::::::::
+
+## Accounting for dispersion
+
+```{r}
+
+library(MASS)
+
+surveys_glm <- glm.nb(
+  sites ~ elevation + offset(log(area)),
+  data = surveys
+)
+
+b0 <- coefficients(surveys_glm)[["(Intercept)"]]
+b1 <- coefficients(surveys_glm)[["elevation"]]
+
+ll <- logLik(surveys_glm)
+
+trend <- tibble(
+  x = surveys$elevation,
+  y = fitted(surveys_glm),
+  area = surveys$area
+)
+
+```
+
+:::::: {.columns}
+::::: {.column}
+
+```{r}
+
+ggplot() +
+  labs(
+    x = "Elevation (km)",
+    y = "Site density (n/km2)"
+  ) + 
+  geom_line(
+    data = trend,
+    aes(x, y/area),
+    color = qcolors("kobe"),
+    size = 1
+  ) +
+  geom_point(
+    data = surveys, 
+    aes(elevation, sites/area),
+    size = 3,
+    alpha = 0.7
+  )
+
+```
+
+:::::
+::::: {.column}
+
+Two strategies:
+
+1. quasi-Poisson
+2. negative binomial
+
+⚠️ Trade-offs! QP doesn't use MLE. NB can't be fit with `stats::glm()`.
+
+```{r}
+
+modelsummary(
+  surveys_glm,
+  shape = term ~ model + statistic,
+  statistic = c("std.error", "statistic", "p.value")
+)
+
+```
+
+
+:::::
+::::::
