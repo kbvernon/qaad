@@ -1,0 +1,16 @@
+---
+title: "Week 14: Partial Dependence"
+description: |
+  (Stats) Making sense of covariance in context. (R) Estimating and visualizing partial dependence.
+date: 2023-04-11
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+No lecture this week.  
+
+## 🔬 Lab Exercises
+
+[Week 14 Lab](../labs/14-partial-dependence-lab.qmd)
+

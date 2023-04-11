@@ -1,0 +1,636 @@
+---
+title: "Lab 14: Partial Dependence"
+description: |
+  (Stats) Making sense of covariance in context. (R) Estimating and visualizing partial dependence.
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. Predicting with GLMs
+2. Back-transforming estimates and standard errors
+2. Estimating partial dependence
+2. Visualizing partial dependence
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [ggeffects](https://strengejacke.github.io/ggeffects)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [tidyverse](https://www.tidyverse.org)
+- [viridis](https://sjmgarnier.github.io/viridis/)
+
+⚠️ Don't forget to install `ggeffects` with `install.packages("ggeffects")`. Best to run this in the console!
+
+```{r}
+library(archdata)
+library(ggeffects)
+library(palmerpenguins)
+library(tidyverse)
+library(viridis)
+
+```
+
+### Data
+
+- `DartPoints`
+    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `penguins` 
+    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+    - package: `palmerpenguins`
+    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+- `Snodgrass`
+    - Includes measurements of size, location, and contents of 91 pit houses at the Snodgrass site in Butler County, Missouri.
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+
+
+## Motivation
+
+With the exception of pure mathematics and maybe fundamental physics, most of our reasoning about the world and our place in it is *defeasible*, meaning additional information (or additional premises) can alter the goodness of the conclusions we want to draw. If I strike a dry, well-made match, for example, I feel pretty confident that it will light. If I strike a dry, well-made match *in the vacuum of space*, however, it probably won't light. Whether the match strikes or not is a Bernoulli outcome, of course, but the general point holds for any discrete or continuous outcome. Its values will only partially depend on the values of a specific covariate or predictor variable. When we fit a simple linear model, we're sort of just hoping that this problem takes care of itself or, at the very least, that we have good theoretical reasons for thinking it's not a problem to begin with. When we fit a general linear model, though, or, for that matter, any model with multiple covariates, we have to be a little more deliberate in how we approach this issue. This is especially true when our model includes lots of interactions between and non-linear transformations of variables. Basically, the more complicated the model, the harder it is to summarize the contribution of a covariate using a single number, like coefficient estimate. 
+
+In this lab, we are going to focus on how we *visualize* partial dependence, meaning how we visualize the relationship between an outcome and a single covariate (call it the *target* variable) while in some sense holding the other covariates fixed. These are sometimes referred to as partial dependence plots (or PDPs).
+
+## Warm-up
+
+As a gentle warm-up to generating PDPs, let's remind ourselves how to visualize an estimated trend in a simple linear model. The model we are going to visualize is a model of bill length by body mass fit to the Palmer Penguins data set. 
+
+As always, we'll start by visualizing the data.
+
+```{r}
+# clean up data, remove rows with missing data
+penguins <- na.omit(penguins)
+
+ggplot(penguins, aes(flipper_length_mm, bill_length_mm)) +
+  geom_point(size = 2) +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Bill Length (mm)"
+  ) +
+  theme_minimal()
+
+```
+
+What is the relationship here? Let's see if a linear model can help us out.
+
+```{r}
+penguins_model <- glm(
+  bill_length_mm ~ flipper_length_mm, 
+  family = gaussian,
+  data = penguins
+)
+
+summary(penguins_model)
+
+```
+
+Now we use the `predict()` function to generate estimated values for bill length at observed values of flipper length. We then use `geom_line()` to visualize the trend line (the estimated or modeled values).
+
+```{r}
+penguins <- penguins |> mutate(fit = predict(penguins_model))
+
+ggplot(penguins) +
+  geom_point(
+    aes(flipper_length_mm, bill_length_mm),
+    size = 2
+  ) +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Bill Length (mm)"
+  ) +
+  theme_minimal() +
+  geom_line(
+    aes(flipper_length_mm, fit),
+    color = "darkred",
+    linewidth = 1
+  )
+
+```
+
+A simple linear trend as expected. To get the standard errors, we can run `predict()` with the argument `se.fit = TRUE`. We'll then add the intervals to the plot with the function `geom_ribbon()` like so.
+
+```{r}
+estimates <- predict(penguins_model, se.fit = TRUE)
+
+str(estimates)
+
+```
+
+This is a list with three items: `fit`, `se.fit`, and `residual.scale`. The `fit` is just the estimated response, `se.fit` the standard error of predicted means, and `residual.scale` the residual standard deviations. Multiplying the standard error (`se.fit`) by two and adding/subtracting that value from the `fit` gives the 95% confidence intervals.
+
+```{r}
+penguins <- penguins |> 
+  mutate(
+    fit = estimates$fit,
+    se = estimates$se.fit,
+    conf_lo = fit - 2*se, # lower confidence interval
+    conf_hi = fit + 2*se  # higher confidence interval
+  )
+
+ggplot(penguins) +
+  geom_ribbon(
+    aes(x = flipper_length_mm, ymin = conf_lo, ymax = conf_hi),
+    fill = "gray85"
+  ) +
+  geom_line(
+    aes(flipper_length_mm, fit),
+    color = "darkred",
+    linewidth = 1
+  ) +
+  geom_point(
+    aes(flipper_length_mm, bill_length_mm),
+    size = 2
+  ) +
+  theme_minimal() +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Bill Length (mm)"
+  )
+
+```
+
+### Exercises
+
+1. Build a model of penguin flipper length by body mass.
+    - Make sure to visualize your data first! Make a scatter plot!
+    - Generate model fit and estimates for confidence intervals using `predict()` and `se.fit = TRUE`. 
+2. Now visualize the response. 
+    - Add the confidence interval using `geom_ribbon()`.
+    - Now plot the modeled relationship between flipper length and body mass using `geom_line()`.
+
+## Inverse Link
+
+A Gaussian GLM uses an identity link function, which is just a fancy way of saying it doesn't transform the response variable. That means predictions made with a Gaussian GLM are already on the scale of the response. In the model above, bill length was measured in millimeters and predictions were returned in millimeters. Unfortunately, logistic and Poisson regression are a little bit more complicated than that because they apply logit and log transformations to the response variable. That means predictions made with logistic and Poisson models return predictions on the logit and log scales respectively. These are not always the easiest scales to interpret, so it's customary to "back transform" the predictions onto the response scale. The transformations applied to the response variable are called link functions, so the functions applied to the predictions to back transform are often referred to as inverse link functions. 
+
+In this section, we'll learn how to access and apply an inverse link to predictions made by a logistic regression model. We'll be using the `Snodgrass` data to answer the following
+
+**Question** Does the size of a house structure (measured in square feet) make it more or less likely that the structure is found inside the inner walls of a site?
+
+```{r}
+data("Snodgrass")
+
+snodgrass <- Snodgrass |> 
+  as_tibble() |> 
+  rename_with(tolower) |> 
+  select(inside, area) |> 
+  mutate(inside = ifelse(inside == "Inside", 1, 0))
+
+remove(Snodgrass)
+
+```
+
+As always, we'll plot these data using a scatterplot.
+
+```{r}
+ggplot(snodgrass, aes(area, inside)) + 
+  geom_point(
+    size = 3,
+    alpha = 0.6
+  ) +
+  labs(
+    x = "Area (sq ft)",
+    y = "Inside inner wall"
+  )
+
+```
+
+And, now we'll fit a GLM with a binomial error distribution and a logit link function. Recall that the logit link is
+
+$$logit(p) = log\left(\frac{p}{1-p}\right)$$
+
+and that we're modeling this value as a linear function of covariates:
+
+$$log\left(\frac{p}{1-p}\right) = \beta X$$
+
+So, here's how we fit that model in R.
+
+```{r}
+glm_snodgrass <- glm(
+  inside ~ area,
+  family = binomial(link = "logit"),
+  data = snodgrass
+)
+
+summary(glm_snodgrass)
+
+```
+
+To predict with this, we use the `predict()` function, just as we did above. 
+
+```{r}
+fit <- predict(glm_snodgrass)
+
+# showing the first five fit
+fit[1:5]
+
+```
+
+Note that these are on the logit scale (and that they have values less than zero and greater than one). To get these back onto the scale of the response (i.e., probability), we need to apply the inverse link function to these data. For logistic regression, the inverse link is just the logistic function!
+
+$$p = \frac{1}{1+exp(-\beta X)}$$
+
+To do that, we extract the function from the error distribution of the model with the `family()` function and the `$` operator.
+
+```{r}
+inverse_link <- family(glm_snodgrass)$linkinv
+
+```
+
+This is a function, so we can now apply it to our fit.
+
+```{r}
+tibble(
+  logit = fit[1:5],
+  probability = inverse_link(fit[1:5])
+)
+
+```
+
+We can use this now to plot the estimated response over our observations.
+
+```{r}
+snodgrass <- snodgrass |> 
+  mutate(
+    logit = predict(glm_snodgrass),
+    probability = inverse_link(logit)
+  )
+
+# plot
+ggplot(snodgrass) + 
+  geom_point(
+    aes(area, inside),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_line(
+    aes(area, probability),
+    linewidth = 1,
+    color = "#A20000"
+  ) +
+  labs(
+    x = "Area (sq ft)",
+    y = "Inside inner wall"
+  )
+
+```
+
+To get the standard errors, we can run `predict()` with the argument `se.fit = TRUE` again. Note that the fit and standard error are both on the logit scale this time, so we need to apply the inverse link function. 
+
+```{r}
+estimates <- predict(glm_snodgrass, se.fit = TRUE)
+
+snodgrass <- snodgrass |> 
+  mutate(
+    logit = estimates$fit,
+    se = estimates$se.fit,
+    probability = inverse_link(logit),
+    conf_hi = inverse_link(logit + 2*se),
+    conf_lo = inverse_link(logit - 2*se)
+  )
+
+```
+
+Here, we add the `logit` response and `se` or standard errors to the `snodgrass` table by extracting the `fit` and `se.fit` items from the `estimates` list. We then convert the `logit` response to a `probability` by applying the `inverse_link()` function. Next, we estimate the upper confidence line `conf_hi` by applying the `inverse_link()` to the sum of the `logit` response and 2 times the standard error (`se`). To get the lower confidence line `conf_lo`, we do the same, but taking the difference.  
+
+Now we have everything we need to plot the confidence ribbon with `geom_ribbon()`. Notice that I add the ribbon to the plot before adding the observed points and the estimated trend line! This ensures that points and line are not obscured by the confidence ribbon.
+
+```{r}
+ggplot(snodgrass) +
+  geom_ribbon(
+    aes(area, ymin = conf_lo, ymax = conf_hi),
+    alpha = 0.5,
+    fill = "gray75"
+  ) + 
+  geom_point(
+    aes(area, inside),
+    size = 3,
+    alpha = 0.6
+  ) +
+  geom_line(
+    aes(area, probability),
+    linewidth = 1,
+    color = "#A20000"
+  ) +
+  labs(
+    x = "Area (sq ft)",
+    y = "Inside inner wall"
+  )
+
+```
+
+
+### Exercises
+
+For these exercises, we'll use the `DartPoints` dataset from the `archdata` package. As we did in the previous lab, we are going to use length to see if we can discriminate Pedernales dart points from the other dart points.
+
+1. First, load the `DartPoints` table with `data("DartPoints")`.
+2. Now, let's do some data wrangling with this table. Make sure to assign it back to your table, so that it saves the changes!And bonus points if you can put this all through one pipe!
+    - Change all the names to lowercase with `rename_with(tolower)`.
+    - Use `select()` to grab the name (`name`) and length (`length`) variables.
+    - Use `rename()` to rename `name` to `type`. Hint: use the `"new_name" = old_name` syntax, for example, `"length" = l`.
+    - **THIS IS IMPORTANT!!!** Use `mutate()` and `ifelse()` to add a column `pedernales` that is `1` if the type is `Pedernales` and 0 otherwise. Hint: fill in the ellipsis in `mutate(pedernales = ifelse(type == ...))`.
+2. Make a scatter plot of the data.  
+2. Build a GLM of the Pedernales type as a function of dart length using a Binomial distribution and the logit link.
+2.  Use `predict()` with `se.fit = TRUE` and assign this to an object called `estimates`. 
+2. Extract the inverse link function from the model with `family()$linkinv` and give it the name `inverse_link`.
+2. Now, add the logit, probability, standard errors, and inverse-transformed standard errors to the `darts` table, applying the inverse link function where necessary.
+2. Plot the confidence ribbon. Make sure to add the ribbon to the plot before adding observations or the trend line!
+
+## `ggeffects`
+
+Now, let's get to partial dependence. Here, we're going to build a slightly more complicated model of bill length that incorporates information about the species of the penguin. This involves the use of a qualitative or categorical variable which gets coded in the model using dummy variables. In this case, we are estimating different intercepts for each species under the assumption that some species have longer bills than others on average.
+
+Before we do that, though, let's visualize the data!
+
+```{r}
+ggplot(penguins, aes(flipper_length_mm, bill_length_mm) ) +
+  geom_point(
+    aes(color = species, fill = species),
+    shape = 21,
+    size = 3
+  ) +
+  scale_fill_viridis(
+    name = "Species",
+    alpha = 0.7,
+    discrete = TRUE
+  ) +
+  scale_color_viridis(
+    name = "Species",
+    discrete = TRUE
+  ) +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Bill Length (mm)"
+  ) +
+  theme_minimal()
+
+```
+
+Now the model.
+
+```{r}
+penguins_model <- glm(
+  bill_length_mm ~ flipper_length_mm + species, 
+  family = gaussian,
+  data = penguins
+)
+
+summary(penguins_model)
+
+```
+
+This is a wee-bit more complicated than the simple GLM we fit above, so we are going to use a new package called `ggeffects` to model the relationship. The process is still the same. First, we generate a table of data by using the model to estimate the response across the range of the covariate. Then, we use that data to plot the response. In this case, we will use the `ggpredict()` function from `ggeffects` to generate a table of data for plotting. Then, we will use `ggplot()` to generate the figure.
+
+The `ggpredict()` function is extremely useful. In fact, you might even consider using it to generate data for visualizing GLMs and even simple linear models, as it will do all the steps we outlined above in one fell swoop. Like with the base `predict()` function, it's first argument is a fitted model. You can also specify what variables to visualize (in this case, we only have one, `flipper_length_mm`), and you can tell it what levels of a factor variable (in this case, `species`) to visualize with. You provide this to the `terms` argument. 
+
+The full function call is this. 
+
+```{r}
+estimates <- ggpredict(
+  penguins_model,
+  terms = c("flipper_length_mm", "species")
+)
+
+estimates
+
+```
+
+While this printout is somewhat involved, under the hood, it's really just a `tibble` with six important columns: 
+
+1. `x` - the predictor variable, 
+2. `predicted` - the estimated response, 
+3. `std.error` - the standard error
+4. `conf.low` - the lower confidence level at 95%, so roughly $predicted - 2\cdot std.error$.
+5. `conf.high` - the upper confidence level at 95%, so roughly $predicted + 2\cdot std.error$.
+6. `species` - the levels or species in the factor variable used, in this case, to estimate random effects.
+
+So, we can use these variables in our `estimates` table to plot the responses. Here, we are going to do all of the following.
+
+1. We are going to add the original observations as points.
+2. We'll also use the `viridis` color package to apply the `viridis` color palette to the species groups. Note that we use the same `name = "Species"` for both `scale_fill_viridis()` and `scale_color_viridis()`. This does two things. 
+    - First, and most simply, it sets the title of the legend. 
+    - Second, it ensures that the legend for color and fill are combined into one legend.
+2. To make the points more visible, we
+    - Set `color = species` and `fill = species` in the `aes()`.
+    - Reduce the opacity of the fill to 0.5 (in the `scale_fill_viridis()` function!), so we can see overlap in points.
+    - We also set `shape = 21`, so we can add a darker border around each point to delineate them.
+2. The facet labels are redundant with the color scheme and legend, so we will remove those with `theme()`.
+
+```{r}
+ggplot(estimates) + 
+  geom_ribbon(
+    aes(x, ymin = conf.low, ymax = conf.high, color = group, fill = group),
+    alpha = 0.15
+  ) +
+  geom_point(
+    data = penguins,
+    aes(flipper_length_mm, bill_length_mm, color = species, fill = species),
+    shape = 21,
+    size = 3
+  ) +
+  scale_fill_viridis(
+    name = "Species",
+    alpha = 0.7,
+    discrete = TRUE
+  ) +
+  geom_line(
+    aes(x, predicted, color = group),
+    size = 1.3
+  ) +
+  scale_color_viridis(
+    name = "Species",
+    discrete = TRUE
+  ) +
+  # facet_wrap(~ species, ncol = 3) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    strip.background = element_blank(), # remove gray box above each facet
+    strip.text = element_blank() # remove text labels above each facet
+  ) +
+  labs(
+    x = "Flipper length (mm)",
+    y = "Bill length (mm)"
+  )
+  
+```
+
+This figure has one very serious flaw. It plots the response along the full range of flipper length irrespective of the range of each species. This is a challenge of working with the `ggeffects` package, unfortunately. If someone can find a good work around for this, I'd like to see it!
+
+If you prefer, the `ggeffects` package also has an automatic `plot()` method for generating a `ggplot()` of the response. In this case, it's nice to use this because of the difficulty of plotting within the range of the actual data, but it has its own frustrating trade-offs that I won't get into now.
+
+```{r}
+plot(
+  estimates,
+  rawdata = TRUE, 
+  limit.range = TRUE,
+  colors = "viridis"
+) +
+  labs(
+    x = "Flipper length (mm)",
+    y = "Bill length (mm)",
+    title = NULL
+  ) +
+  theme_minimal()
+
+```
+
+### Exercises
+
+1. Build a model of penguin flipper length by body mass and species (let the intercepts vary by species).
+    - Make sure to visualize your data first! Make a scatter plot! And color points by species!
+    - Generate model fit and estimates for confidence intervals using `ggpredict()` with `terms = c("body_mass_g", "species")`. 
+2. Now visualize the response. 
+    - You can use the `ggplot2` or `plot` method.    
+    - Add the confidence interval.
+    - Add the modeled relationship.
+    - Add the data points to the model.
+
+## Partial dependence
+
+OK, so here's the basic idea behind partial dependence. For demonstration purposes, let's say our data set is this subset of the penguins table:
+
+```{r}
+set.seed(42)
+
+my_data <- penguins |> 
+  select(flipper_length_mm, bill_length_mm, body_mass_g) |> 
+  slice_sample(n = 12)
+
+my_data
+
+```
+
+And we fit our penguins model to this data. 
+
+```{r}
+penguins_model <- glm(
+  bill_length_mm ~ flipper_length_mm + body_mass_g,
+  data = my_data
+)
+
+```
+
+Now, let's say we want to know how bill length varies as a function of body mass while holding flipper length constant. Here's how we do that. First, we take the range of flipper length and choose and build a grid with arbitrary number of values within that range, so
+
+```{r}
+n <- 3
+
+x_grid <- with(
+  my_data, 
+  seq(min(flipper_length_mm), max(flipper_length_mm), length = n)
+)
+
+x_grid
+
+```
+
+In this case, our grid has 3 values. Now, for each of those values, we take our original data set, `my_data`, and set all the values of flipper length to that value and then estimate the response with our model. We then take the mean of those estimates. This gives us the average response of bill length at each of those three values of flipper length.
+
+```{r}
+new_data1 <- my_data |> mutate(flipper_length_mm = x_grid[1])
+
+new_data1
+
+e1 <- predict(penguins_model, newdata = new_data1)
+
+e1
+
+mean(e1)
+
+new_data2 <- my_data |> mutate(flipper_length_mm = x_grid[2])
+
+e2 <- predict(penguins_model, newdata = new_data2)
+
+new_data3 <- my_data |> mutate(flipper_length_mm = x_grid[3])
+
+e3 <- predict(penguins_model, newdata = new_data3)
+
+partial_dependence <- tibble(
+  flipper_length_mm = x_grid,
+  bill_length_mm = c(mean(e1), mean(e2), mean(e3))
+)
+
+partial_dependence
+
+```
+
+And we end up with an estimate of partial dependence that looks like this.
+
+```{r}
+ggplot(partial_dependence, aes(flipper_length_mm, bill_length_mm)) +
+  geom_line(
+    color = "darkred",
+    linewidth = 1
+  ) +
+  geom_point(size = 3) +
+  labs(
+    x = "Flipper length (mm)",
+    y = "Bill length (mm)"
+  ) +
+  theme_minimal()
+
+```
+
+Now, obviously, this would take many many lines of code to estimate the partial dependence for an arbitrary model and data set, especially if we increase the number of points on the grid. Fortunately, the `ggeffects` package will do these calculations for you. Let's just run through a full example to see how that works.
+
+First we build the model.
+
+```{r}
+penguins_model <- glm(
+  bill_length_mm ~ flipper_length_mm + body_mass_g + species,
+  data = penguins
+)
+
+summary(penguins_model)
+
+```
+
+Now we estimate partial dependence of bill length on flipper length for each species.
+
+```{r}
+partial <- ggpredict(penguins_model, terms = c("flipper_length_mm", "species"))
+
+```
+
+And plot the result.
+
+```{r}
+plot(
+  partial,
+  rawdata = TRUE, 
+  limit.range = TRUE,
+  colors = "viridis"
+) +
+  labs(
+    x = "Flipper length (mm)",
+    y = "Bill length (mm)",
+    title = NULL
+  ) +
+  theme_minimal()
+
+```
+
+Notice that when we control for body mass, the effect of flipper length on fill length is not as large!
+
+### Exercises
+
+1. Use the model in the last example to make a plot of the partial dependence of bill length on body mass.  
+2. How does it compare to the relationship estimated by the model with just bill length and body mass, which you made above?
+
+## Homework
+
+No homework this week.
