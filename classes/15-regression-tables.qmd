@@ -1,0 +1,15 @@
+---
+title: "Week 15: Regression Tables"
+description: |
+  (Stats) Nothing new. (R) How to report results of regression in a table with R.
+date: 2023-04-18
+toc: false
+---
+
+## 📺 Lecture Slides {.reveal-viewport}
+
+No lecture this week.  
+
+## 🔬 Lab Exercises
+
+[Week 15 Lab](../labs/15-regression-tables-lab.qmd)

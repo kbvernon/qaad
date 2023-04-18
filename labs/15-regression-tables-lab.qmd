@@ -1,0 +1,455 @@
+---
+title: "Lab 14: Partial Dependence"
+description: |
+  (Stats) Making sense of covariance in context. (R) Estimating and visualizing partial dependence.
+---
+
+```{r}
+#| include: false
+
+here::here("labs", "_setup.R") |> source()
+
+```
+
+## Outline
+
+### Objectives
+
+This lab will guide you through the process of  
+
+1. Creating simple display tables
+2. Creating interactive displays for large HTML tables
+2. Building data summary tables
+2. Building regression tables
+2. Exporting tables
+
+### R Packages
+
+We will be using the following packages:
+
+- [archdata](https://cran.r-project.org/web/packages/archdata/index.html)
+- [gt](https://gt.rstudio.com/)
+- [gtsummary](https://www.danieldsjoberg.com/gtsummary/index.html)
+- [here](https://here.r-lib.org/)
+- [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+- [tidyverse](https://www.tidyverse.org)
+
+⚠️ Don't forget to install `gt` and `gtsummary` with `install.packages(c("gt", "gtsummary"))`. Best to run this in the console!
+
+```{r}
+library(archdata)
+library(gt)
+library(gtsummary)
+library(here)
+library(palmerpenguins)
+library(tidyverse)
+
+```
+
+### Data
+
+- `DartPoints`
+    - Includes measurements of 91 Archaic dart points recovered during surface surveys at Fort Hood, Texas.
+    - package: `archdata`
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+- `penguins` 
+    - Includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. 
+    - package: `palmerpenguins`
+    - reference: <https://allisonhorst.github.io/palmerpenguins/reference/penguins.html>
+- `Snodgrass`
+    - Includes measurements of size, location, and contents of 91 pit houses at the Snodgrass site in Butler County, Missouri.
+    - reference: <https://cran.r-project.org/web/packages/archdata/archdata.pdf>
+
+## Grammar of Tables
+
+Tables have a grammar? 🤔 Well, sort of... the grammar here refers to a cohesive language for describing the parts of a table, not a *data* table, per se, but a *display* table, a table meant to represent your data rather than simply store it.  
+
+![](https://gt.rstudio.com/reference/figures/gt_parts_of_a_table.svg)
+
+A simple table of data includes column or variable labels and a body (all the rows and cells containing values of the variables). A display table, though, can also include (i) a header containing a title for the whole table (and not just a column!), (ii) a footer with, well, footnotes, and (iii) a "stub", which includes row or observation labels and groupings of those observations. To create a display table, you can use the eponymous `gt()` function. It will create a `gt` object having all the components shown in the figure above, though some may be excluded if you do not explicitly specify them. Importantly, you can use `gt()` to generate tables in the most common formats, namely HTML, LaTeX, and RTF, but you can also export the tables in even larger number of formats, including HTML, PDF, Word, and PNG (if you want an image of the table). That said, the real power of `gt` is its support of HTML tables, and in particular interactive tables.
+
+As a simple motivating example, consider the scenario where a reviewer asks you to include a table with all your raw data in the supplement. That's pretty easy with `gt()`. In the following example, we'll also specify the table header with `tab_header()` and add a footnote with `tab_footnote()`.
+
+```{r}
+head(penguins) |> 
+  gt() |> 
+  tab_caption("Table 1. Palmer Penguins Data") |> 
+  tab_header(title = "this is the header") |>  
+  tab_footnote("*I added a footnote to this table.")
+```
+
+But what if your table has a lot of data, like hundreds of rows? Obviously, you can just dump all that data into a giant table and let the user suffer through navigating it. Alternatively, you know, if you have a 💟, you can use `gt()` to create an interactive HTML table with search and scroll features. You simply pass the `gt` table to `opt_interactive()`. 
+
+⚠️ A word of caution, this is actually a brand new feature that is under active development, so it might be a smidge buggy. It will also only work in HTML documents, not Word or PDF. 
+
+```{r}
+penguins |> 
+  gt() |> 
+  tab_caption("Table 1. Palmer Penguins Data") |> 
+  tab_header(title = "this is the header") |>  
+  tab_footnote("I added a footnote to this table.") |> 
+  opt_interactive(
+    use_compact_mode = TRUE, # squish table
+    use_highlight = TRUE, # highlight rows on mouse hover
+    use_page_size_select = TRUE, # specify number of rows displayed
+    use_resizers = TRUE, # allow resizing columns
+    use_search = TRUE # add a search text box to table
+  ) |> 
+  tab_options(container.height = px(500))
+
+```
+
+Notice that I used `px(500)` to specify the height of the container. The `px()` function is a helper for specifying height or width in pixels, rather than, say, inches or centimeters. 
+
+With the `gt` package, the sky is the limit on formatting beautiful tables in R. For instance, you can add color codes to columns with `data_color()` like so.
+
+```{r}
+head(penguins) |> 
+  gt() |> 
+  tab_caption("Table 1. Palmer Penguins Data") |> 
+  tab_header(title = "this is the header") |>  
+  tab_footnote("*I added a footnote to this table.") |> 
+  data_color(
+    columns = bill_length_mm:body_mass_g,
+    palette = "BrBG"
+  )
+```
+
+And that's just the tip of the iceberg! To learn more, I recommend perusing [the package website](https://gt.rstudio.com/index.html) and playing around with different functions and settings.
+
+### Exercises
+
+1. Load in the DartPoints data with `data("DartPoints")`.  
+2. Make all the variable names lower case with `rename_with(tolower)`.  
+2. Subset the data to include only name, tarl (the Smithsonian Trinomial), length, width, and thickness.  
+2. Create an interactive table with the DartPoints data. 
+    - Add a header and footnote with `tab_header()` and `tab_footnote()`.  
+    - Specify the height of the table's container.  
+    - Try experimenting with the different arguments you can pass to `opt_interactive()` to see what they do.  
+
+## Data summary
+
+The number and variety of options available in the `gt` package can be overwhelming. It's also not capable of summarizing data or models by itself. That's where the  `gtsummary` package comes in. It's a wrapper around `gt` that automatically generates summary tables of data and regression models. To generate a summary table of data, we use the `tbl_summary()` function. This is similar to the `skim` function from the `skimr` package, but with a slightly different aesthetic. It also gives you more fine grained control over the output and style, which means it's a smidge more complicated to work with, too. 
+
+```{r}
+penguins |> tbl_summary()
+```
+
+By default, the summary gives you the proportions for categorical data, and the median values of continuous variables (along with their first and third quartiles or their interquartile range, IQR, in parentheses). 'Unknown' here refers to missing values. These are fine as far as they go, but the styling leaves a lot to be desired, especially if vertical space is prime real estate in whatever document you are creating.  
+
+In this case, something we might actually care about in our analysis is differences between species, which requires that we summarize the data by species. To do that, we simply specify the `species` variable in the `by=` argument.
+
+```{r}
+penguins |> tbl_summary(by = species)
+```
+
+By default, the table uses the column labels from the table. R doesn't like spaces in names, so it's common to see underscores in the labels. We can amend these in the table by specifying all the changes in a named list.  
+
+```{r}
+penguins |> 
+  tbl_summary(
+    by = species,
+    label = list(
+      island = "Island",
+      bill_length_mm = "Bill length (mm)",
+      bill_depth_mm = "Bill depth (mm)",
+      flipper_length_mm = "Flipper length (mm)",
+      body_mass_g = "Body mass (g)",
+      sex = "Sex",
+      year = "Year"
+    )
+  ) 
+```
+
+The `gtsummary` package also offers some helper functions for adding various columns to a summary table. For example, you can add a column with row totals using the `add_overall()` function.
+
+```{r}
+penguins |> 
+  tbl_summary(
+    by = species,
+    label = list(
+      island = "Island",
+      bill_length_mm = "Bill length (mm)",
+      bill_depth_mm = "Bill depth (mm)",
+      flipper_length_mm = "Flipper length (mm)",
+      body_mass_g = "Body mass (g)",
+      sex = "Sex",
+      year = "Year"
+    )
+  ) |> 
+  add_overall(last = TRUE)
+```
+
+We can also add some custom formatting, like adding a caption, removing the "Characteristic" label (that column should be obvious), and making the variable names or labels bold.
+
+```{r}
+penguins |> 
+  tbl_summary(
+    by = species,
+    label = list(
+      island = "Island",
+      bill_length_mm = "Bill length (mm)",
+      bill_depth_mm = "Bill depth (mm)",
+      flipper_length_mm = "Flipper length (mm)",
+      body_mass_g = "Body mass (g)",
+      sex = "Sex",
+      year = "Year"
+    )
+  ) |> 
+  add_overall(last = TRUE) |> 
+  modify_header(label ~ "") |>
+  modify_caption("**Table 1. Penguin Characteristics**") |> 
+  bold_labels()
+```
+
+Notice that you can use markdown syntax, like including asterisks around text you want to bold or italicize, and it will be rendered appropriately.  
+
+### Exercises
+
+1. Create a summary table of the DartPoints data. 
+    - Add a header and footnote with `tab_header()` and `tab_footnote()`.  
+    - Specify the height of the table's container.  
+    - Try experimenting with the different arguments you can pass to `opt_interactive()` to see what they do. 
+
+## Regression summary
+
+Summarizing models works in a similar way to summarizing data tables. Consider this simple linear model of bill length by flipper length and species.
+
+```{r}
+lm_penguins <- lm(
+  bill_length_mm ~ flipper_length_mm + species, 
+  data = penguins
+)
+```
+
+Here is the base R summary of the model:
+
+```{r}
+lm_penguins |> summary()
+```
+
+And here is the `gtsummary`:
+
+```{r}
+lm_penguins |> tbl_regression()
+```
+
+The first thing to note here is that this is just the coefficients table from the `summary()` output. Instead of "Estimate", though, it uses the label "Beta" - just another way of referring to the coefficient estimates or estimates of the betas for the different variables. The second and way more important thing to note is that the intercept is not reported by default. I do not know why this is the case, but I recommend you always do so (at least if it's a model that estimates an intercept). To do that, we add `intercept = TRUE`. While we're at, let's also rename the variables.
+
+```{r}
+lm_penguins |> 
+  tbl_regression(
+    intercept = TRUE,
+    label = list(
+      bill_length_mm = "Bill length (mm)",
+      flipper_length_mm = "Flipper length (mm)",
+      species = "Species"
+    )
+  )
+```
+
+Also, the test statistic used to generate the p-value is currently suppressed, and instead of reporting the standard error of the estimates, the 95% confidence interval is shown instead. These are some odd design choices by the package authors, maybe related to the fact that they designed the package to work with every model you can think of putting together in R. Whatever the reason, I recommend that you unhide those columns like so.
+
+```{r}
+lm_penguins |> 
+  tbl_regression(
+    intercept = TRUE,
+    label = list(
+      bill_length_mm = "Bill length (mm)",
+      flipper_length_mm = "Flipper length (mm)",
+      species = "Species"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error))
+```
+
+Finally, the coefficients table doesn't have information about the model as a whole, like the $R^2$ value or the F-statistic used in the ANOVA. We can add that information to our table either as additional rows with `add_glance_table()` or as a footnote with `add_glance_source_note()`. My own preference is for the latter, but journals will have their own formatting guidelines.    
+
+```{r}
+lm_penguins |> 
+  tbl_regression(
+    intercept = TRUE,
+    label = list(
+      bill_length_mm = "Bill length (mm)",
+      flipper_length_mm = "Flipper length (mm)",
+      species = "Species"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error)) |> 
+  add_glance_source_note(
+    include = c(adj.r.squared, sigma, statistic, df.residual, df, p.value),
+    label = list(
+      sigma = "σ",
+      statistic = "F-statistic"
+    )
+  )
+```
+
+By default, a number of statistics will be added to the table, but you should limit these to the ones that are most relevant to evaluating the type of model you have fit. In this case, we fit a linear model, so we included the adjusted $R^2$, the residual standard error (sigma), and information about the ANOVA.  
+
+Let's do one more example with a GLM. Here we'll see if we can differentiate Gentoo penguins from the rest. Hint: they're the really big ones. Then we'll walk through the steps of displaying the model.  
+
+```{r}
+gentoo <- penguins |> 
+  mutate(gentoo = ifelse(species == "Gentoo", 1, 0))
+
+glm_penguins <- glm(
+  gentoo ~ body_mass_g + bill_length_mm, 
+  family = binomial,
+  data = gentoo
+)
+
+glm_penguins |> summary()
+```
+
+```{r}
+glm_penguins |> 
+  tbl_regression(
+    intercept = TRUE,
+    label = list(
+      gentoo = "Gentoo",
+      body_mass_g = "Body mass (g)",
+      bill_length_mm = "Bill length (mm)"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error)) |> 
+  add_glance_source_note(
+    include = c(AIC, null.deviance, df.null, deviance, df.residual)
+  )
+```
+
+Note that we are given estimates of the coefficients on the logit or log odds ratio scale. This is a value that can be really hard to interpret, so it's recommended that you exponentiate these terms to get them onto the odds ratio scale (in this case the probability of being a Gentoo penguin relative to the probability of not being a Gentoo penguin). To do that, we simply tell `tbl_regression()` to exponentiate the terms for us.
+
+```{r}
+glm_penguins |> 
+  tbl_regression(
+    exponentiate = TRUE,
+    intercept = TRUE,
+    label = list(
+      gentoo = "Gentoo",
+      body_mass_g = "Body mass (g)",
+      bill_length_mm = "Bill length (mm)"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error)) |> 
+  add_glance_source_note(
+    include = c(AIC, null.deviance, df.null, deviance, df.residual)
+  )
+```
+
+A final note about formatting. All the things you can change in a data summary table, you can modify in a regression summary table, too.
+
+```{r}
+glm_penguins |> 
+  tbl_regression(
+    exponentiate = TRUE,
+    intercept = TRUE,
+    label = list(
+      gentoo = "Gentoo",
+      body_mass_g = "Body mass (g)",
+      bill_length_mm = "Bill length (mm)"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error)) |> 
+  add_glance_source_note(
+    include = c(AIC, null.deviance, df.null, deviance, df.residual)
+  ) |>
+  modify_header(label ~ "") |>
+  modify_caption("**Table 2. Gentoo Model**") |> 
+  bold_labels()
+```
+
+You can also re-order the columns, but it's a little tricky because of the structure of the summary table. We modify the table body, relocating columns or variables with the `dplyr` function `relocate()`, telling it to move the `statistic` column before the `p.value` column.  
+
+```{r}
+glm_penguins |> 
+  tbl_regression(
+    exponentiate = TRUE,
+    intercept = TRUE,
+    label = list(
+      gentoo = "Gentoo",
+      body_mass_g = "Body mass (g)",
+      bill_length_mm = "Bill length (mm)"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error)) |> 
+  modify_table_body(~.x |> relocate(statistic, .before = p.value)) |> 
+  add_glance_source_note(
+    include = c(AIC, null.deviance, df.null, deviance, df.residual)
+  ) |>
+  modify_header(label ~ "") |>
+  modify_caption("**Table 2. Gentoo Model**") |> 
+  bold_labels()
+```
+
+This ordering makes a smidge more sense because SE and CI are naturally related to each other, as are the test statistic and p-value.
+
+### Exercises
+
+1. Create a regression table for a logistic model fit to the Snodgrass data. 
+2. Load in the Snodgrass data with `data("Snodgrass")`.  
+2. Make all the variable names lower case with `rename_with(tolower)`.  
+2. Use `select()` to subset the data to include only the `area` of each structure and whether it is `inside` the inner walls.  
+2. Use a GLM to model whether the structure is found inside the inner walls as a function of its total area.
+    - Formula should be `inside ~ area`.
+    - Set `family = binomial` and `data = Snodgrass`.
+2. Summarize the model with `summary()`.
+2. Now create a regression table with `tbl_regression()`.
+    - Be sure to exponentiate the coefficient estimates.  
+    - Include the intercept.  
+    - Unhide the test statistic and standard error for the coefficient estimates with `modify_column_unhide()`.  
+    - Be sure to re-arrange the columns with `modify_table_body(~.x |> relocate(statistic, .before = p.value))`.  
+    - Add model statistics with `add_glance_source_note()`.  
+    - Add a caption with `modify_caption()`.  
+    - Remove the "Characteristic" label with `modify_header(label ~ "")`.  
+
+## Exporting tables
+
+The `gtsummary` package doesn't provide tools for exporting tables. Fortunately, it does let you convert its summary tables to `gt` tables, and the `gt` package does provide tools for exporting tables. 
+
+Here's the last table we made in the previous section:
+
+```{r}
+gtsummary_penguins <- glm_penguins |> 
+  tbl_regression(
+    exponentiate = TRUE,
+    intercept = TRUE,
+    label = list(
+      gentoo = "Gentoo",
+      body_mass_g = "Body mass (g)",
+      bill_length_mm = "Bill length (mm)"
+    )
+  ) |> 
+  modify_column_unhide(columns = c(statistic, std.error)) |> 
+  modify_table_body(~.x |> relocate(statistic, .before = p.value)) |> 
+  add_glance_source_note(
+    include = c(AIC, null.deviance, df.null, deviance, df.residual)
+  ) |>
+  # modify_header(label ~ " ") |>
+  modify_caption("**Table 2. Gentoo Model**") |> 
+  bold_labels()
+```
+
+We convert this to a gt object using `as_gt()` and save it to disk with the `gtsave()` function from the `gt` package. This works similar to `write_csv()` and `ggsave()`. We simply tell it what table we want to save and where we want to save it.
+
+```{r}
+#| eval: false
+
+gtsave(
+  as_gt(gtsummary_penguins),
+  file = here("manuscript", "model-summary.png")
+)
+```
+
+Saving as a png actually involves taking a screen shot of the HTML table and requires the `webshot2` package be installed. You'll get a note to this effect if you trying saving to this format and don't have `webshot2` installed already. You can also save to other formats like PDF (.pdf) and Word (.docx), though the latter probably won't work right now (there appears to be a bug in the code for `gtsave()` that is currently being worked on).
+
+### Exercises
+
+1. Make sure you are in the QAAD project directory.  
+2. Add a folder called "manuscript."  
+2. Now try saving the data summary and regression summary tables you made in the last two sections into that folder. Use `here("manuscript", <name of file.png>)`.  
+2. Navigate to that folder and check that it successfully saved.  
+
+## Homework
+
+No homework this week.
