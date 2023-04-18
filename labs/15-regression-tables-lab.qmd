@@ -206,10 +206,13 @@ Notice that you can use markdown syntax, like including asterisks around text yo
 
 ### Exercises
 
-1. Create a summary table of the DartPoints data. 
-    - Add a header and footnote with `tab_header()` and `tab_footnote()`.  
-    - Specify the height of the table's container.  
-    - Try experimenting with the different arguments you can pass to `opt_interactive()` to see what they do. 
+1. Create a summary table of the DartPoints data with `tbl_summary()`.  
+2. Use the `by=` argument to summarize by dart type (the variable name is `name`).  
+2. Update the labels as needed.  
+2. Add the overall counts for each group.  
+2. Remove the "Characteristic" label with `modify_header()`.  
+2. Add a caption.  
+2. Make the variable labels bold.  
 
 ## Regression summary
 
