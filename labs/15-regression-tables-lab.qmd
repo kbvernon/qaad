@@ -1,7 +1,7 @@
 ---
-title: "Lab 14: Partial Dependence"
+title: "Lab 15: Regression Tables"
 description: |
-  (Stats) Making sense of covariance in context. (R) Estimating and visualizing partial dependence.
+  (Stats) Nothing new. (R) How to report results of regression in a table with R.
 ---
 
 ```{r}
